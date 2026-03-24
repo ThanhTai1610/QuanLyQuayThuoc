@@ -1,4 +1,5 @@
 ﻿using QuanLyQuayThuoc.DTOs.NguoiDung;
+using QuanLyQuayThuoc.Models;
 
 namespace QuanLyQuayThuoc.Repositories.Interfaces
 {
@@ -6,5 +7,6 @@ namespace QuanLyQuayThuoc.Repositories.Interfaces
     {
         Task<NguoiDungInfoDto?> LayHoSoCaNhan(int maNguoiDung);
         Task<bool> LuuCapNhatHoSo(int maNguoiDung, CapNhatHoSoDto duLieu);
+        Task<NguoiDung?> GetByEmailAsync(string email);
     }
 }

@@ -2,8 +2,11 @@
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.Repositories;
 using QuanLyQuayThuoc.Repositories.Interfaces;
+using QuanLyQuayThuoc.Services.Interfaces;
+using QuanLyQuayThuoc.Services.Implementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer; // Giải quyết lỗi JwtBearerDefaults
-using Microsoft.IdentityModel.Tokens;               // Giải quyết lỗi TokenValidationParameters, SymmetricSecurityKey
+using Microsoft.IdentityModel.Tokens;
+using QuanLyQuayThuoc.Helpers;
 using System.Text;                                  // Giải quyết lỗi Encoding
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,11 +23,12 @@ builder.Services.AddCors(options => {
               .AllowAnyHeader()
               .AllowCredentials());
 });
-
+Console.WriteLine("Ma Hash cho 123456 la: " + BCrypt.Net.BCrypt.HashPassword("123456"));
 // --- 3. ĐĂNG KÝ REPOSITORY & SERVICES ---
 builder.Services.AddScoped<INguoiDungRepository, NguoiDungRepository>();
 // Tài thêm các Repo khác ở đây...
-
+builder.Services.AddScoped<INguoiDungService, NguoiDungService>();
+builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -63,21 +63,51 @@
 <script setup>
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import axiosClient from '../../api/axiosClient'; // Kiểm tra lại đường dẫn file này
 
 const router = useRouter();
-
-// Sử dụng reactive để quản lý dữ liệu form đăng nhập
 const auth = reactive({
   email: '',
   password: '',
   remember: false
 });
 
-const handleLogin = () => {
-  console.log("Dữ liệu gửi lên:", auth);
-  // Logic xử lý đăng nhập (gọi API .NET) sẽ nằm ở đây
-  // Tạm thời điều hướng về trang khách hàng sau khi nhấn
-  // router.push('/khach-hang/danh-sach-san-pham');
+const handleLogin = async () => {
+  try {
+    const data = await axiosClient.post('/NguoiDung/dang-nhap', {
+      email: auth.email,
+      matKhau: auth.password
+    });
+
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      const roleId = data.user.maVaiTro; // Lấy mã vai trò từ Backend trả về
+
+      // PHÂN QUYỀN ĐIỀU HƯỚNG
+      switch (roleId) {
+        case 1: // Giả sử 1 là Admin
+          alert("Chào mừng Quản trị viên: " + data.user.hoTen);
+          router.push('/admin/thong-ke');
+          break;
+        case 2: // Giả sử 2 là Nhân viên
+          alert("Chào mừng Nhân viên: " + data.user.hoTen);
+          router.push('/nhan-vien/ban-hang');
+          break;
+        case 3: // Giả sử 3 là Khách hàng
+          alert("Chào mừng " + data.user.hoTen);
+          router.push('/');
+          break;
+        default:
+          router.push('');
+          break;
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || "Đăng nhập thất bại!");
+  }
 };
 </script>
 

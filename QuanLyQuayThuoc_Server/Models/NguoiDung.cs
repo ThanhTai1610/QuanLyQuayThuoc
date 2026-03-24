@@ -17,7 +17,7 @@ public partial class NguoiDung
 
     public string? AnhDaiDien { get; set; }
 
-    public int? MaVaiTro { get; set; }
+    public int MaVaiTro { get; set; }
 
     public string? TrangThai { get; set; }
 
