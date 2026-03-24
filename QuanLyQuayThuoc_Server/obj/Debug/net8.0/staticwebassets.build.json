@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "neNqgynarWlEt4Sb5Pn7FBwmrBDbU+ynxIQMwh6INyQ=",
+  "Hash": "z3Gt1sRzrcxooCri1gXL9Y3TexNnu1v1ZaQqlQeqJlQ=",
   "Source": "QuanLyQuayThuoc",
   "BasePath": "_content/QuanLyQuayThuoc",
   "Mode": "Default",
@@ -10,7 +10,7 @@
     {
       "Name": "QuanLyQuayThuoc\\wwwroot",
       "Source": "QuanLyQuayThuoc",
-      "ContentRoot": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc\\wwwroot\\",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "Pattern": "**"
     }

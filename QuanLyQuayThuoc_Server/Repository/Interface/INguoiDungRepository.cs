@@ -1,6 +1,10 @@
-﻿namespace QuanLyQuayThuoc.Repository.Interface
+﻿using QuanLyQuayThuoc.DTOs.NguoiDung;
+
+namespace QuanLyQuayThuoc.Repositories.Interfaces
 {
-    public class INguoiDungRepository
+    public interface INguoiDungRepository
     {
+        Task<NguoiDungInfoDto?> LayHoSoCaNhan(int maNguoiDung);
+        Task<bool> LuuCapNhatHoSo(int maNguoiDung, CapNhatHoSoDto duLieu);
     }
 }

@@ -19,11 +19,12 @@
             <div class="account-sidebar">
               <div class="account-user-card">
                 <div class="account-avatar">
-                  <span class="icon-user"></span>
+                  <img v-if="nguoiDung.anhDaiDien" :src="nguoiDung.anhDaiDien" class="img-fluid rounded-circle" alt="Avatar">
+                  <span v-else class="icon-user"></span>
                 </div>
                 <div class="account-user-info">
-                  <div class="account-user-name">{{ user.fullName }}</div>
-                  <div class="account-user-phone">{{ user.phone }}</div>
+                  <div class="account-user-name">{{ nguoiDung.hoTen || 'Đang tải...' }}</div>
+                  <div class="account-user-phone">{{ nguoiDung.soDienThoai }}</div>
                 </div>
               </div>
               <ul class="account-menu list-unstyled">
@@ -53,7 +54,7 @@
                   </a>
                 </li>
                 <li>
-                  <a href="#" @click.prevent="logout">
+                  <a href="#" @click.prevent="dangXuat">
                     <span class="icon-exit_to_app mr-2"></span> Đăng xuất
                   </a>
                 </li>
@@ -69,7 +70,8 @@
               <div class="account-profile-body">
                 <div class="account-profile-avatar text-center mb-4">
                   <div class="avatar-circle">
-                    <span class="icon-user"></span>
+                    <img v-if="nguoiDung.anhDaiDien" :src="nguoiDung.anhDaiDien" class="img-fluid rounded-circle">
+                    <span v-else class="icon-user"></span>
                   </div>
                 </div>
                 <div class="table-responsive">
@@ -77,21 +79,29 @@
                     <tbody>
                       <tr>
                         <td class="label-col">Họ và tên</td>
-                        <td class="value-col text-right">{{ user.fullName }}</td>
+                        <td class="value-col text-right">{{ nguoiDung.hoTen }}</td>
                       </tr>
                       <tr>
                         <td class="label-col">Số điện thoại</td>
-                        <td class="value-col text-right">{{ user.phone }}</td>
+                        <td class="value-col text-right">{{ nguoiDung.soDienThoai }}</td>
+                      </tr>
+                      <tr>
+                        <td class="label-col">Email</td>
+                        <td class="value-col text-right">{{ nguoiDung.email }}</td>
                       </tr>
                       <tr>
                         <td class="label-col">Giới tính</td>
-                        <td class="value-col text-right">{{ user.gender }}</td>
+                        <td class="value-col text-right">{{ nguoiDung.gioiTinh || 'Chưa cập nhật' }}</td>
                       </tr>
                       <tr>
                         <td class="label-col">Ngày sinh</td>
                         <td class="value-col text-right text-primary" style="cursor: pointer">
-                          {{ user.birthday || 'Thêm thông tin' }}
+                          {{ dinhDangNgay(nguoiDung.ngaySinh) }}
                         </td>
+                      </tr>
+                      <tr>
+                        <td class="label-col">Vai trò</td>
+                        <td class="value-col text-right"><span class="badge badge-info">{{ nguoiDung.tenVaiTro }}</span></td>
                       </tr>
                     </tbody>
                   </table>
@@ -104,7 +114,6 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -112,28 +121,63 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
 
-// Dữ liệu mẫu (sau này Tài sẽ lấy từ API qua axios)
-const user = ref({
-  fullName: 'PHẠM THÀNH TÀI',
-  phone: '0816354009',
-  gender: 'Nam',
-  birthday: ''
+// Khởi tạo đối tượng người dùng theo chuẩn Backend đã code
+const nguoiDung = ref({
+  hoTen: '',
+  soDienThoai: '',
+  email: '',
+  anhDaiDien: '',
+  gioiTinh: '',
+  ngaySinh: null,
+  tenVaiTro: ''
 });
 
-const logout = () => {
-  // Logic đăng xuất
+// Hàm gọi API lấy dữ liệu hồ sơ
+const taiThongTinHoSo = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/auth/dang-nhap');
+      return;
+    }
+
+    const phanHoi = await axios.get('https://localhost:7xxx/api/HoSo/thong-tin-ca-nhan', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (phanHoi.data) {
+      nguoiDung.value = phanHoi.data;
+    }
+  } catch (loi) {
+    console.error("Lỗi khi lấy thông tin người dùng:", loi);
+    if (loi.response && loi.response.status === 401) {
+      dangXuat();
+    }
+  }
+};
+
+// Hàm định dạng ngày tháng hiển thị
+const dinhDangNgay = (chuoiNgay) => {
+  if (!chuoiNgay) return 'Thêm thông tin';
+  const ngay = new Date(chuoiNgay);
+  return ngay.toLocaleDateString('vi-VN');
+};
+
+const dangXuat = () => {
   localStorage.removeItem('token');
   router.push('/auth/dang-nhap');
 };
-</script>
 
-<style scoped>
-/* Không cần viết CSS ở đây vì Tài đã có các file CSS cũ.
-   Vue sẽ tự động nhận CSS từ các file bạn đã import trong main.js 
-   hoặc App.vue như account-profile.css, style.css... */
-</style>
+// Gọi API ngay khi component được gắn vào DOM
+onMounted(() => {
+  taiThongTinHoSo();
+});
+</script>

@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data;
-// Đừng quên using các namespace của Repository và Service của bạn ở đây
-// ví dụ: using QuanLyQuayThuoc.Repository.Interfaces; 
+using QuanLyQuayThuoc.Repositories;
+using QuanLyQuayThuoc.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer; // Giải quyết lỗi JwtBearerDefaults
+using Microsoft.IdentityModel.Tokens;               // Giải quyết lỗi TokenValidationParameters, SymmetricSecurityKey
+using System.Text;                                  // Giải quyết lỗi Encoding
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,25 +12,39 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// --- 2. CẤU HÌNH CORS (Chỉ cần 1 cái này là đủ cho máy xanh gọi máy tím) ---
+// --- 2. CẤU HÌNH CORS ---
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowVueApp", policy =>
-        policy.WithOrigins("http://localhost:5173") // Cổng mặc định của Vite/Vue 3
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());
 });
 
-// --- 3. ĐĂNG KÝ REPOSITORY & SERVICES (BẮT BUỘC PHẢI CÓ) ---
-// Tài thêm các dòng này để hệ thống hiểu các file trong folder Repository/Service nhé
-// builder.Services.AddScoped<IAuthService, AuthService>();
-// builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
-// ... Thêm các cái khác tương tự ở đây ...
+// --- 3. ĐĂNG KÝ REPOSITORY & SERVICES ---
+builder.Services.AddScoped<INguoiDungRepository, NguoiDungRepository>();
+// Tài thêm các Repo khác ở đây...
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// --- CẤU HÌNH JWT (Tài đảm bảo đã có phần này để [Authorize] hoạt động) ---
+// builder.Services.AddAuthentication(...)...
+builder.Services.AddAuthentication(options => {
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options => {
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false, // Chỉnh thành true nếu bạn có quy định Issuer
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Chuoi_Secret_Key_Cua_Tai_Phai_Du_Dai_32_Ky_Tu"))
+    };
+});
 var app = builder.Build();
 
 // --- 4. CẤU HÌNH PIPELINE ---
@@ -39,9 +56,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// KÍCH HOẠT CORS (Phải nằm TRƯỚC Authorization)
 app.UseCors("AllowVueApp");
 
+app.UseAuthentication(); // Phải có cái này trước Authorization
 app.UseAuthorization();
 
 app.MapControllers();
