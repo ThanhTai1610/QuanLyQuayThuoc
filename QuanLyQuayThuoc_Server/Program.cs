@@ -26,8 +26,11 @@ builder.Services.AddCors(options => {
 Console.WriteLine("Ma Hash cho 123456 la: " + BCrypt.Net.BCrypt.HashPassword("123456"));
 // --- 3. ĐĂNG KÝ REPOSITORY & SERVICES ---
 builder.Services.AddScoped<INguoiDungRepository, NguoiDungRepository>();
+builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
+builder.Services.AddScoped<IKhoRepository, KhoRepository>();
 // Tài thêm các Repo khác ở đây...
 builder.Services.AddScoped<INguoiDungService, NguoiDungService>();
+builder.Services.AddScoped<IBanHangService, BanHangService>();
 builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
