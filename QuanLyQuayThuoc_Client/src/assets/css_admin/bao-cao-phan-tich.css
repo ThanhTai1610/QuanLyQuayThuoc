@@ -1,0 +1,219 @@
+/**
+ * Báo cáo & Phân tích — giao diện bổ sung (chỉ frontend)
+ */
+
+/* Thẻ chỉ số chính */
+.bc-metric-card {
+    border-radius: 0.35rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bc-metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(58, 59, 69, 0.12) !important;
+}
+
+.bc-metric-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #3a3b45;
+    line-height: 1.2;
+}
+
+.bc-metric-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #858796;
+}
+
+.bc-trend {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 0.35rem;
+}
+
+.bc-trend--up {
+    color: #1cc88a;
+}
+
+.bc-trend--down {
+    color: #e74a3b;
+}
+
+.bc-trend--good-down {
+    color: #1cc88a;
+}
+
+.bc-trend small {
+    font-weight: 600;
+    color: #b7b9cc;
+}
+
+/* Thanh chọn chu kỳ biểu đồ */
+.bc-chart-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.bc-chart-toolbar .btn-group .btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.bc-chart-toolbar .btn-group .btn.active {
+    background-color: #4e73df;
+    border-color: #4e73df;
+    color: #fff;
+}
+
+.bc-chart-legend-hint {
+    font-size: 0.8rem;
+    color: #858796;
+}
+
+/* Khung biểu đồ cố định chiều cao */
+.bc-chart-canvas-wrap {
+    position: relative;
+    height: 320px;
+    max-height: 45vh;
+}
+
+.bc-chart-canvas-wrap--sm {
+    height: 260px;
+}
+
+.bc-chart-canvas-wrap--pie {
+    height: 280px;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+/* Bảng xếp hạng lượt xem */
+.bc-rank-item {
+    margin-bottom: 0.85rem;
+}
+
+.bc-rank-item__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.bc-rank-item__name {
+    font-weight: 600;
+    color: #3a3b45;
+    padding-right: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bc-rank-item__views {
+    font-weight: 700;
+    color: #4e73df;
+    flex-shrink: 0;
+}
+
+.bc-rank-item .progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #eaecf4;
+}
+
+/* Cảnh báo hạn / tồn */
+.bc-alert-table th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-top: 0;
+}
+
+.bc-alert-table td {
+    font-size: 0.875rem;
+    vertical-align: middle;
+}
+
+.bc-badge-expiry--3 {
+    background-color: #e74a3b;
+    color: #fff;
+}
+
+.bc-badge-expiry--6 {
+    background-color: #f6c23e;
+    color: #3a3b45;
+}
+
+.bc-badge-stock {
+    background-color: #858796;
+    color: #fff;
+}
+
+/* Bản đồ khu vực (placeholder) */
+.bc-map-placeholder {
+    background: linear-gradient(135deg, #f8f9fc 0%, #eaecf4 100%);
+    border: 2px dashed #d1d3e2;
+    border-radius: 0.35rem;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+    text-align: center;
+    color: #858796;
+}
+
+.bc-map-placeholder i {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.6;
+}
+
+.bc-region-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.bc-region-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f0f0f5;
+}
+
+.bc-region-list li:last-child {
+    border-bottom: 0;
+}
+
+.bc-region-list .pct {
+    font-weight: 700;
+    color: #4e73df;
+}
+
+/* Ghi chú nguồn dữ liệu */
+.bc-data-note {
+    font-size: 0.8rem;
+    color: #858796;
+    border-left: 3px solid #4e73df;
+    padding-left: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+@media (max-width: 575.98px) {
+    .bc-metric-value {
+        font-size: 1.15rem;
+    }
+
+    .bc-chart-canvas-wrap {
+        height: 260px;
+    }
+}

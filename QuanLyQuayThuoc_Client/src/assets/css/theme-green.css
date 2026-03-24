@@ -1,0 +1,224 @@
+:root {
+  --lc-blue-800: #0047ab;
+  --lc-blue-700: #0054c7;
+  --lc-blue-600: #0a66df;
+  --lc-blue-500: #2a7ff0;
+  --lc-blue-100: #eaf2ff;
+  --lc-blue-050: #f5f9ff;
+  --lc-yellow-400: #ffd54f;
+}
+
+body {
+  background-color: #f4f7fc;
+}
+
+a {
+  color: var(--lc-blue-600);
+}
+
+.text-primary {
+  color: var(--lc-blue-600) !important;
+}
+
+.btn-primary {
+  background-color: var(--lc-blue-600) !important;
+  border-color: var(--lc-blue-600) !important;
+  color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--lc-blue-700) !important;
+  border-color: var(--lc-blue-700) !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-primary {
+  color: var(--lc-blue-600) !important;
+  border-color: var(--lc-blue-600) !important;
+  background-color: #ffffff !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--lc-blue-600) !important;
+  border-color: var(--lc-blue-600) !important;
+  color: #fff !important;
+}
+
+.lc-header,
+.lc-header-middle {
+  background: linear-gradient(135deg, var(--lc-blue-800), var(--lc-blue-600)) !important;
+}
+
+.lc-header-top {
+  background: #003a8c !important;
+}
+
+.lc-header-bottom {
+  background: var(--lc-blue-700) !important;
+}
+
+.lc-header-link,
+.lc-header-nav a {
+  color: #ffffff !important;
+}
+
+.lc-header-link:hover,
+.lc-header-nav a:hover {
+  color: var(--lc-yellow-400) !important;
+}
+
+.btn,
+.btn:focus,
+.btn:hover {
+  text-decoration: none !important;
+}
+
+.home-promise-strip,
+.pharmacy-products,
+.home-featured-categories {
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%) !important;
+}
+
+.site-blocks-cover.overlay:before {
+  background: rgba(17, 24, 39, 0.28) !important;
+}
+
+.category-icon,
+.pharmacy-product-meta,
+.products-pagination .page-link {
+  color: var(--lc-blue-600) !important;
+}
+
+.products-pagination .page-item.active .page-link,
+.tab-btn.active,
+.account-menu li.active > a {
+  background: var(--lc-blue-600) !important;
+  border-color: var(--lc-blue-600) !important;
+  color: #ffffff !important;
+}
+
+.account-menu a:hover {
+  background: var(--lc-blue-100) !important;
+  color: var(--lc-blue-600) !important;
+}
+
+.account-content-card,
+.filter-sidebar,
+.products-toolbar,
+.product-card,
+.detail-top-card,
+.tabs-card,
+.support-card,
+.related-card {
+  box-shadow: 0 8px 24px rgba(30, 64, 175, 0.08) !important;
+}
+
+/* Chuyen cac icon xanh la mac dinh sang xanh nuoc */
+.feature .wrap-icon {
+  background: rgba(10, 102, 223, 0.12) !important;
+  color: var(--lc-blue-600) !important;
+}
+
+.bg-primary-light {
+  background: rgba(10, 102, 223, 0.12) !important;
+}
+
+.text-success,
+a.text-success:hover,
+a.text-success:focus {
+  color: var(--lc-blue-600) !important;
+}
+
+/* Khu banner khuyen mai va buoc so: bo xanh la, doi sang xanh nuoc */
+.bg-image.overlay:before {
+  background: rgba(10, 102, 223, 0.62) !important;
+}
+
+.step-number > span,
+.step-number:last-child > span {
+  background: var(--lc-blue-600) !important;
+  border-color: var(--lc-blue-600) !important;
+  color: #ffffff !important;
+}
+
+.step-number p a,
+.step-number p strong {
+  color: var(--lc-blue-600) !important;
+}
+
+.btn-outline-white:hover {
+  color: var(--lc-blue-600) !important;
+}
+
+/* Quet toan bo mau xanh la con sot lai trong template */
+.btn.btn-primary:hover {
+  color: var(--lc-blue-600) !important;
+}
+
+.form-control:active,
+.form-control:focus {
+  border-color: var(--lc-blue-600) !important;
+}
+
+.site-section-heading:before,
+.site-section-heading.text-center:before,
+.title-section h2:before,
+.title-section.text-center h2:before {
+  background: var(--lc-blue-600) !important;
+}
+
+.site-footer ul li a:hover,
+.testimony .author,
+.block-5 ul li:before,
+.site-navbar .site-navigation .site-menu .active > a,
+.site-navbar .site-navigation .site-menu .has-children .dropdown .active > a,
+.site-blocks-cover .btn,
+.site-blocks-table tbody tr:first-child td,
+.site-block-27 ul li.active a,
+.site-block-27 ul li.active span {
+  color: var(--lc-blue-600) !important;
+}
+
+.site-navbar .site-top-icons ul li a.site-cart .count,
+.site-navbar .site-navigation .site-menu .active > a:before,
+.site-navbar .site-navigation .site-menu .has-children .dropdown,
+.block-3 .owl-dots .owl-dot.active > span,
+#slider-range .ui-slider-handle,
+#slider-range .ui-slider-range,
+.bag .number,
+.owl-single .owl-nav .owl-prev:hover,
+.owl-single .owl-nav .owl-next:hover,
+.step-number > span,
+.step-number:last-child > span,
+.site-blocks-cover .btn:hover {
+  background: var(--lc-blue-600) !important;
+  border-color: var(--lc-blue-600) !important;
+}
+
+.bg-image.overlay:after {
+  background: rgba(10, 102, 223, 0.78) !important;
+}
+
+.btn.btn-black:hover,
+.btn.btn-black:active,
+.btn.btn-black:focus {
+  background-color: var(--lc-blue-600) !important;
+}
+
+.bg-success,
+.badge-success {
+  background-color: var(--lc-blue-600) !important;
+}
+
+.border-success {
+  border-color: var(--lc-blue-600) !important;
+}
+
+/* Banner trang chu: giu chu nut "Mua ngay" mau trang */
+.site-blocks-cover .btn,
+.site-blocks-cover .btn:hover,
+.site-blocks-cover .btn:focus {
+  color: #ffffff !important;
+}

@@ -1,0 +1,141 @@
+.account-breadcrumb {
+  background-color: #f5f7fb;
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.account-wrapper {
+  background-color: #f1f3f8;
+  padding: 24px 0 40px;
+}
+
+.account-sidebar {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 16px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.account-user-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  color: #ffffff;
+  margin-bottom: 16px;
+}
+
+.account-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.account-avatar .icon-user {
+  font-size: 26px;
+}
+
+.account-user-name {
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.account-user-phone {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.account-menu li {
+  margin-bottom: 4px;
+}
+
+.account-menu a {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2933;
+  text-decoration: none;
+}
+
+.account-menu a:hover {
+  background-color: #eef2ff;
+  color: #2563eb;
+}
+
+.account-menu li.active > a {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.account-content-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.account-content-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.account-profile-body {
+  margin-top: 16px;
+}
+
+.account-profile-avatar .avatar-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  background: #e0edff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.account-profile-avatar .icon-user {
+  font-size: 40px;
+  color: #2563eb;
+}
+
+.account-profile-table {
+  margin-bottom: 0;
+}
+
+.account-profile-table td {
+  border-top: none;
+  border-bottom: 1px solid #edf2f7;
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.account-profile-table .label-col {
+  color: #6b7280;
+}
+
+.account-profile-table .value-col {
+  font-weight: 500;
+}
+
+@media (max-width: 767.98px) {
+  .account-wrapper {
+    padding: 16px 0 24px;
+  }
+
+  .account-content-card,
+  .account-sidebar {
+    box-shadow: none;
+    border-radius: 8px;
+  }
+}
+

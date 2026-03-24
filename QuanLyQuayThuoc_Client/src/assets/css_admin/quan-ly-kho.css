@@ -1,0 +1,160 @@
+/**
+ * Quản lý Kho & Lô hàng — chỉ frontend
+ */
+
+.qlk-page {
+    padding-bottom: 0.5rem;
+}
+
+.qlk-subnav {
+    position: sticky;
+    top: 1rem;
+}
+
+.qlk-subnav .nav-link {
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.35rem;
+    margin-bottom: 0.35rem;
+    font-weight: 800;
+    color: #4e73df;
+}
+
+.qlk-subnav .nav-link:hover {
+    background: #f4f6ff;
+}
+
+.qlk-subnav .nav-link.active {
+    background: #4e73df;
+    color: #fff;
+}
+
+.qlk-section {
+    display: none;
+}
+
+.qlk-section--active {
+    display: block;
+}
+
+.qlk-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #858796;
+    white-space: nowrap;
+}
+
+.qlk-table td {
+    vertical-align: middle;
+    font-size: 0.92rem;
+}
+
+.qlk-batch-badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.35rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #f8f9fc;
+    font-weight: 900;
+}
+
+.qlk-hsd--expired {
+    background: #ffe6e6;
+    border: 1px solid #e74a3b;
+    color: #b91c1c;
+    border-radius: 0.35rem;
+    padding: 0.25rem 0.5rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.qlk-hsd--soon {
+    background: #fff3cd;
+    border: 1px solid #f6c23e;
+    color: #8a5a00;
+    border-radius: 0.35rem;
+    padding: 0.25rem 0.5rem;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.qlk-stat-value {
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.qlk-stat-card {
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.qlk-filters-card {
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    padding: 0.85rem 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.qlk-toast-wrap .alert {
+    font-size: 0.9rem;
+}
+
+.qlk-rolebar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.qlk-muted {
+    color: #858796;
+    font-size: 0.9rem;
+}
+
+/* Reuse class names from POS autocomplete (demo) */
+.pos-autocomplete-list {
+    position: absolute;
+    z-index: 50;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    max-height: 320px;
+    overflow: auto;
+}
+
+.pos-autocomplete-item {
+    padding: 0.65rem 0.75rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.pos-autocomplete-item:last-child {
+    border-bottom: 0;
+}
+
+.pos-autocomplete-item:hover,
+.pos-autocomplete-item--active {
+    background: #f4f6ff;
+}
+
+.pos-autocomplete-item__title {
+    font-weight: 900;
+    color: #3a3b45;
+    line-height: 1.15;
+}
+
+.pos-autocomplete-item__meta {
+    font-size: 0.85rem;
+    color: #858796;
+    margin-top: 2px;
+}
+

@@ -1,0 +1,195 @@
+/**
+ * Giao diện Quản lý người dùng & nhân viên (chỉ frontend)
+ * Dùng kèm SB Admin 2 / Bootstrap 4
+ */
+
+/* Thanh điều hướng nhanh giữa các khối */
+.qlnd-quick-nav {
+    background: #fff;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.qlnd-quick-nav .nav-link {
+    color: #5a5c69;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.25rem;
+}
+
+.qlnd-quick-nav .nav-link:hover {
+    background: #eaecf4;
+    color: #4e73df;
+}
+
+.qlnd-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4e73df;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eaecf4;
+}
+
+/* Toolbar: bộ lọc + tìm kiếm */
+.qlnd-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.qlnd-toolbar .form-group {
+    margin-bottom: 0;
+}
+
+.qlnd-toolbar label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #858796;
+    margin-bottom: 0.25rem;
+}
+
+.qlnd-search-wrap {
+    flex: 1;
+    min-width: 220px;
+    max-width: 400px;
+}
+
+/* Avatar trong bảng */
+.qlnd-avatar {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #eaecf4;
+}
+
+/* Vai trò */
+.qlnd-badge-admin {
+    background-color: #e74a3b;
+    color: #fff;
+}
+
+.qlnd-badge-staff {
+    background-color: #4e73df;
+    color: #fff;
+}
+
+.qlnd-badge-customer {
+    background-color: #1cc88a;
+    color: #fff;
+}
+
+/* Nút hành động gọn */
+.qlnd-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.qlnd-actions .btn + .btn {
+    margin-left: 0.15rem;
+}
+
+/* Form thêm/sửa */
+.qlnd-form-card .form-section-label {
+    font-weight: 700;
+    color: #5a5c69;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.qlnd-upload-zone {
+    border: 2px dashed #d1d3e2;
+    border-radius: 0.35rem;
+    padding: 1.25rem;
+    text-align: center;
+    background: #f8f9fc;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.qlnd-upload-zone:hover {
+    border-color: #4e73df;
+    background: #f0f3ff;
+}
+
+.qlnd-upload-preview {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 0.35rem;
+    object-fit: cover;
+    margin-top: 0.75rem;
+    border: 1px solid #e3e6f0;
+}
+
+/* Phân quyền: danh sách checkbox */
+.qlnd-perm-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.qlnd-perm-list li {
+    padding: 0.65rem 1rem;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    margin-bottom: 0.5rem;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.qlnd-perm-list li:hover {
+    background: #f8f9fc;
+    border-color: #b7b9cc;
+}
+
+.qlnd-perm-list .custom-control-label {
+    font-weight: 600;
+    color: #5a5c69;
+    cursor: pointer;
+    width: 100%;
+    padding-left: 0.25rem;
+}
+
+/* Bảng lịch sử: cột hành động rộng hơn */
+.qlnd-log-action {
+    max-width: 320px;
+    white-space: normal;
+    font-size: 0.875rem;
+}
+
+/* Ghi chú màn hình */
+.qlnd-hint {
+    font-size: 0.8rem;
+    color: #858796;
+}
+
+@media (max-width: 767.98px) {
+    .qlnd-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .qlnd-search-wrap {
+        max-width: none;
+    }
+
+    .qlnd-actions {
+        white-space: normal;
+    }
+
+    .qlnd-actions .btn {
+        margin-bottom: 0.25rem;
+    }
+}

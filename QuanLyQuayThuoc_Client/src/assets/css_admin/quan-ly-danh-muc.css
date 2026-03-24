@@ -1,0 +1,268 @@
+/**
+ * Quản lý danh mục — Tree View (chỉ frontend)
+ */
+
+/* Khối quy tắc nghiệp vụ */
+.dm-rules .alert {
+    border-radius: 0.35rem;
+    font-size: 0.9rem;
+}
+
+.dm-rules .alert-heading {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+/* Tiêu đề cột (giống bảng) */
+.dm-tree-header {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 64px 110px 100px minmax(220px, auto);
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem 0.35rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #858796;
+}
+
+.dm-tree-header__col--actions {
+    text-align: right;
+}
+
+/* Vùng cây */
+.dm-tree-wrap {
+    border: 1px solid #e3e6f0;
+    border-top: 0;
+    border-radius: 0 0 0.35rem 0.35rem;
+    background: #fff;
+    overflow-x: auto;
+}
+
+.dm-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dm-tree-children {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    padding-left: 1.75rem;
+    border-left: 2px solid #eaecf4;
+    margin-left: 0.85rem;
+}
+
+.dm-tree-children.dm-tree-children--collapsed {
+    display: none;
+}
+
+.dm-tree-item {
+    border-bottom: 1px solid #f0f0f5;
+}
+
+.dm-tree-item:last-child {
+    border-bottom: 0;
+}
+
+/* Một dòng danh mục */
+.dm-tree-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 64px 110px 100px minmax(220px, auto);
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    transition: background 0.15s ease;
+}
+
+.dm-tree-row:hover {
+    background: #fcfcfe;
+}
+
+.dm-tree-row--leaf .dm-tree-toggle {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Nút thu gọn / mở rộng */
+.dm-tree-toggle {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: #eaecf4;
+    color: #5a5c69;
+    border-radius: 0.25rem;
+    margin-right: 0.35rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.2s;
+}
+
+.dm-tree-toggle:hover {
+    background: #d1d3e2;
+}
+
+.dm-tree-toggle i {
+    transition: transform 0.2s;
+    font-size: 0.7rem;
+}
+
+.dm-tree-item.dm-tree-item--collapsed .dm-tree-toggle i {
+    transform: rotate(-90deg);
+}
+
+/* Cột tên */
+.dm-tree-name-cell {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.dm-tree-name-cell .dm-tree-type-icon {
+    margin-right: 0.5rem;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.dm-tree-name-cell .dm-tree-type-icon--folder {
+    color: #f6c23e;
+}
+
+.dm-tree-name-cell .dm-tree-type-icon--leaf {
+    color: #858796;
+}
+
+.dm-tree-name-text {
+    font-weight: 600;
+    color: #3a3b45;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Icon đại diện danh mục (menu) */
+.dm-tree-icon-preview {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    font-size: 1.25rem;
+    color: #4e73df;
+}
+
+.dm-tree-icon-preview img {
+    max-width: 32px;
+    max-height: 32px;
+    object-fit: contain;
+}
+
+.dm-tree-count {
+    font-weight: 600;
+    color: #5a5c69;
+    font-size: 0.95rem;
+}
+
+.dm-tree-count--zero {
+    color: #b7b9cc;
+}
+
+.dm-tree-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.dm-tree-actions .btn-group .btn {
+    padding: 0.2rem 0.45rem;
+}
+
+/* Modal form */
+.dm-modal-icon-upload {
+    border: 2px dashed #d1d3e2;
+    border-radius: 0.35rem;
+    padding: 1rem;
+    text-align: center;
+    background: #f8f9fc;
+}
+
+.dm-modal-icon-preview {
+    width: 56px;
+    height: 56px;
+    margin: 0.5rem auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    font-size: 1.5rem;
+    color: #4e73df;
+}
+
+.dm-modal-icon-preview img {
+    max-width: 48px;
+    max-height: 48px;
+    object-fit: contain;
+}
+
+.dm-slug-hint {
+    font-size: 0.8rem;
+}
+
+.dm-slug-input {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.9rem;
+}
+
+/* Toast demo (xóa thành công / đổi thứ tự) */
+.dm-toast-wrap {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 1080;
+    max-width: 320px;
+}
+
+@media (max-width: 991.98px) {
+    .dm-tree-header,
+    .dm-tree-row {
+        grid-template-columns: minmax(160px, 1fr) 48px 80px 80px 1fr;
+        font-size: 0.85rem;
+    }
+
+    .dm-tree-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .dm-tree-header {
+        display: none;
+    }
+
+    .dm-tree-row {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .dm-tree-actions {
+        justify-content: flex-start;
+    }
+
+    .dm-tree-children {
+        padding-left: 1rem;
+        margin-left: 0.5rem;
+    }
+}

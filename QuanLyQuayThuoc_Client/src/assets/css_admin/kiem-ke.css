@@ -1,0 +1,72 @@
+/**
+ * Kiểm kê & Đối soát tồn kho — chỉ frontend
+ */
+
+.kiemke-toolbar .form-group {
+    margin-bottom: 0.75rem;
+}
+
+.kiemke-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #858796;
+    white-space: nowrap;
+}
+
+.kiemke-table td {
+    vertical-align: middle;
+}
+
+.kiemke-batch {
+    display: inline-block;
+    margin-left: 0.25rem;
+    padding: 0.1rem 0.4rem;
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    font-size: 0.75rem;
+}
+
+.kiemke-hsd {
+    white-space: nowrap;
+}
+
+.kiemke-so-thuc-te {
+    width: 120px;
+    font-weight: 600;
+}
+
+.kiemke-chenh-lech {
+    font-weight: 800;
+}
+
+.kiemke-chenh--du {
+    color: #1cc88a;
+}
+
+.kiemke-chenh--thieu {
+    color: #e74a3b;
+}
+
+.kiemke-chenh--bang {
+    color: #858796;
+}
+
+.kiemke-ly-do {
+    min-width: 220px;
+}
+
+.kiemke-reason-disabled {
+    opacity: 0.6;
+}
+
+.kiemke-summary-value {
+    font-weight: 900;
+    font-size: 1.1rem;
+}
+
+.kiemke-toast-wrap .alert {
+    font-size: 0.9rem;
+}
+

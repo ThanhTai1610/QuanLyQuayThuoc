@@ -1,0 +1,220 @@
+/**
+ * POS (Point of Sale) — chỉ frontend
+ * Ưu tiên: nhanh thao tác, dễ nhìn tại quầy
+ */
+
+.pos-root {
+    padding-bottom: 0.75rem;
+}
+
+.pos-header {
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    padding: 0.75rem;
+}
+
+.pos-search-input {
+    font-size: 1rem;
+    height: 44px;
+}
+
+.pos-autocomplete-wrap {
+    position: relative;
+}
+
+.pos-autocomplete-list {
+    position: absolute;
+    z-index: 50;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-top: 0;
+    border-bottom-left-radius: 0.35rem;
+    border-bottom-right-radius: 0.35rem;
+    max-height: 320px;
+    overflow: auto;
+}
+
+.pos-autocomplete-item {
+    padding: 0.6rem 0.7rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.pos-autocomplete-item:hover,
+.pos-autocomplete-item--active {
+    background: #f8f9fc;
+}
+
+.pos-autocomplete-item__title {
+    font-weight: 800;
+    color: #3a3b45;
+    line-height: 1.15;
+}
+
+.pos-autocomplete-item__meta {
+    font-size: 0.85rem;
+    color: #858796;
+    margin-top: 2px;
+}
+
+.pos-layout {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.pos-left {
+    flex: 0 0 70%;
+    min-width: 420px;
+}
+
+.pos-right {
+    flex: 1;
+    min-width: 320px;
+}
+
+.pos-card {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.pos-card__header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pos-card__title {
+    font-weight: 900;
+    color: #4e73df;
+    margin-bottom: 0;
+}
+
+.pos-cart-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #858796;
+    white-space: nowrap;
+}
+
+.pos-cart-table td {
+    vertical-align: middle;
+    font-size: 0.92rem;
+}
+
+.pos-qty-control {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.pos-qty-control button {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.pos-qty-input {
+    width: 70px;
+    text-align: center;
+    font-weight: 800;
+}
+
+.pos-batch-select {
+    min-width: 190px;
+}
+
+.pos-unit-select {
+    min-width: 130px;
+}
+
+.pos-line-total {
+    font-weight: 900;
+    color: #3a3b45;
+    white-space: nowrap;
+}
+
+.pos-summary {
+    padding: 0.75rem 1rem 1rem;
+}
+
+.pos-kpi-value {
+    font-weight: 900;
+    font-size: 1.25rem;
+}
+
+.pos-highlight-due {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 0.35rem;
+    padding: 0.6rem 0.75rem;
+}
+
+.pos-keys {
+    margin-top: 0.9rem;
+    border: 1px dashed rgba(0, 0, 0, 0.12);
+    border-radius: 0.35rem;
+    padding: 0.6rem 0.75rem;
+    background: #fafafa;
+}
+
+.pos-key {
+    display: inline-block;
+    padding: 0.2rem 0.45rem;
+    border-radius: 0.25rem;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    font-weight: 900;
+    margin-right: 0.5rem;
+}
+
+.pos-toast-wrap .alert {
+    font-size: 0.9rem;
+}
+
+/* In hóa đơn (nhiệt demo) */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #posHoaDonPrint,
+    #posHoaDonPrint * {
+        visibility: visible;
+    }
+
+    #posHoaDonPrint {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 6mm;
+        font-size: 12px;
+    }
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .pos-layout {
+        flex-direction: column;
+    }
+
+    .pos-left,
+    .pos-right {
+        flex-basis: auto;
+        min-width: 0;
+    }
+}
+

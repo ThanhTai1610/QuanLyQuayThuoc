@@ -1,0 +1,5 @@
+/* Sidebar-specific styles are isolated here for reuse across pages. */
+
+#accordionSidebar .nav-link span {
+    white-space: nowrap;
+}
