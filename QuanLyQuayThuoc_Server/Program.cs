@@ -81,7 +81,7 @@ builder.Services.AddAuthentication(options => {
 
 // CHỐT CẤU HÌNH TẠI ĐÂY
 var app = builder.Build();
-
+app.UseStaticFiles();
 // --- 5. CẤU HÌNH PIPELINE (MIDDLEWARE) ---
 if (app.Environment.IsDevelopment())
 {

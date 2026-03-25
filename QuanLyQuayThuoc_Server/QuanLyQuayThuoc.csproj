@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <Folder Include="Config\" />
-    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
 
 </Project>
