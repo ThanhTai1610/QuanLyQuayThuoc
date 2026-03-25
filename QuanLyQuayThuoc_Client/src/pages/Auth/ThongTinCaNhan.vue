@@ -107,7 +107,8 @@
                   </table>
                 </div>
                 <div class="text-center mt-4">
-                  <button type="button" class="btn btn-primary px-5 py-2 rounded-pill">
+                  <button type="button" class="btn btn-primary px-5 py-2 rounded-pill shadow" 
+                          data-toggle="modal" data-target="#modalChinhSua" @click="moModalCapNhat">
                     Chỉnh sửa thông tin
                   </button>
                 </div>
@@ -117,7 +118,45 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="modalChinhSua" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cập nhật thông tin cá nhân</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="xuLyCapNhat">
+            <div class="form-group">
+              <label>Họ và tên</label>
+              <input type="text" class="form-control" v-model="formCapNhat.hoTen" required>
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" v-model="formCapNhat.email" required>
+            </div>
+            <div class="form-group">
+              <label>Số điện thoại</label>
+              <input type="text" class="form-control" v-model="formCapNhat.soDienThoai" disabled>
+              <small class="text-muted">Không thể thay đổi số điện thoại</small>
+            </div>
+            <div class="text-right mt-4">
+              <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Hủy</button>
+              <button type="submit" class="btn btn-primary" :disabled="loading">
+                {{ loading ? 'Đang lưu...' : 'Lưu thay đổi' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
+  </div>
+  
+  
 </template>
 
 <script setup>
@@ -125,9 +164,22 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 // QUAN TRỌNG: Dùng axiosClient Tài đã viết để tự động đính kèm Token từ localStorage
 import axiosClient from '../../api/axiosClient'; 
-
+const loading = ref(false);
 const router = useRouter();
 
+const formCapNhat = ref({
+  hoTen: '',
+  email: '',
+  soDienThoai: ''
+});
+
+const moModalCapNhat = () => {
+  formCapNhat.value = {
+    hoTen: nguoiDung.value.hoTen,
+    email: nguoiDung.value.email,
+    soDienThoai: nguoiDung.value.soDienThoai
+  };
+};
 // Khởi tạo object để hứng dữ liệu từ API
 const nguoiDung = ref({
   hoTen: '',
@@ -175,6 +227,48 @@ const dangXuat = () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   router.push('/auth/dang-nhap');
+};
+
+const xuLyCapNhat = async () => {
+  try {
+    loading.value = true;
+    
+    const dataGuiDi = {
+      maNguoiDung: nguoiDung.value.maNguoiDung,
+      hoTen: formCapNhat.value.hoTen,
+      email: formCapNhat.value.email,
+      soDienThoai: nguoiDung.value.soDienThoai,
+      gioiTinh: formCapNhat.value.gioiTinh || nguoiDung.value.gioiTinh
+    };
+
+    const response = await axiosClient.put('/HoSo/cap-nhat', dataGuiDi);
+
+    if (response) {
+      alert("Cập nhật thông tin thành công!");
+      await taiThongTinHoSo();
+      
+      // Sửa lỗi "modal is not a function" ở đây
+      // Cách 1: Dùng jQuery nếu đã có thư viện
+      if (typeof window.$ !== 'undefined' && typeof window.$.fn.modal !== 'undefined') {
+        window.$('#modalChinhSua').modal('hide');
+      } else {
+        // Cách 2: Nếu không có jQuery, ta ép modal đóng bằng cách tìm nút đóng hoặc reload
+        const closeButton = document.querySelector('#modalChinhSua [data-dismiss="modal"]');
+        if (closeButton) closeButton.click();
+      }
+    }
+  } catch (loi) {
+    // Nếu API đã thành công (status 200) nhưng vẫn nhảy vào catch do lỗi đóng modal
+    // thì ta không nên hiện alert lỗi
+    if (loi.message && loi.message.includes('modal is not a function')) {
+        console.warn("Lưu thành công nhưng không đóng được modal tự động.");
+    } else {
+        console.error("Lỗi cập nhật:", loi);
+        alert("Có lỗi xảy ra khi lưu thông tin!");
+    }
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(() => {

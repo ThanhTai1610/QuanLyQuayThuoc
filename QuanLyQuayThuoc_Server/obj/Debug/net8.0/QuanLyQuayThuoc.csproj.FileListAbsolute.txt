@@ -444,3 +444,4 @@ F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.pdb
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.genruntimeconfig.cache
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\ref\QuanLyQuayThuoc.dll
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\BCrypt.Net-Next.dll
+D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\BCrypt.Net-Next.dll
