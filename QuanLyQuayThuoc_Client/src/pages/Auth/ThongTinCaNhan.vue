@@ -107,7 +107,8 @@
                   </table>
                 </div>
                 <div class="text-center mt-4">
-                  <button type="button" class="btn btn-primary px-5 py-2 rounded-pill">
+                  <button type="button" class="btn btn-primary px-5 py-2 rounded-pill shadow" 
+                          data-toggle="modal" data-target="#modalChinhSua" @click="moModalCapNhat">
                     Chỉnh sửa thông tin
                   </button>
                 </div>
@@ -117,18 +118,96 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="modalChinhSua" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cập nhật thông tin cá nhân</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form @submit.prevent="xuLyCapNhat">
+           <div class="form-group">
+              <label>Họ và tên</label>
+             <input type="text" 
+                  class="form-control" 
+                  v-model="formCapNhat.hoTen" 
+                  @input="validateTen"
+                  :class="{'is-invalid': errors.hoTen}">
+              <small class="text-danger" v-if="errors.hoTen">{{ errors.hoTen }}</small>
+            </div>
+
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" 
+                    class="form-control" 
+                    v-model="formCapNhat.email" 
+                    @input="validateEmail"
+                    :class="{'is-invalid': errors.email}">
+              <small class="text-danger" v-if="errors.email">{{ errors.email }}</small>
+            </div>
+            <div class="form-group">
+              <label>Số điện thoại</label>
+              <input type="text" class="form-control" v-model="formCapNhat.soDienThoai" disabled>
+              <small class="text-muted">Không thể thay đổi số điện thoại</small>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">Giới tính</label>
+              <select class="form-control" v-model="formCapNhat.gioiTinh">
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+                <option value="Khác">Khác</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="font-weight-bold">Ngày sinh</label>
+              <input type="date" class="form-control" v-model="formCapNhat.ngaySinh">
+            </div>
+            <div class="text-right mt-4">
+              <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Hủy</button>
+              <button type="submit" class="btn btn-primary" :disabled="loading">
+                {{ loading ? 'Đang lưu...' : 'Lưu thay đổi' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
+  </div>
+  
+  
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-// QUAN TRỌNG: Dùng axiosClient Tài đã viết để tự động đính kèm Token từ localStorage
 import axiosClient from '../../api/axiosClient'; 
+import Swal from 'sweetalert2'; // Import thư viện vào đây
 
+const loading = ref(false);
 const router = useRouter();
 
-// Khởi tạo object để hứng dữ liệu từ API
+// Cấu hình Toast để hiển thị thông báo nhanh ở góc màn hình
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true
+});
+
+const formCapNhat = ref({
+  hoTen: '',
+  email: '',
+  soDienThoai: '',
+  gioiTinh: '',
+  ngaySinh: ''
+});
+
 const nguoiDung = ref({
   hoTen: '',
   soDienThoai: '',
@@ -139,42 +218,143 @@ const nguoiDung = ref({
   tenVaiTro: ''
 });
 
-// Hàm gọi API lấy dữ liệu hồ sơ
+const errors = ref({
+  hoTen: '',
+  email: ''
+});
+
+const moModalCapNhat = () => {
+  formCapNhat.value = {
+    hoTen: nguoiDung.value.hoTen,
+    email: nguoiDung.value.email,
+    soDienThoai: nguoiDung.value.soDienThoai,
+    gioiTinh: nguoiDung.value.gioiTinh || 'Nam',
+    ngaySinh: nguoiDung.value.ngaySinh ? nguoiDung.value.ngaySinh.split('T')[0] : ''
+  };
+  // Reset lỗi khi mở lại modal
+  errors.value = { hoTen: '', email: '' };
+};
+
 const taiThongTinHoSo = async () => {
   try {
-    // 1. Kiểm tra token trước khi gọi
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/auth/dang-nhap');
       return;
     }
-
-    // 2. Gọi API thông qua axiosClient (đã đổi port thành 7070 cho khớp Backend của Tài)
-    // Lưu ý: Route phải khớp với [HttpGet("thong-tin")] trong HoSoController
     const data = await axiosClient.get('/HoSo/thong-tin');
-
-    // 3. Gán dữ liệu vào ref
     if (data) {
       nguoiDung.value = data;
-      console.log("Dữ liệu hồ sơ:", data);
     }
   } catch (loi) {
     console.error("Lỗi khi lấy thông tin người dùng:", loi);
-    // Nếu lỗi 401 (Hết hạn token), axiosClient sẽ tự đá về trang login
   }
 };
 
-// Hàm định dạng ngày tháng hiển thị
 const dinhDangNgay = (chuoiNgay) => {
   if (!chuoiNgay) return 'Chưa cập nhật';
   const ngay = new Date(chuoiNgay);
   return ngay.toLocaleDateString('vi-VN');
 };
 
+// Cập nhật hàm Đăng xuất có xác nhận
 const dangXuat = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
-  router.push('/auth/dang-nhap');
+  Swal.fire({
+    title: 'Bạn muốn đăng xuất?',
+    text: "Phiên làm việc của bạn sẽ kết thúc!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Đồng ý',
+    cancelButtonText: 'Hủy'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      router.push('/auth/dang-nhap');
+      Toast.fire({
+        icon: 'success',
+        title: 'Đã đăng xuất thành công'
+      });
+    }
+  });
+};
+
+const validateTen = () => {
+  const regexTen = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỵỷỹýỳỷỹý\s]+$/;
+  if (!formCapNhat.value.hoTen?.trim()) {
+    errors.value.hoTen = "Họ tên không được để trống";
+  } else if (!regexTen.test(formCapNhat.value.hoTen.trim())) {
+    errors.value.hoTen = "Tên không được chứa số hoặc ký tự đặc biệt";
+  } else {
+    errors.value.hoTen = "";
+  }
+};
+
+const validateEmail = () => {
+  const regexEmail = /^[^\s@]+@[^\s@]+\.(com|vn|net|edu|org)$/i;
+  if (!formCapNhat.value.email?.trim()) {
+    errors.value.email = "Email không được để trống";
+  } else if (!regexEmail.test(formCapNhat.value.email.trim())) {
+    errors.value.email = "Email phải đúng định dạng (vd: .com, .vn)";
+  } else {
+    errors.value.email = "";
+  }
+};
+
+const xuLyCapNhat = async () => {
+  validateTen();
+  validateEmail();
+
+  if (errors.value.hoTen || errors.value.email) {
+    Toast.fire({
+      icon: 'error',
+      title: 'Vui lòng kiểm tra lại thông tin!'
+    });
+    return;
+  }
+
+  try {
+    loading.value = true;
+    const dataGuiDi = {
+      maNguoiDung: nguoiDung.value.maNguoiDung,
+      hoTen: formCapNhat.value.hoTen.trim(),
+      email: formCapNhat.value.email.trim(),
+      soDienThoai: formCapNhat.value.soDienThoai,
+      gioiTinh: formCapNhat.value.gioiTinh, 
+      ngaySinh: formCapNhat.value.ngaySinh  
+    };
+
+    const response = await axiosClient.put('/HoSo/cap-nhat', dataGuiDi);
+
+    if (response) {
+      // Thông báo thành công
+      Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: 'Thông tin của bạn đã được cập nhật.',
+        showConfirmButton: false,
+        timer: 1500
+      });
+
+      await taiThongTinHoSo();
+      
+      // Đóng modal
+      const closeButton = document.querySelector('#modalChinhSua [data-dismiss="modal"]');
+      if (closeButton) closeButton.click();
+    }
+  } catch (loi) {
+    console.error("Lỗi cập nhật:", loi);
+    const msg = loi.response?.data?.message || "Có lỗi xảy ra khi lưu thông tin!";
+    Swal.fire({
+      icon: 'error',
+      title: 'Thất bại',
+      text: msg
+    });
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(() => {

@@ -23,9 +23,10 @@ public partial class NguoiDung
 
     public DateTime? NgayTao { get; set; }
     public string? MaOtp { get; set; } 
-    public DateTime? HanOtp { get; set; } 
+    public DateTime? HanOtp { get; set; }
 
-
+    public string? GioiTinh { get; set; } // Thêm trường này
+    public DateTime? NgaySinh { get; set; }
     public virtual ICollection<DonHang> DonHangMaKhachHangNavigations { get; set; } = new List<DonHang>();
 
     public virtual ICollection<DonHang> DonHangMaNhanVienNavigations { get; set; } = new List<DonHang>();

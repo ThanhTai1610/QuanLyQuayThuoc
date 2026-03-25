@@ -10,7 +10,7 @@
         
         public string TenVaiTro { get; set; }
         public string? TrangThai { get; set; }
-
-
+        public string? GioiTinh { get; set; } // Thêm trường này
+        public DateTime? NgaySinh { get; set; }
     }
 }

@@ -24,6 +24,8 @@ namespace QuanLyQuayThuoc.Repositories
                     Email = n.Email,
                     SoDienThoai = n.SoDienThoai,
                     AnhDaiDien = n.AnhDaiDien,
+                    GioiTinh = n.GioiTinh,
+                    NgaySinh = n.NgaySinh,
                     TenVaiTro = n.MaVaiTroNavigation != null ? n.MaVaiTroNavigation.TenVaiTro : null,
                     TrangThai = n.TrangThai
                 }).FirstOrDefaultAsync();
@@ -37,7 +39,8 @@ namespace QuanLyQuayThuoc.Repositories
             user.HoTen = duLieu.HoTen;
             user.Email = duLieu.Email;
             user.SoDienThoai = duLieu.SoDienThoai;
-
+            user.GioiTinh = duLieu.GioiTinh;
+            user.NgaySinh = duLieu.NgaySinh;
             return await _db.SaveChangesAsync() > 0;
         }
         public async Task<NguoiDung?> GetByEmailAsync(string email)

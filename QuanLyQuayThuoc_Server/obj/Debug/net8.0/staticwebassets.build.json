@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "G6iAfTLVhZblpTtqSOjhm3RHRfiZXjlu20c4aOu3jPg=",
+  "Hash": "qokEnSKyCvLQQhtf5V88M7+IozdscWo195QIEggJRG8=",
   "Source": "QuanLyQuayThuoc",
   "BasePath": "_content/QuanLyQuayThuoc",
   "Mode": "Default",
@@ -62,7 +62,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 25 Mar 2026 06:14:52 GMT"
+          "Value": "Wed, 25 Mar 2026 09:32:14 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -107,7 +107,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 25 Mar 2026 06:14:52 GMT"
+          "Value": "Wed, 25 Mar 2026 09:32:14 GMT"
         },
         {
           "Name": "Cache-Control",
