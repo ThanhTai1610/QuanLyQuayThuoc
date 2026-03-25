@@ -132,6 +132,21 @@
           </router-link>
         </div>
       </section>
+
+      <section class="related-card mt-4">
+        <h2>Sản phẩm thường mua cùng</h2>
+        <div class="related-slider d-flex overflow-auto">
+          <router-link
+            v-for="item in dsThuongMuaCung"
+            :key="item.maThuoc"
+            :to="{ name: 'ChiTietSanPham', params: { id: item.maThuoc } }"
+            class="related-item p-3 text-center"
+          >
+            <img :src="getImageUrl(item.hinhAnhChinh)" style="width: 100px; height: 100px; object-fit: cover;" />
+            <div class="mt-2">{{ item.tenThuoc }}</div>
+          </router-link>
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -172,6 +187,7 @@ const anhHienTai = ref('');
 const selectedUnitIndex = ref(0);
 const activeTab = ref('dacdiem');
 const dsSanPhamTuongTu = ref([]);
+const dsThuongMuaCung = ref([]); 
 
 const tongTonKho = computed(() => {
   if (!thuoc.value.loHangs) return 0;
@@ -184,7 +200,7 @@ const formatTien = (so) => {
 };
 
 const getImageUrl = (path) => {
-  if (!path) return '/images/no-image.png'; 
+  if (!path) return '/images/no-image.png';
   if (path.startsWith('http')) return path;
   return `https://localhost:7070${path}`;
 };
@@ -206,8 +222,6 @@ const loadProduct = async () => {
       });
     }
     danhSachAnh.value = images;
-    
-    // 🔥 Sửa ở đây: Ưu tiên lấy ảnh chính làm đại diện lớn khi vừa load trang
     anhHienTai.value = data.hinhAnhChinh || images[0] || '';
 
     selectedUnitIndex.value = 0;
@@ -216,36 +230,45 @@ const loadProduct = async () => {
     if (data.maDanhMuc) {
       loadRelatedProducts(data.maDanhMuc, productId);
     }
+
+    loadFrequentlyBoughtProducts(productId);
+
   } catch (error) {
     console.error('Không thể tải dữ liệu thuốc từ API:', error);
   }
 };
 
 const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
-  if (!maDanhMuc) {
-    console.warn("⚠️ Không thể tải sản phẩm tương tự vì maDanhMuc bị rỗng.");
-    return;
-  }
-
+  if (!maDanhMuc) return;
   try {
-    const danhMucId = Number(maDanhMuc);
-    const sanPhamId = Number(currentProductId);
-
-    console.log(`📡 Đang gọi API sản phẩm tương tự cho Danh Mục: ${danhMucId}, SP Hiện Tại: ${sanPhamId}`);
-
     const response = await axios.get(
       `https://localhost:7070/api/ThuocKhachHang/Related`, 
       {
         params: {
-          maDanhMuc: danhMucId,
-          currentProductId: sanPhamId // 🔥 Đã sửa khớp với C# để né lỗi 400 Bad Request
+          maDanhMuc: Number(maDanhMuc),
+          currentProductId: Number(currentProductId)
         }
       }
     );
-
     dsSanPhamTuongTu.value = response.data;
   } catch (error) {
     console.error('Lỗi khi tải thuốc tương tự:', error);
+  }
+};
+
+const loadFrequentlyBoughtProducts = async (currentProductId) => {
+  try {
+    const response = await axios.get(
+      `https://localhost:7070/api/ThuocKhachHang/FrequentlyBoughtWith`, 
+      {
+        params: { 
+          currentProductId: Number(currentProductId) 
+        }
+      }
+    );
+    dsThuongMuaCung.value = response.data;
+  } catch (error) {
+    console.error('Lỗi khi tải thuốc thường mua cùng:', error);
   }
 };
 
@@ -258,7 +281,7 @@ const themGioHang = async () => {
   }
 
   const payload = {
-    maKhachHang: 1,
+    maKhachHang: 1, 
     maThuoc: thuoc.value.maThuoc,
     maDvt: activeUnit.maDvt,
     soLuong: 1
@@ -274,12 +297,56 @@ const themGioHang = async () => {
 };
 
 onMounted(loadProduct);
+
 watch(() => route.params.id, (newId) => {
   if (newId) loadProduct();
 });
 </script>
 
 <style scoped>
+.site-wrap, 
+.site-wrap h1, .site-wrap h2, .site-wrap h3, 
+.site-wrap p, .site-wrap span, .site-wrap select, .site-wrap button {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* Tiêu đề mục (Thành phần, Công dụng...) */
+.tab-content h3 {
+  font-size: 1.15rem;
+  font-weight: 600; 
+  color: #111827; 
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Nội dung chữ mô tả */
+.tab-content p {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #4b5563; 
+  line-height: 1.6; 
+}
+
+
+.related-card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1.25rem;
+}
+
+/* Tên sản phẩm nhỏ dưới hình */
+.related-item .mt-2 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.4;
+}
+
+
 .thumb-item.active { border: 2px solid #28a745; }
 .tab-content { display: block; }
 .prescription-pill { color: red; font-weight: bold; }
@@ -289,5 +356,10 @@ watch(() => route.params.id, (newId) => {
 .thumb-item { border: 1px solid #eee; background: #fff; padding: 4px; cursor: pointer; }
 .thumb-item img { width: 60px; height: 60px; object-fit: cover; }
 .main-image { width: 100%; border-radius: 8px; height: 350px; object-fit: contain; background-color: #f8f9fa; }
-.tab-btn.active { background: #28a745; color: #fff; }
+
+
+.tab-btn.active { 
+  background-color: #0062cc; 
+  color: #fff; 
+}
 </style>
