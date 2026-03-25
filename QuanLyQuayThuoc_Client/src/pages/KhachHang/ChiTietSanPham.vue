@@ -11,17 +11,17 @@
         <div class="row">
           <div class="col-lg-5 mb-3 mb-lg-0">
             <div class="image-viewer">
-              <img :src="anhHienTai" alt="Ảnh thuốc chính" class="main-image" />
+              <img :src="getImageUrl(anhHienTai)" alt="Ảnh thuốc chính" class="main-image" />
             </div>
             <div class="thumb-list">
               <button
-                v-for="(img, index) in thuoc.hinhAnh"
+                v-for="(img, index) in danhSachAnh"
                 :key="index"
                 class="thumb-item"
                 :class="{ active: anhHienTai === img }"
                 @click="anhHienTai = img"
               >
-                <img :src="img" alt="Ảnh nhỏ" />
+                <img :src="getImageUrl(img)" alt="Ảnh nhỏ" />
               </button>
             </div>
           </div>
@@ -42,21 +42,21 @@
             <div class="unit-row">
               <label><strong>Chọn đơn vị tính:</strong></label>
               <select v-model="selectedUnitIndex" class="form-control form-control-sm w-50">
-                <option v-for="(dv, index) in thuoc.donViTinh" :key="index" :value="index">
-                  {{ dv.ten }}
+                <option v-for="(dv, index) in thuoc.donViTinhs" :key="index" :value="index">
+                  {{ dv.tenDonVi }}
                 </option>
               </select>
             </div>
 
             <div class="price-row">
-              <div class="gia-ban">{{ formatTien(thuoc.donViTinh[selectedUnitIndex]?.giaBan || 0) }}</div>
-              <div class="gia-note">/ {{ thuoc.donViTinh[selectedUnitIndex]?.ten }}</div>
+              <div class="gia-ban">{{ formatTien(thuoc.donViTinhs[selectedUnitIndex]?.giaBan || 0) }}</div>
+              <div class="gia-note">/ {{ thuoc.donViTinhs[selectedUnitIndex]?.tenDonVi }}</div>
             </div>
 
             <div class="stock-row">
               Trạng thái kho:
-              <span :class="['stock-badge', thuoc.soLuongTon > 0 ? 'stock-available' : 'stock-empty']">
-                {{ thuoc.soLuongTon > 0 ? 'Còn hàng' : 'Tạm hết hàng' }}
+              <span :class="['stock-badge', tongTonKho > 0 ? 'stock-available' : 'stock-empty']">
+                {{ tongTonKho > 0 ? 'Còn hàng' : 'Tạm hết hàng' }}
               </span>
             </div>
 
@@ -65,7 +65,7 @@
             </div>
 
             <div class="action-row mt-4">
-              <button class="btn btn-primary btn-action mr-2">Thêm vào giỏ hàng</button>
+              <button @click="themGioHang" class="btn btn-primary btn-action mr-2">Thêm vào giỏ hàng</button>
               <button class="btn btn-success btn-action">Mua ngay</button>
             </div>
           </div>
@@ -123,12 +123,12 @@
         <div class="related-slider d-flex overflow-auto">
           <router-link
             v-for="item in dsSanPhamTuongTu"
-            :key="item.id"
-            :to="{ name: 'ChiTietSanPham', params: { id: item.id } }"
+            :key="item.maThuoc"
+            :to="{ name: 'ChiTietSanPham', params: { id: item.maThuoc } }"
             class="related-item p-3 text-center"
           >
-            <img :src="item.image" style="width: 100px" />
-            <div class="mt-2">{{ item.name }}</div>
+            <img :src="getImageUrl(item.hinhAnhChinh)" style="width: 100px; height: 100px; object-fit: cover;" />
+            <div class="mt-2">{{ item.tenThuoc }}</div>
           </router-link>
         </div>
       </section>
@@ -138,87 +138,145 @@
 
 <script setup>
 import '../../assets/css/product-detail-page.css';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
-
-const duLieuThuoc = {
-  omega3: {
-    tenThuoc: 'Omega 3 Orihiro hỗ trợ tim mạch và não bộ',
-    nhaSanXuat: 'Orihiro',
-    nuocSanXuat: 'Nhật Bản',
-    maThuoc: 'ORI-001',
-    soDangKy: 'VN-10234-21',
-    hinhAnh: ['/src/assets/images/product_01.png', '/src/assets/images/product_04.png'],
-    donViTinh: [
-      { ten: 'Hộp', giaBan: 736000 },
-      { ten: 'Vỉ', giaBan: 98000 }
-    ],
-    soLuongTon: 55,
-    laThuocKeDon: false,
-    moTaNgan: 'Sản phẩm bổ sung Omega 3 tinh khiết giúp hỗ trợ não bộ...',
-    quyCach: 'Hộp 180 viên',
-    dangBaoChe: 'Viên nang mềm',
-    hanSuDungThang: 24,
-    thanhPhan: 'Omega-3 (EPA, DHA), gelatin...',
-    congDung: 'Hỗ trợ tăng cường trí nhớ...',
-    cachDung: 'Uống 1-2 viên/ngày...',
-    doiTuongSuDung: 'Người trưởng thành...',
-    chongChiDinh: 'Không dùng cho người mẫn cảm...',
-    tacDungPhu: 'Hiếm gặp...',
-    luuY: 'Không dùng quá liều...',
-    baoQuan: 'Bảo quản nơi khô ráo...'
-  },
-  jointcare: {
-    tenThuoc: 'Viên uống Joint Care hỗ trợ giảm đau nhức xương khớp',
-    nhaSanXuat: 'Joint Pharma',
-    nuocSanXuat: 'Nhật Bản',
-    maThuoc: 'JNT-002',
-    soDangKy: 'VN-19453-23',
-    hinhAnh: ['/src/assets/images/product_02.png', '/src/assets/images/product_04.png'],
-    donViTinh: [
-      { ten: 'Hộp', giaBan: 561000 },
-      { ten: 'Vỉ', giaBan: 79000 }
-    ],
-    soLuongTon: 22,
-    laThuocKeDon: true,
-    moTaNgan: 'Hỗ trợ xương khớp linh hoạt...',
-    quyCach: 'Hộp 120 viên',
-    dangBaoChe: 'Viên nén bao phim',
-    hanSuDungThang: 36,
-    thanhPhan: 'Glucosamine sulfate, Chondroitin...',
-    congDung: 'Hỗ trợ giảm đau nhức khớp...',
-    cachDung: 'Uống 1 viên/lần, ngày 2 lần...',
-    doiTuongSuDung: 'Người trưởng thành...',
-    chongChiDinh: 'Người dị ứng hải sản...',
-    tacDungPhu: 'Có thể gặp buồn nôn nhẹ...',
-    luuY: 'Nên tham khảo bác sĩ...',
-    baoQuan: 'Để nơi khô, dưới 30 độ C...'
-  }
-};
+import axios from 'axios';
 
 const route = useRoute();
-const thuoc = ref(duLieuThuoc.omega3);
+
+const thuoc = ref({
+  tenThuoc: '',
+  nhaSanXuat: '',
+  nuocSanXuat: '',
+  maThuoc: '',
+  soDangKy: '',
+  donViTinhs: [], 
+  loHangs: [],
+  laThuocKeDon: false,
+  moTaNgan: '',
+  quyCach: '',
+  dangBaoChe: '',
+  hanSuDungThang: 0,
+  thanhPhan: '',
+  congDung: '',
+  cachDung: '',
+  doiTuongSuDung: '',
+  chongChiDinh: '',
+  tacDungPhu: '',
+  luuY: '',
+  baoQuan: ''
+});
+
+const danhSachAnh = ref([]);
 const anhHienTai = ref('');
 const selectedUnitIndex = ref(0);
 const activeTab = ref('dacdiem');
+const dsSanPhamTuongTu = ref([]);
 
-const dsSanPhamTuongTu = [
-  { id: 'omega3', name: 'Omega 3 Orihiro', image: '/src/assets/images/product_01.png' },
-  { id: 'jointcare', name: 'Joint Care', image: '/src/assets/images/product_02.png' }
-];
+const tongTonKho = computed(() => {
+  if (!thuoc.value.loHangs) return 0;
+  return thuoc.value.loHangs.reduce((sum, lo) => sum + lo.soLuongTon, 0);
+});
 
-const formatTien = (so) => so.toLocaleString('vi-VN') + 'đ';
+const formatTien = (so) => {
+  if (so === undefined || so === null) return '0đ';
+  return so.toLocaleString('vi-VN') + 'đ';
+};
 
-const loadProduct = () => {
-  const id = route.params.id;
-  thuoc.value = duLieuThuoc[id] || duLieuThuoc.omega3;
-  anhHienTai.value = thuoc.value.hinhAnh[0];
-  selectedUnitIndex.value = 0;
-  activeTab.value = 'dacdiem';
+const getImageUrl = (path) => {
+  if (!path) return '/images/no-image.png'; 
+  if (path.startsWith('http')) return path;
+  return `https://localhost:7070${path}`;
+};
+
+const loadProduct = async () => {
+  const productId = route.params.id;
+  try {
+    const response = await axios.get(`https://localhost:7070/api/ThuocKhachHang/${productId}`);
+    const data = response.data;
+
+    thuoc.value = data;
+
+    const images = [];
+    if (data.hinhAnhChinh) images.push(data.hinhAnhChinh);
+    if (data.hinhAnhThuocs && data.hinhAnhThuocs.length > 0) {
+      data.hinhAnhThuocs.forEach((img) => {
+        const path = typeof img === 'string' ? img : img.duongDan;
+        if (path) images.push(path);
+      });
+    }
+    danhSachAnh.value = images;
+    
+    // 🔥 Sửa ở đây: Ưu tiên lấy ảnh chính làm đại diện lớn khi vừa load trang
+    anhHienTai.value = data.hinhAnhChinh || images[0] || '';
+
+    selectedUnitIndex.value = 0;
+    activeTab.value = 'dacdiem';
+
+    if (data.maDanhMuc) {
+      loadRelatedProducts(data.maDanhMuc, productId);
+    }
+  } catch (error) {
+    console.error('Không thể tải dữ liệu thuốc từ API:', error);
+  }
+};
+
+const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
+  if (!maDanhMuc) {
+    console.warn("⚠️ Không thể tải sản phẩm tương tự vì maDanhMuc bị rỗng.");
+    return;
+  }
+
+  try {
+    const danhMucId = Number(maDanhMuc);
+    const sanPhamId = Number(currentProductId);
+
+    console.log(`📡 Đang gọi API sản phẩm tương tự cho Danh Mục: ${danhMucId}, SP Hiện Tại: ${sanPhamId}`);
+
+    const response = await axios.get(
+      `https://localhost:7070/api/ThuocKhachHang/Related`, 
+      {
+        params: {
+          maDanhMuc: danhMucId,
+          currentProductId: sanPhamId // 🔥 Đã sửa khớp với C# để né lỗi 400 Bad Request
+        }
+      }
+    );
+
+    dsSanPhamTuongTu.value = response.data;
+  } catch (error) {
+    console.error('Lỗi khi tải thuốc tương tự:', error);
+  }
+};
+
+const themGioHang = async () => {
+  const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
+  
+  if (!activeUnit) {
+    alert('Vui lòng chọn đơn vị tính hợp lệ!');
+    return;
+  }
+
+  const payload = {
+    maKhachHang: 1,
+    maThuoc: thuoc.value.maThuoc,
+    maDvt: activeUnit.maDvt,
+    soLuong: 1
+  };
+
+  try {
+    await axios.post('https://localhost:7070/api/ThuocKhachHang/AddToCart', payload);
+    alert('Thêm vào giỏ hàng thành công!');
+  } catch (error) {
+    console.error('Lỗi khi thêm giỏ hàng:', error);
+    alert('Không thể thêm vào giỏ hàng.');
+  }
 };
 
 onMounted(loadProduct);
-watch(() => route.params.id, loadProduct);
+watch(() => route.params.id, (newId) => {
+  if (newId) loadProduct();
+});
 </script>
 
 <style scoped>
@@ -227,10 +285,9 @@ watch(() => route.params.id, loadProduct);
 .prescription-pill { color: red; font-weight: bold; }
 .related-item { min-width: 150px; text-decoration: none; color: black; }
 
-/* optional basic spacing nếu chưa có css ngoài */
 .thumb-list { display: flex; gap: 8px; margin-top: 10px; }
 .thumb-item { border: 1px solid #eee; background: #fff; padding: 4px; cursor: pointer; }
 .thumb-item img { width: 60px; height: 60px; object-fit: cover; }
-.main-image { width: 100%; border-radius: 8px; }
+.main-image { width: 100%; border-radius: 8px; height: 350px; object-fit: contain; background-color: #f8f9fa; }
 .tab-btn.active { background: #28a745; color: #fff; }
 </style>

@@ -16,6 +16,7 @@
 
       <div class="row">
         <div class="col-lg-3 col-md-6 mb-4" v-for="product in products" :key="product.id">
+          
           <router-link
             :to="{ name: 'ChiTietSanPham', params: { id: product.id } }"
             class="pharmacy-product-card d-block"
@@ -69,6 +70,7 @@ const getImageUrl = (path) => {
 };
 
 const formatPrice = (value) => {
+  if (!value) return "0 ₫";
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 

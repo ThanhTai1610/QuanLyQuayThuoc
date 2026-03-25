@@ -1,6 +1,11 @@
-﻿namespace QuanLyQuayThuoc.Repository.Interface
+﻿using QuanLyQuayThuoc.Models;
+
+namespace QuanLyQuayThuoc.Repository
 {
-    public class IThuocRepository
+    public interface IThuocRepository
     {
+        Task<Thuoc> GetByIdAsync(int id);
+        Task<IEnumerable<Thuoc>> GetRelatedAsync(int maDanhMuc, int currentProductId);
+        Task SaveChangesAsync();
     }
 }
