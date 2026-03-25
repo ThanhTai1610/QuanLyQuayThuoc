@@ -22,7 +22,8 @@ public partial class NguoiDung
     public string? TrangThai { get; set; }
 
     public DateTime? NgayTao { get; set; }
-
+    public string? MaOtp { get; set; } 
+    public DateTime? HanOtp { get; set; } 
 
 
     public virtual ICollection<DonHang> DonHangMaKhachHangNavigations { get; set; } = new List<DonHang>();
