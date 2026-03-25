@@ -4,27 +4,38 @@
       <div class="pos-card__header">
         <h5 class="pos-card__title mb-0">Giỏ hàng đang bán</h5>
         <div class="small text-muted">
-          <span class="pos-cart-count" id="posTongMon">{{ cartItems.length }}</span> món
+          <span class="pos-cart-count">{{ cartItems.length }}</span> món
         </div>
       </div>
       <div class="p-3">
         <div class="table-responsive">
-          <table class="table table-bordered mb-0 pos-cart-table" id="posCartTable">
+          <table class="table table-bordered mb-0 pos-cart-table">
             <thead class="thead-light">
               <tr>
-                <th style="min-width: 260px;">Tên thuốc &amp; Đơn vị</th>
-                <th style="min-width: 170px;">Số lượng</th>
-                <th style="min-width: 240px;">Lô hàng (FEFO)</th>
-                <th style="min-width: 140px;">Thành tiền</th>
-                <th style="min-width: 70px;">Xóa</th>
+                <th style="min-width: 200px;">Tên thuốc</th>
+                <th style="min-width: 130px;">Đơn vị</th>
+                <th style="min-width: 150px;">Số lượng</th>
+                <th style="min-width: 220px;">Lô hàng (FEFO)</th>
+                <th style="min-width: 120px;">Thành tiền</th>
+                <th style="min-width: 50px;">Xóa</th>
               </tr>
             </thead>
-            <tbody id="posCartBody">
-              <tr v-for="(item, index) in cartItems" :key="item.id || index">
+            <tbody>
+              <tr v-for="(item, index) in cartItems" :key="index">
                 <td>
                   <div class="font-weight-bold text-primary">{{ item.tenThuoc }}</div>
-                  <small class="text-muted">Đơn vị: {{ item.donVi }}</small>
+                  <small class="text-muted">Giá: {{ formatMoney(item.giaBan) }}</small>
                 </td>
+
+                <td>
+                  <select class="form-control form-control-sm" v-model="item.maDvtSelected"
+                    @change="updatePriceByUnit(item)">
+                    <option v-for="dv in item.danhSachDonVi" :key="dv.maDvt" :value="dv.maDvt">
+                      {{ dv.tenDonVi }} - {{ formatMoney(dv.giaBan) }}
+                    </option>
+                  </select>
+                </td>
+
                 <td>
                   <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
@@ -36,13 +47,18 @@
                     </div>
                   </div>
                 </td>
+
                 <td>
                   <select class="form-control form-control-sm" v-model="item.loHangSelected">
-                    <option v-for="lo in item.danhSachLo" :key="lo.id" :value="lo.id">
-                      {{ lo.maLo }} - HSD: {{ lo.hanSuDung }} (Tồn: {{ lo.tonKho }})
+                    <option v-for="lo in item.danhSachLo" :key="lo.maLo" :value="lo.maLo">
+                      Lô: {{ lo.maLo }} - HSD: {{ lo.hanSuDung }} (Tồn: {{ lo.soLuongTon }})
                     </option>
                   </select>
+                  <div v-if="!item.danhSachLo || item.danhSachLo.length === 0" class="small text-danger">
+                    Hết hàng!
+                  </div>
                 </td>
+
                 <td class="text-right font-weight-bold">
                   {{ formatMoney(item.giaBan * item.soLuong) }}
                 </td>
@@ -56,7 +72,7 @@
           </table>
         </div>
 
-        <div v-if="cartItems.length === 0" id="posCartEmpty" class="text-center text-muted py-4">
+        <div v-if="cartItems.length === 0" class="text-center text-muted py-4">
           Chưa có sản phẩm. Hãy tìm và thêm bằng ô tìm kiếm.
         </div>
       </div>
@@ -65,39 +81,34 @@
 </template>
 
 <script setup>
-// Nhận dữ liệu giỏ hàng từ trang cha (BanHangTaiQuay.vue)
 const props = defineProps({
-  cartItems: {
-    type: Array,
-    default: () => []
-  }
+  cartItems: { type: Array, default: () => [] }
 });
 
-const emit = defineEmits(['remove-item', 'update-quantity']);
+const emit = defineEmits(['remove-item', 'update-quantity', 'update-unit']);
 
-// Hàm format tiền tệ
 const formatMoney = (value) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
 };
 
-// Gửi sự kiện xóa sản phẩm lên cha
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'N/A';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('vi-VN');
+};
+
 const removeItem = (index) => {
   emit('remove-item', index);
 };
 
-// Hàm cập nhật nhanh số lượng bằng nút +/-
 const updateQty = (index, change) => {
   emit('update-quantity', { index, change });
 };
-</script>
 
-<style scoped>
-/* CSS bổ sung nếu cần, các class SB Admin 2 sẽ tự nhận từ file css tổng */
-.pos-cart-table th {
-  vertical-align: middle;
-  text-align: center;
-}
-.pos-cart-table td {
-  vertical-align: middle;
-}
-</style>
+const updatePriceByUnit = (item) => {
+  const unit = item.danhSachDonVi.find(d => d.maDvt === item.maDvtSelected);
+  if (unit) {
+    item.giaBan = unit.giaBan;
+  }
+};
+</script>

@@ -6,7 +6,7 @@
         <span class="badge badge-light text-gray-600" id="posMaDonHienThi">{{ maDonHang }}</span>
       </div>
       <div class="pos-summary p-3">
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label for="posSdt" class="small text-muted mb-1">SĐT khách (tích điểm)</label>
           <div class="input-group">
             <input type="tel" v-model="paymentInfo.sdtKhach" class="form-control" placeholder="0xxx xxx xxx">
@@ -16,7 +16,7 @@
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <div class="mb-2 d-flex align-items-center justify-content-between">
           <span class="small text-muted">Tổng tiền hàng</span>
@@ -37,31 +37,50 @@
           </div>
         </div>
 
-        <div class="mb-2">
-          <label class="small text-muted mb-1">Tiền khách đưa (tiền mặt)</label>
-          <input type="number" v-model.number="paymentInfo.tienKhachDua" class="form-control" min="0">
-          <div class="small text-muted mt-1">
-            Tiền thừa trả: <strong :class="{'text-danger': tienThua < 0}">{{ formatMoney(tienThua) }}</strong>
+        <div class="mb-3">
+          <label class="small text-muted mb-1 font-weight-bold">Tiền khách đưa (tiền mặt)</label>
+          <div class="input-group mb-2">
+            <input type="number" v-model.number="paymentInfo.tienKhachDua"
+              class="form-control text-right h5 mb-0 font-weight-bold" placeholder="0">
+            <div class="input-group-append">
+              <button class="btn btn-outline-danger" type="button" @click="resetTienKhachDua" title="Xóa tất cả">
+                <span class="font-weight">Xoá</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="row no-gutters">
+            <div v-for="amount in quickAmounts" :key="amount" class="col-4 p-1">
+              <button type="button" class="btn btn-sm btn-light border w-100 py-2 shadow-sm"
+                @click="addTienKhachDua(amount)">
+                +{{ amount >= 1000 ? (amount / 1000) + 'K' : amount }}
+              </button>
+            </div>
+            <div class="col-12 p-1">
+              <button type="button" class="btn btn-info w-100 font-weight-bold shadow-sm py-2" @click="setTienDu">
+                KHÁCH ĐƯA ĐỦ
+              </button>
+            </div>
+          </div>
+
+          <div class="mt-3 p-2 bg-light rounded d-flex justify-content-between align-items-center">
+            <span class="small text-muted">Tiền thừa trả khách:</span>
+            <strong :class="tienThua < 0 ? 'text-danger' : 'text-success'" style="font-size: 1.2rem;">
+              {{ formatMoney(tienThua) }}
+            </strong>
           </div>
         </div>
-
         <div class="mb-3">
           <label class="small text-muted mb-1">Phương thức</label>
           <div class="btn-group btn-group-toggle d-flex" role="group">
-            <button 
-              type="button" 
-              class="btn btn-sm" 
+            <button type="button" class="btn btn-sm"
               :class="paymentInfo.phuongThuc === 'tien-mat' ? 'btn-primary' : 'btn-outline-primary'"
-              @click="paymentInfo.phuongThuc = 'tien-mat'"
-            >
+              @click="paymentInfo.phuongThuc = 'tien-mat'">
               <i class="fas fa-money-bill-wave mr-1"></i> Tiền mặt
             </button>
-            <button 
-              type="button" 
-              class="btn btn-sm" 
+            <button type="button" class="btn btn-sm"
               :class="paymentInfo.phuongThuc === 'chuyen-khoan' ? 'btn-primary' : 'btn-outline-primary'"
-              @click="paymentInfo.phuongThuc = 'chuyen-khoan'"
-            >
+              @click="paymentInfo.phuongThuc = 'chuyen-khoan'">
               <i class="fas fa-qrcode mr-1"></i> Chuyển khoản
             </button>
           </div>
@@ -69,13 +88,15 @@
 
         <div v-if="paymentInfo.phuongThuc === 'chuyen-khoan'" class="mb-3 border rounded p-2 text-center bg-white">
           <div class="small text-muted mb-2">QR thanh toán (demo)</div>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=DemoPayment" alt="QR" style="width: 120px; height: 120px;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=DemoPayment" alt="QR"
+            style="width: 120px; height: 120px;">
           <div class="small text-muted mt-2">Quét QR để thanh toán</div>
         </div>
 
         <div class="d-flex flex-wrap align-items-center justify-content-between">
-          <button type="button" class="btn btn-success flex-grow-1 mr-2" @click="handleCheckOut" :disabled="tongTienHang <= 0">
-            <i class="fas fa-print mr-1"></i> F10 - Thanh toán
+          <button type="button" class="btn btn-success flex-grow-1 mr-2" @click="handleCheckOut"
+            :disabled="tongTienHang <= 0">
+            <i class="fas fa-print mr-1"></i> Thanh toán
           </button>
           <button type="button" class="btn btn-outline-secondary" @click="$emit('clear-cart')">
             <i class="fas fa-trash"></i>
@@ -102,7 +123,6 @@ const props = defineProps({
 
 const emit = defineEmits(['checkout', 'clear-cart']);
 
-// Dữ liệu thanh toán
 const paymentInfo = reactive({
   sdtKhach: '',
   giamGia: 0,
@@ -110,18 +130,28 @@ const paymentInfo = reactive({
   phuongThuc: 'tien-mat'
 });
 
-// Tính toán khách cần trả
 const khachCanTra = computed(() => {
   const amount = props.tongTienHang - paymentInfo.giamGia;
   return amount > 0 ? amount : 0;
 });
+// Danh sách các mệnh giá phổ biến
+const quickAmounts = [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000];
 
-// Tính tiền thừa
+const addTienKhachDua = (val) => {
+  paymentInfo.tienKhachDua += val;
+};
+
+const resetTienKhachDua = () => {
+  paymentInfo.tienKhachDua = 0;
+};
+
+const setTienDu = () => {
+  paymentInfo.tienKhachDua = khachCanTra.value;
+};
 const tienThua = computed(() => {
   return paymentInfo.tienKhachDua - khachCanTra.value;
 });
 
-// Format tiền
 const formatMoney = (val) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
 };

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.DTOs.DonHang;
 using QuanLyQuayThuoc.Models;
 using QuanLyQuayThuoc.Repositories.Interfaces;
 using QuanLyQuayThuoc.Services.Interfaces;
+using QuanLyQuayThuoc.Data;
 
 namespace QuanLyQuayThuoc.Services.Implementation
 {
@@ -12,60 +14,76 @@ namespace QuanLyQuayThuoc.Services.Implementation
     {
         private readonly IDonHangRepository _donHangRepo;
         private readonly IKhoRepository _khoRepo;
-
-        // Tiêm (Inject) các Repository độc lập vào đây
-        public BanHangService(IDonHangRepository donHangRepo, IKhoRepository khoRepo)
+        private readonly ApplicationDbContext _context;
+        public BanHangService(IDonHangRepository donHangRepo, IKhoRepository khoRepo, ApplicationDbContext context)
         {
             _donHangRepo = donHangRepo;
             _khoRepo = khoRepo;
+            _context = context;
+        }
+        public async Task<IEnumerable<Object>> TimKiemThuocNhanhAsync(string query)
+        {
+            return await _khoRepo.TimKiemThuocAsync(query);
+        }
+
+        public async Task<IEnumerable<LoHang>> LayDanhSachLoCuaThuocAsync(int maThuoc)
+        {
+            return await _khoRepo.GetLoHangByThuocAsync(maThuoc);
         }
 
         public async Task<int> ThanhToanTaiQuayAsync(TaoDonHangDto dto, int maNhanVien)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // 1. Tính tổng tiền từ danh sách chi tiết (kiểm tra lại từ Backend cho chắc chắn)
-                decimal tongTienHang = dto.ChiTiet.Sum(x => x.GiaBan * x.SoLuong);
-                decimal tongThanhToan = tongTienHang - dto.GiamGia;
-
-                // 2. Tạo đối tượng đơn hàng
                 var donHang = new DonHang
                 {
-                    MaKhachHang = dto.MaKhachHang,
                     MaNhanVien = maNhanVien,
                     NgayDat = DateTime.Now,
-                    TongTien = tongThanhToan,
                     PhuongThucThanhToan = dto.PhuongThucThanhToan,
                     TrangThai = "Hoàn tất",
-                    // Chuyển đổi từ DTO sang Model ChiTietDonHang
-                    ChiTietDonHangs = dto.ChiTiet.Select(c => new ChiTietDonHang
-                    {
-                        MaLo = c.MaLo,
-                        MaDvt = c.MaDVT,
-                        SoLuong = c.SoLuong,
-                        GiaBanTaiThoiDiem = c.GiaBan
-                    }).ToList()
+                    TongTien = 0
                 };
 
-                // 3. Xử lý trừ kho cho từng mặt hàng
+                _context.DonHangs.Add(donHang);
+                await _context.SaveChangesAsync();
+
+                decimal tongTienDonHang = 0;
+
                 foreach (var item in dto.ChiTiet)
                 {
-                    // Gọi sang LoHangRepository đã viết ở bước trước
-                    await _khoRepo.UpdateSoLuongAsync(item.MaLo, item.SoLuong);
+                    var dvt = await _context.DonViTinhs
+                        .FirstOrDefaultAsync(d => d.MaDvt == item.MaDVT);
+
+                    if (dvt == null) throw new Exception("Không tìm thấy đơn vị tính mã {item.MaDVT}");
+                    int heSoQuyDoi = dvt.GiaTriQuyDoi ?? 1;
+                    int soLuongQuyDoi = item.SoLuong * heSoQuyDoi;
+                    await _khoRepo.UpdateSoLuongAsync(item.MaLo, soLuongQuyDoi);
+
+                    var chiTiet = new ChiTietDonHang
+                    {
+                        MaDonHang = donHang.MaDonHang,
+                        MaLo = item.MaLo,
+                        MaDvt = item.MaDVT,
+                        SoLuong = item.SoLuong,
+                        GiaBanTaiThoiDiem = item.GiaBan
+                    };
+                    _context.ChiTietDonHangs.Add(chiTiet);
+                    tongTienDonHang += (decimal)item.SoLuong * item.GiaBan;
                 }
+                decimal giamGia = dto.GiamGia;
+                donHang.TongTien = tongTienDonHang - giamGia;
 
-                // 4. Lưu đơn hàng vào Database qua DonHangRepository
-                await _donHangRepo.AddAsync(donHang);
-
-                // 5. Lưu tất cả thay đổi (DB commit)
-                await _donHangRepo.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
                 return donHang.MaDonHang;
             }
             catch (Exception ex)
             {
-                // Nếu có bất kỳ lỗi nào (hết hàng, lỗi DB...), Exception sẽ bắn ra ngoài
-                throw new Exception("Lỗi xử lý thanh toán: " + ex.Message);
+                await transaction.RollbackAsync();
+                var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                throw new Exception("Thanh toán thất bại: " + errorMessage);
             }
         }
     }
