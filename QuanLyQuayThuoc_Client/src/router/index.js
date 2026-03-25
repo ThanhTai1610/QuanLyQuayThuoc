@@ -9,6 +9,8 @@ const routes = [
       { path: 'dang-nhap', name: 'DangNhap', component: () => import('../pages/Auth/DangNhap.vue') },
       { path: 'dang-ky', name: 'DangKy', component: () => import('../pages/Auth/DangKy.vue') },
       { path: 'quen-mat-khau', name: 'QuenMatKhau', component: () => import('../pages/Auth/QuenMatKhau.vue') },
+      { path: 'quen-mat-khau/otp',    name: 'QuenMatKhauOtp', component: () => import('../pages/Auth/QuenMatKhauOtp.vue') },
+      { path: 'quen-mat-khau/doi-mk', name: 'DatLaiMatKhau',  component: () => import('../pages/Auth/DatLaiMatKhau.vue') },
     ]
   },
 

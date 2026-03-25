@@ -305,6 +305,7 @@ F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\QuanLyQuayThuoc.dll
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\QuanLyQuayThuoc.pdb
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\Azure.Core.dll
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\Azure.Identity.dll
+F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\BCrypt.Net-Next.dll
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\Humanizer.dll
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
@@ -443,5 +444,8 @@ F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\refint\QuanLyQuayThuo
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.pdb
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.genruntimeconfig.cache
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\ref\QuanLyQuayThuoc.dll
+<<<<<<< HEAD
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\BCrypt.Net-Next.dll
 D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\BCrypt.Net-Next.dll
+=======
+>>>>>>> main
