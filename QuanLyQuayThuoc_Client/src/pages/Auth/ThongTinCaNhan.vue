@@ -123,11 +123,12 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+// QUAN TRỌNG: Dùng axiosClient Tài đã viết để tự động đính kèm Token từ localStorage
+import axiosClient from '../../api/axiosClient'; 
 
 const router = useRouter();
 
-// Khởi tạo đối tượng người dùng theo chuẩn Backend đã code
+// Khởi tạo object để hứng dữ liệu từ API
 const nguoiDung = ref({
   hoTen: '',
   soDienThoai: '',
@@ -141,42 +142,41 @@ const nguoiDung = ref({
 // Hàm gọi API lấy dữ liệu hồ sơ
 const taiThongTinHoSo = async () => {
   try {
+    // 1. Kiểm tra token trước khi gọi
     const token = localStorage.getItem('token');
     if (!token) {
       router.push('/auth/dang-nhap');
       return;
     }
 
-    const phanHoi = await axios.get('https://localhost:7xxx/api/HoSo/thong-tin-ca-nhan', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    // 2. Gọi API thông qua axiosClient (đã đổi port thành 7070 cho khớp Backend của Tài)
+    // Lưu ý: Route phải khớp với [HttpGet("thong-tin")] trong HoSoController
+    const data = await axiosClient.get('/HoSo/thong-tin');
 
-    if (phanHoi.data) {
-      nguoiDung.value = phanHoi.data;
+    // 3. Gán dữ liệu vào ref
+    if (data) {
+      nguoiDung.value = data;
+      console.log("Dữ liệu hồ sơ:", data);
     }
   } catch (loi) {
     console.error("Lỗi khi lấy thông tin người dùng:", loi);
-    if (loi.response && loi.response.status === 401) {
-      dangXuat();
-    }
+    // Nếu lỗi 401 (Hết hạn token), axiosClient sẽ tự đá về trang login
   }
 };
 
 // Hàm định dạng ngày tháng hiển thị
 const dinhDangNgay = (chuoiNgay) => {
-  if (!chuoiNgay) return 'Thêm thông tin';
+  if (!chuoiNgay) return 'Chưa cập nhật';
   const ngay = new Date(chuoiNgay);
   return ngay.toLocaleDateString('vi-VN');
 };
 
 const dangXuat = () => {
   localStorage.removeItem('token');
+  localStorage.removeItem('user');
   router.push('/auth/dang-nhap');
 };
 
-// Gọi API ngay khi component được gắn vào DOM
 onMounted(() => {
   taiThongTinHoSo();
 });

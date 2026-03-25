@@ -31,8 +31,8 @@ axiosClient.interceptors.response.use(
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       // Tránh lặp vô tận nếu đang ở trang login
-      if (!window.location.pathname.includes('/auth/login')) {
-        window.location.href = '/auth/login';
+      if (!window.location.pathname.includes('/auth/dang-nhap')) {
+        window.location.href = '/auth/dang-nhap';
       }
     }
     return Promise.reject(error);

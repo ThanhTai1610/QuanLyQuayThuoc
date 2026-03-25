@@ -3,24 +3,28 @@
   "WorkspaceRootPath": "F:\\QuanLyQuayThuoc\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\khachhang\\nguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\khachhang\\nguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\helpers\\jwthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\helpers\\jwthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\khachhang\\hosocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\khachhang\\hosocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\khachhang\\nguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\khachhang\\nguoidungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\helpers\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\helpers\\passwordhasher.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\implementation\\nguoidungservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -57,10 +61,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\khachhang\\hosocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\khachhang\\hosocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\khachhang\\donhangkhachcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -234,7 +234,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Bookmark",
@@ -258,46 +258,33 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "NguoiDungService.cs",
-              "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
-              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAIA8wB8AAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T15:23:22.614Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "NguoiDungController.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\NguoiDungController.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\NguoiDungController.cs",
               "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\NguoiDungController.cs",
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\NguoiDungController.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAzwC4AAAAeAAAAAAAAAA==",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAwC4AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-23T17:02:11.911Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Program.cs",
-              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAAAAAAAAAAAA==",
+              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs*",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Program.cs*",
+              "ViewState": "AgIAACgAAAAAAAAAAAAswEoAAAAOAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-23T15:36:15.671Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "PasswordHasher.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Helpers\\PasswordHasher.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Helpers\\PasswordHasher.cs",
@@ -305,38 +292,37 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Helpers\\PasswordHasher.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-23T15:35:28.731Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T15:35:28.731Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "JwtHelper.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Helpers\\JwtHelper.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Helpers\\JwtHelper.cs",
               "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Helpers\\JwtHelper.cs",
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Helpers\\JwtHelper.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAkwDIAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAowCQAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-03-23T15:35:27.701Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "appsettings.json",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\appsettings.json",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\appsettings.json",
-              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\appsettings.json",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\appsettings.json*",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\appsettings.json*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-03-23T15:36:01.005Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "INguoiDungService.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\INguoiDungService.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Interface\\INguoiDungService.cs",
@@ -344,12 +330,36 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Interface\\INguoiDungService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T15:27:35.127Z",
+              "WhenOpened": "2026-03-24T15:27:35.127Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "HoSoController.cs",
+              "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
+              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAABUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-24T09:10:11.233Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
+              "Title": "NguoiDungService.cs",
+              "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
+              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\NguoiDungService.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAIA8wB8AAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-24T15:23:22.614Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "NguoiDung.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Models\\NguoiDung.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Models\\NguoiDung.cs",
@@ -357,12 +367,11 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Models\\NguoiDung.cs",
               "ViewState": "AgIAAA8AAAAAAAAAAAA7wCEAAABnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T15:32:25.937Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-24T15:32:25.937Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "NguoiDungRepository.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Implementation\\NguoiDungRepository.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\NguoiDungRepository.cs",
@@ -370,12 +379,11 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\NguoiDungRepository.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAYwAsAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T15:21:46.984Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-24T15:21:46.984Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "INguoiDungRepository.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Interface\\INguoiDungRepository.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Repository\\Interface\\INguoiDungRepository.cs",
@@ -383,12 +391,11 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Repository\\Interface\\INguoiDungRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T15:21:28.923Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-24T15:21:28.923Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "DangNhapDto.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\NguoiDung\\DangNhapDto.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\NguoiDung\\DangNhapDto.cs",
@@ -396,12 +403,11 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\NguoiDung\\DangNhapDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T15:18:46.469Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-24T15:18:46.469Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "AutoMapperProfile.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Helpers\\AutoMapperProfile.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Helpers\\AutoMapperProfile.cs",
@@ -409,12 +415,11 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Helpers\\AutoMapperProfile.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T14:52:59.658Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-24T14:52:59.658Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "FileHelper.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Helpers\\FileHelper.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Helpers\\FileHelper.cs",
@@ -422,8 +427,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Helpers\\FileHelper.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-23T15:35:26.734Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T15:35:26.734Z"
             },
             {
               "$type": "Document",
@@ -435,25 +439,11 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.http",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2026-03-23T15:36:19.79Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T15:36:19.79Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 14,
-              "Title": "HoSoController.cs",
-              "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
-              "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\HoSoController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-24T09:10:11.233Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
               "Title": "appsettings.Development.json",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\appsettings.Development.json",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\appsettings.Development.json",
@@ -461,8 +451,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\appsettings.Development.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-23T15:36:04.555Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T15:36:04.555Z"
             },
             {
               "$type": "Document",
@@ -474,8 +463,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Properties\\launchSettings.json",
               "ViewState": "AgIAAAEAAAAAAAAAAAAmwBMAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-03-23T15:36:36.459Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T15:36:36.459Z"
             },
             {
               "$type": "Document",
@@ -487,8 +475,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\DonHangKhachController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-23T17:02:10.994Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T17:02:10.994Z"
             },
             {
               "$type": "Document",
@@ -500,8 +487,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\ChatbotController.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-03-23T15:35:31.748Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-03-23T15:35:31.748Z"
             },
             {
               "$type": "Document",

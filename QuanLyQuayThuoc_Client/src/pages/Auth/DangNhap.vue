@@ -74,39 +74,33 @@ const auth = reactive({
 
 const handleLogin = async () => {
   try {
-    const data = await axiosClient.post('/NguoiDung/dang-nhap', {
+    // Gửi request đăng nhập
+    const response = await axiosClient.post('/NguoiDung/dang-nhap', {
       email: auth.email,
       matKhau: auth.password
     });
 
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+    // Kiểm tra nếu có token (Backend phải trả về trường này)
+    if (response.token) {
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.user));
       
-      const roleId = data.user.maVaiTro; // Lấy mã vai trò từ Backend trả về
+      const roleId = response.user.maVaiTro; 
 
-      // PHÂN QUYỀN ĐIỀU HƯỚNG
-      switch (roleId) {
-        case 1: // Giả sử 1 là Admin
-          alert("Chào mừng Quản trị viên: " + data.user.hoTen);
-          router.push('/admin/thong-ke');
-          break;
-        case 2: // Giả sử 2 là Nhân viên
-          alert("Chào mừng Nhân viên: " + data.user.hoTen);
-          router.push('/nhan-vien/ban-hang');
-          break;
-        case 3: // Giả sử 3 là Khách hàng
-          alert("Chào mừng " + data.user.hoTen);
-          router.push('/');
-          break;
-        default:
-          router.push('');
-          break;
+      // Điều hướng dựa trên MaVaiTro từ database
+      if (roleId === 1) {
+        router.push('/admin/thong-ke');
+      } else if (roleId === 2) {
+        router.push('/nhan-vien/ban-hang');
+      } else {
+        router.push('/');
       }
+    } else {
+      alert("Đăng nhập thành công nhưng không nhận được mã xác thực!");
     }
   } catch (error) {
-    console.error(error);
-    alert(error.response?.data?.message || "Đăng nhập thất bại!");
+    console.error("Lỗi đăng nhập:", error);
+    alert(error.response?.data?.message || "Email hoặc mật khẩu không đúng!");
   }
 };
 </script>

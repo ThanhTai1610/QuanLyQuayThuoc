@@ -9,13 +9,14 @@ using Microsoft.IdentityModel.Tokens;
 using QuanLyQuayThuoc.Helpers;
 using System.Text;                                  // Giải quyết lỗi Encoding
 
+// ... các phần Using giữ nguyên ...
+
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. KẾT NỐI DATABASE ---
+// --- 1. KẾT NỐI DATABASE & CORS ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// --- 2. CẤU HÌNH CORS ---
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowVueApp", policy =>
         policy.WithOrigins("http://localhost:5173")
@@ -23,18 +24,46 @@ builder.Services.AddCors(options => {
               .AllowAnyHeader()
               .AllowCredentials());
 });
-Console.WriteLine("Ma Hash cho 123456 la: " + BCrypt.Net.BCrypt.HashPassword("123456"));
-// --- 3. ĐĂNG KÝ REPOSITORY & SERVICES ---
+
+// --- 2. ĐĂNG KÝ REPOSITORY & SERVICES ---
 builder.Services.AddScoped<INguoiDungRepository, NguoiDungRepository>();
-// Tài thêm các Repo khác ở đây...
 builder.Services.AddScoped<INguoiDungService, NguoiDungService>();
 builder.Services.AddScoped<JwtHelper>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
-// --- CẤU HÌNH JWT (Tài đảm bảo đã có phần này để [Authorize] hoạt động) ---
-// builder.Services.AddAuthentication(...)...
+// --- 3. CẤU HÌNH SWAGGER (DI CHUYỂN LÊN ĐÂY) ---
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Chỉ cần dán mã Token vào đây (Không cần ghi chữ Bearer)"
+    });
+
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
+// --- 4. CẤU HÌNH JWT ---
+var secretKey = builder.Configuration["Jwt:Key"] ?? "Chuoi_Secret_Key_Cua_Tai_Phai_Du_Dai_32_Ky_Tu";
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -42,16 +71,18 @@ builder.Services.AddAuthentication(options => {
 .AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false, // Chỉnh thành true nếu bạn có quy định Issuer
+        ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Chuoi_Secret_Key_Cua_Tai_Phai_Du_Dai_32_Ky_Tu"))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
 });
+
+// CHỐT CẤU HÌNH TẠI ĐÂY
 var app = builder.Build();
 
-// --- 4. CẤU HÌNH PIPELINE ---
+// --- 5. CẤU HÌNH PIPELINE (MIDDLEWARE) ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -59,12 +90,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("AllowVueApp");
 
-app.UseAuthentication(); // Phải có cái này trước Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.Run();
