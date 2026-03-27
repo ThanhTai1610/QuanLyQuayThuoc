@@ -21,17 +21,17 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(item, index) in cartItems" :key="index">
+              <tr v-for="(sanPham, viTri) in cartItems" :key="viTri">
                 <td>
-                  <div class="font-weight-bold text-primary">{{ item.tenThuoc }}</div>
-                  <small class="text-muted">Giá: {{ formatMoney(item.giaBan) }}</small>
+                  <div class="font-weight-bold text-primary">{{ sanPham.tenThuoc }}</div>
+                  <small class="text-muted">Giá: {{ dinhDangTien(sanPham.giaBan) }}</small>
                 </td>
 
                 <td>
-                  <select class="form-control form-control-sm" v-model="item.maDvtSelected"
-                    @change="updatePriceByUnit(item)">
-                    <option v-for="dv in item.danhSachDonVi" :key="dv.maDvt" :value="dv.maDvt">
-                      {{ dv.tenDonVi }} - {{ formatMoney(dv.giaBan) }}
+                  <select class="form-control form-control-sm" v-model="sanPham.maDvtSelected"
+                    @change="capNhatGiaTheoDonVi(sanPham)">
+                    <option v-for="donVi in sanPham.danhSachDonVi" :key="donVi.maDvt" :value="donVi.maDvt">
+                      {{ donVi.tenDonVi }} - {{ dinhDangTien(donVi.giaBan) }}
                     </option>
                   </select>
                 </td>
@@ -39,31 +39,31 @@
                 <td>
                   <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                      <button class="btn btn-outline-secondary" @click="updateQty(index, -1)">-</button>
+                      <button class="btn btn-outline-secondary" @click="capNhatSoLuong(viTri, -1)">-</button>
                     </div>
-                    <input type="number" class="form-control text-center" v-model.number="item.soLuong" min="1">
+                    <input type="number" class="form-control text-center" v-model.number="sanPham.soLuong" min="1">
                     <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" @click="updateQty(index, 1)">+</button>
+                      <button class="btn btn-outline-secondary" @click="capNhatSoLuong(viTri, 1)">+</button>
                     </div>
                   </div>
                 </td>
 
                 <td>
-                  <select class="form-control form-control-sm" v-model="item.loHangSelected">
-                    <option v-for="lo in item.danhSachLo" :key="lo.maLo" :value="lo.maLo">
+                  <select class="form-control form-control-sm" v-model="sanPham.loHangSelected">
+                    <option v-for="lo in sanPham.danhSachLo" :key="lo.maLo" :value="lo.maLo">
                       Lô: {{ lo.maLo }} - HSD: {{ lo.hanSuDung }} (Tồn: {{ lo.soLuongTon }})
                     </option>
                   </select>
-                  <div v-if="!item.danhSachLo || item.danhSachLo.length === 0" class="small text-danger">
+                  <div v-if="!sanPham.danhSachLo || sanPham.danhSachLo.length === 0" class="small text-danger">
                     Hết hàng!
                   </div>
                 </td>
 
                 <td class="text-right font-weight-bold">
-                  {{ formatMoney(item.giaBan * item.soLuong) }}
+                  {{ dinhDangTien(sanPham.giaBan * sanPham.soLuong) }}
                 </td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-outline-danger" @click="removeItem(index)">
+                  <button class="btn btn-sm btn-outline-danger" @click="xoaSanPham(viTri)">
                     <i class="fas fa-trash"></i>
                   </button>
                 </td>
@@ -87,28 +87,37 @@ const props = defineProps({
 
 const emit = defineEmits(['remove-item', 'update-quantity', 'update-unit']);
 
-const formatMoney = (value) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
+const dinhDangTien = (giaTri) => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(giaTri || 0);
 };
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return 'N/A';
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('vi-VN');
+const dinhDangNgay = (chuoiNgay) => {
+  if (!chuoiNgay) return 'N/A';
+  const ngay = new Date(chuoiNgay);
+  return ngay.toLocaleDateString('vi-VN');
 };
 
-const removeItem = (index) => {
-  emit('remove-item', index);
+const xoaSanPham = (viTri) => {
+  emit('remove-item', viTri);
 };
 
-const updateQty = (index, change) => {
-  emit('update-quantity', { index, change });
+const capNhatSoLuong = (viTri, thayDoi) => {
+  emit('update-quantity', { index: viTri, change: thayDoi });
 };
 
-const updatePriceByUnit = (item) => {
-  const unit = item.danhSachDonVi.find(d => d.maDvt === item.maDvtSelected);
-  if (unit) {
-    item.giaBan = unit.giaBan;
+const capNhatGiaTheoDonVi = (sanPham) => {
+  const donVi = sanPham.danhSachDonVi.find(d => d.maDvt === sanPham.maDvtSelected);
+  if (donVi) {
+    sanPham.giaBan = donVi.giaBan;
   }
 };
 </script>
+
+<style scoped>
+/* Xóa mũi tên tăng giảm cho Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>

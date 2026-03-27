@@ -48,7 +48,8 @@ namespace QuanLyQuayThuoc.Repositories
                         .Select(d => d.TenDonVi)
                         .FirstOrDefault() ?? "Đơn vị"
                 })
-                .OrderBy(t => t.TenThuoc)
+                .OrderByDescending(t => t.TenThuoc.StartsWith(query))
+                .ThenBy(t => t.TenThuoc)
                 .Take(10)
                 .ToListAsync();
         }
@@ -62,7 +63,7 @@ namespace QuanLyQuayThuoc.Repositories
             if (lo == null) throw new Exception("Không tìm thấy lô hàng để trừ kho.");
 
             if (lo.SoLuongTon < soLuongTru)
-                throw new Exception($"Lô {lo.SoLo} không đủ hàng. Tồn: {lo.SoLuongTon}, Cần: {soLuongTru}");
+                throw new Exception("Lô {lo.SoLo} không đủ hàng. Tồn: {lo.SoLuongTon}, Cần: {soLuongTru}");
 
             lo.SoLuongTon -= soLuongTru;
         }

@@ -1,18 +1,18 @@
 <template>
   <div class="container-fluid pos-root">
-    <TimKiem @add-to-cart="addToCart" />
+    <TimKiem @add-to-cart="themVaoGioHang" />
 
     <div class="row mt-3">
       <div class="col-xl-8 col-lg-7">
-        <GioHang :cartItems="cartItems" @remove-item="removeItem" @update-quantity="updateQuantity" />
+        <GioHang :cartItems="cacSanPhamTrongGio" @remove-item="xoaSanPham" @update-quantity="capNhatSoLuong" />
       </div>
 
       <div class="col-xl-4 col-lg-5">
-        <ThanhToan :tongTienHang="totalAmount" :maDonHang="maDonHang" @checkout="openInvoice" @clear-cart="clearCart" />
+        <ThanhToan :tongTienHang="tongTienHang" :maDonHang="maDonHang" @checkout="moHoaDon" @clear-cart="xoaGioHang" />
       </div>
     </div>
 
-    <Modals :invoiceData="invoiceData" @add-quick-item="addToCart" @finish-payment="handleFinishPayment" />
+    <Modals :invoiceData="duLieuHoaDon" @add-quick-item="themVaoGioHang" @finish-payment="xuLyHoanThanhThanhToan" />
   </div>
 </template>
 
@@ -26,110 +26,133 @@ import Modals from '../../NhanVien/POS/Modals.vue';
 import Swal from 'sweetalert2';
 
 // STATE
-const cartItems = ref([]);
+const cacSanPhamTrongGio = ref([]);
 const maDonHang = ref('POS-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'));
 
-const invoiceData = reactive({
+const duLieuHoaDon = reactive({
   maHd: maDonHang.value,
   thoiGian: '',
   khachHang: '',
-  cartItems: [],
+  cacSanPhamTrongGio: [],
   tongTienHang: 0,
   giamGia: 0,
   canTra: 0,
   phuongThuc: 'Tiền mặt',
-  _paymentDetail: null
+  _chiTietThanhToan: null
 });
 
 // COMPUTED
-const totalAmount = computed(() => {
-  return cartItems.value.reduce((sum, item) => sum + (item.giaBan * item.soLuong), 0);
+const tongTienHang = computed(() => {
+  return cacSanPhamTrongGio.value.reduce((tong, sanPham) => tong + (sanPham.giaBan * sanPham.soLuong), 0);
 });
 
 // CART LOGIC
-const addToCart = (product) => {
-  const existing = cartItems.value.find(i => i.maThuoc === product.maThuoc);
+const themVaoGioHang = (sanPham) => {
+  const sanPhamHienCo = cacSanPhamTrongGio.value.find(i => i.maThuoc === sanPham.maThuoc);
 
-  if (existing) {
-    existing.soLuong += 1;
+  if (sanPhamHienCo) {
+    sanPhamHienCo.soLuong += 1;
   } else {
-    cartItems.value.push({
-      ...product,
+    cacSanPhamTrongGio.value.push({
+      ...sanPham,
       soLuong: 1,
-      maDvtSelected: product.maDvtSelected || product.danhSachDonVi[0]?.maDvt,
-      loHangSelected: product.loHangSelected || product.danhSachLo[0]?.maLo
+      maDvtSelected: sanPham.maDvtSelected || sanPham.danhSachDonVi[0]?.maDvt,
+      loHangSelected: sanPham.loHangSelected || sanPham.danhSachLo[0]?.maLo
     });
   }
 };
 
-const updateQuantity = ({ index, change }) => {
-  const item = cartItems.value[index];
-  if (item) {
-    item.soLuong += change;
-    if (item.soLuong <= 0) removeItem(index);
+const capNhatSoLuong = ({ index, change }) => { 
+  const sanPham = cacSanPhamTrongGio.value[index];
+  if (sanPham) {
+    sanPham.soLuong += change;
+    if (sanPham.soLuong <= 0) xoaSanPham(index);
   }
 };
 
-const removeItem = (index) => {
-  cartItems.value.splice(index, 1);
+const xoaSanPham = (viTri) => {
+  cacSanPhamTrongGio.value.splice(viTri, 1);
 };
 
-const clearCart = () => {
-  if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
-    cartItems.value = [];
-  }
+const xoaGioHang = () => {
+  if (cacSanPhamTrongGio.value.length === 0) return;
+
+  Swal.fire({
+    title: 'Xác nhận xóa?',
+    text: "Toàn bộ thuốc trong giỏ sẽ bị loại bỏ",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Xoá',
+    cancelButtonText: 'Hoàn tác'
+  }).then((ketQua) => {
+    if (ketQua.isConfirmed) {
+      cacSanPhamTrongGio.value = [];
+      Swal.fire(
+        'Đã xóa!',
+        'Giỏ hàng của bạn hiện đang trống.',
+        'success'
+      );
+    }
+  });
 };
 
 
 // OPEN INVOICE
-const openInvoice = (paymentDetail) => {
-  if (cartItems.value.length === 0) {
-    alert("Giỏ hàng đang trống");
+const moHoaDon = (chiTietThanhToan) => {
+  if (cacSanPhamTrongGio.value.length === 0) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Giỏ hàng trống',
+      text: 'Vui lòng chọn ít nhất một loại thuốc để thanh toán!',
+      confirmButtonColor: '#3085d6'
+    });
     return;
   }
 
-  invoiceData.maHd = maDonHang.value;
-  invoiceData.thoiGian = new Date().toLocaleString('vi-VN');
-  invoiceData.cartItems = [...cartItems.value];
-  invoiceData.tongTienHang = totalAmount.value;
-  invoiceData.giamGia = paymentDetail.giamGia;
-  invoiceData.canTra = paymentDetail.khachCanTra;
-  invoiceData.phuongThuc = paymentDetail.phuongThuc === 'tien-mat' ? 'Tiền mặt' : 'Chuyển khoản';
-  invoiceData._paymentDetail = paymentDetail;
+  duLieuHoaDon.maHd = maDonHang.value;
+  duLieuHoaDon.thoiGian = new Date().toLocaleString('vi-VN');
+  duLieuHoaDon.cartItems = [...cacSanPhamTrongGio.value];
+  duLieuHoaDon.tongTienHang = tongTienHang.value;
+  duLieuHoaDon.giamGia = chiTietThanhToan.giamGia;
+  duLieuHoaDon.canTra = chiTietThanhToan.khachCanTra;
+  duLieuHoaDon.phuongThuc = chiTietThanhToan.phuongThuc === 'tien-mat' ? 'Tiền mặt' : 'Chuyển khoản';
+  duLieuHoaDon._chiTietThanhToan = chiTietThanhToan;
 
-  const modalElement = document.getElementById('modalHoaDon');
-  if (modalElement) {
-    const myModal = window.bootstrap.Modal.getOrCreateInstance(modalElement);
-    myModal.show();
+  const phanTuModal = document.getElementById('modalHoaDon');
+  if (phanTuModal) {
+    const modalCuaToi = window.bootstrap.Modal.getOrCreateInstance(phanTuModal);
+    modalCuaToi.show();
   }
 };
 
 // CALL API THANH TOÁN
-const thanhToanApi = async (paymentDetail) => {
-  if (cartItems.value.length === 0) return;
+const goiApiThanhToan = async (chiTietThanhToan) => {
+  if (cacSanPhamTrongGio.value.length === 0) return;
 
   try {
     const dto = {
       maKhachHang: 0,
-      phuongThucThanhToan: paymentDetail.phuongThuc === 'tien-mat' ? 'tienmat' : 'chuyenkhoan',
-      giamGia: paymentDetail.giamGia || 0,
-      chiTiet: cartItems.value.map(item => ({
-        maLo: item.loHangSelected,
-        maDVT: item.maDvtSelected,
-        soLuong: item.soLuong,
-        giaBan: item.giaBan
+      phuongThucThanhToan: chiTietThanhToan.phuongThuc === 'tien-mat' ? 'tienmat' : 'chuyenkhoan',
+      giamGia: chiTietThanhToan.giamGia || 0,
+      chiTiet: cacSanPhamTrongGio.value.map(sanPham => ({
+        maLo: sanPham.loHangSelected,
+        maDVT: sanPham.maDvtSelected,
+        soLuong: sanPham.soLuong,
+        giaBan: sanPham.giaBan
       }))
     };
 
-    const res = await axios.post(
+    const ketQua = await axios.post(
       'https://localhost:7070/api/BanHang/thanh-toan',
       dto
     );
 
-    if (res.data.success) {
+    if (ketQua.data.success) {
       Swal.fire({
         title: 'Thành công!',
-        text: `Hóa đơn ${res.data.maDonHang} đã được lưu hệ thống.`,
+        text: `Hóa đơn ${ketQua.data.maDonHang} đã được lưu hệ thống.`,
         icon: 'success',
         confirmButtonText: 'Đóng',
         confirmButtonColor: '#28a745',
@@ -137,37 +160,37 @@ const thanhToanApi = async (paymentDetail) => {
         timerProgressBar: true
       });
 
-      resetPage();
+      datLaiTrang();
     }
-  } catch (err) {
-    console.error(err);
+  } catch (loi) {
+    console.error(loi);
     Swal.fire({
       title: 'Lỗi thanh toán',
-      text: err.response?.data?.message || 'Không thể kết nối Server, vui lòng thử lại!',
+      text: loi.response?.data?.message || 'Không thể kết nối Server, vui lòng thử lại!',
       icon: 'error',
       confirmButtonText: 'Kiểm tra lại'
     });
   }
 };
 
-const handleFinishPayment = () => {
-  thanhToanApi(invoiceData._paymentDetail);
+const xuLyHoanThanhThanhToan = () => {
+  goiApiThanhToan(duLieuHoaDon._chiTietThanhToan);
 };
 
-const resetPage = () => {
-  cartItems.value = [];
+const datLaiTrang = () => {
+  cacSanPhamTrongGio.value = [];
   maDonHang.value = 'POS-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  const modalElement = document.getElementById('modalHoaDon');
-  if (modalElement) {
-    const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
-    if (modalInstance) {
-      modalInstance.hide();
+  const phanTuModal = document.getElementById('modalHoaDon');
+  if (phanTuModal) {
+    const phienBanModal = window.bootstrap.Modal.getInstance(phanTuModal);
+    if (phienBanModal) {
+      phienBanModal.hide();
     }
   }
 
-  const backdrop = document.querySelector('.modal-backdrop');
-  if (backdrop) {
-    backdrop.remove();
+  const nenModal = document.querySelector('.modal-backdrop');
+  if (nenModal) {
+    nenModal.remove();
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';

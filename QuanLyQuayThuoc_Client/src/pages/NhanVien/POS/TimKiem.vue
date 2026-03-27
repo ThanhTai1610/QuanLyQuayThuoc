@@ -5,21 +5,21 @@
         Tìm thuốc theo tên / hoạt chất
       </label>
       <input id="posSearch" type="text" class="form-control pos-search-input"
-        placeholder="Ví dụ: Smecta, Paracetamol..." autocomplete="off" v-model="searchQuery" @input="handleSearch">
+        placeholder="Ví dụ: Smecta, Paracetamol..." autocomplete="off" v-model="tuKhoaTimKiem" @input="xuLyTimKiem">
 
-      <div v-if="showSuggestions" class="pos-autocomplete-list border rounded shadow-sm bg-white">
+      <div v-if="hienThiGoiY" class="pos-autocomplete-list border rounded shadow-sm bg-white">
         <div v-for="thuoc in danhSachThuoc" :key="thuoc.maThuoc" class="suggestion-item p-2 border-bottom"
-          @click="selectItem(thuoc)">
+          @click="chonSanPham(thuoc)">
           <div class="d-flex justify-content-between">
             <strong class="text-primary">{{ thuoc.tenThuoc }}</strong>
-            <span class="badge badge-info">{{ formatMoney(thuoc.giaBanHienTai) }}</span>
+            <span class="badge badge-info">{{ dinhDangTien(thuoc.giaBanHienTai) }}</span>
           </div>
           <div class="small text-muted">
             Hoạt chất: {{ thuoc.hoatChat }}
           </div>
         </div>
 
-        <div v-if="danhSachThuoc.length === 0 && searchQuery.length > 0" class="p-3 text-center text-muted">
+        <div v-if="danhSachThuoc.length === 0 && tuKhoaTimKiem.length > 0" class="p-3 text-center text-muted">
           Không tìm thấy thuốc nào phù hợp.
         </div>
       </div>
@@ -33,32 +33,32 @@ import axios from 'axios';
 
 const emit = defineEmits(['add-to-cart']);
 
-const searchQuery = ref('');
-const showSuggestions = ref(false);
+const tuKhoaTimKiem = ref('');
+const hienThiGoiY = ref(false);
 const danhSachThuoc = ref([]);
-const isLoading = ref(false);
+const dangTai = ref(false);
 
-const getField = (obj, camel, pascal) => obj[camel] !== undefined ? obj[camel] : obj[pascal];
+const layTruong = (obj, tenCamelCase, tenPascalCase) => obj[tenCamelCase] !== undefined ? obj[tenCamelCase] : obj[tenPascalCase];
 
-let timeout = null;
+let boHenGio = null;
 
-const handleSearch = () => {
-  clearTimeout(timeout);
+const xuLyTimKiem = () => {
+  clearTimeout(boHenGio);
 
-  timeout = setTimeout(async () => {
-    if (!searchQuery.value.trim() || searchQuery.value.trim().length < 2) {
-      showSuggestions.value = false;
+  boHenGio = setTimeout(async () => {
+    if (!tuKhoaTimKiem.value.trim() || tuKhoaTimKiem.value.trim().length < 2) {
+      hienThiGoiY.value = false;
       danhSachThuoc.value = [];
       return;
     }
 
     try {
-      isLoading.value = true;
-      const res = await axios.get('https://localhost:7070/api/BanHang/tim-kiem', {
-        params: { tenThuoc: searchQuery.value }
+      dangTai.value = true;
+      const ketQua = await axios.get('https://localhost:7070/api/BanHang/tim-kiem', {
+        params: { tenThuoc: tuKhoaTimKiem.value }
       });
 
-      danhSachThuoc.value = (res.data || []).map(t => ({
+      danhSachThuoc.value = (ketQua.data || []).map(t => ({
         maThuoc: t.maThuoc,
         tenThuoc: t.tenThuoc,
         hoatChat: t.hamLuong || 'Chưa có thông tin',
@@ -68,20 +68,20 @@ const handleSearch = () => {
         danhSachDonVi: t.danhSachDonVi || []
       }));
 
-      showSuggestions.value = true;
-    } catch (err) {
-      console.error("Lỗi tìm kiếm:", err);
+      hienThiGoiY.value = true;
+    } catch (loi) {
+      console.error("Lỗi tìm kiếm:", loi);
       danhSachThuoc.value = [];
     } finally {
-      isLoading.value = false;
+      dangTai.value = false;
     }
   }, 300);
 };
 
-const selectItem = async (thuoc) => {
+const chonSanPham = async (thuoc) => {
   try {
-    const resLo = await axios.get(`https://localhost:7070/api/BanHang/lo-hang/${thuoc.maThuoc}`);
-    const danhSachLo = (resLo.data || []).map(lo => ({
+    const ketQuaLo = await axios.get(`https://localhost:7070/api/BanHang/lo-hang/${thuoc.maThuoc}`);
+    const danhSachLo = (ketQuaLo.data || []).map(lo => ({
       maLo: lo.maLo,
       hanSuDung: lo.hanSuDung,
       soLuongTon: lo.soLuongTon
@@ -102,15 +102,15 @@ const selectItem = async (thuoc) => {
       loHangSelected: danhSachLo[0].maLo
     });
 
-    searchQuery.value = '';
-    showSuggestions.value = false;
-  } catch (err) {
-    console.error("Lỗi khi chọn thuốc:", err);
+    tuKhoaTimKiem.value = '';
+    hienThiGoiY.value = false;
+  } catch (loi) {
+    console.error("Lỗi khi chọn thuốc:", loi);
   }
 };
 
-const formatMoney = (val) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val || 0);
+const dinhDangTien = (giaTri) => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(giaTri || 0);
 };
 </script>
 
