@@ -18,14 +18,12 @@
           <div class="col-lg-3 mb-4 mb-lg-0">
             <div class="account-sidebar">
               <div class="account-user-card">
-                <div class="account-avatar" @click="triggerUpload" style="cursor: pointer">
+                <div class="account-avatar" @click="moModalTuyChonAnh" style="cursor: pointer">
                   <img v-if="nguoiDung.anhDaiDien" 
                   :src="getFullUrl(nguoiDung.anhDaiDien)" 
                   class="img-fluid rounded-circle" 
-                  style="width: 100%; height: 100%; object-fit: cover;" 
                   alt="Avatar">
                   <span v-else class="icon-user"></span>
-                  <input type="file" ref="fileInput" class="d-none" accept="image/*" @change="xuLyUploadAvatar">
                 </div>
                 <div class="account-user-info">
                   <div class="account-user-name">{{ nguoiDung.hoTen || 'Đang tải...' }}</div>
@@ -34,34 +32,16 @@
               </div>
               <ul class="account-menu list-unstyled">
                 <li class="active">
-                  <router-link to="/ho-so">
-                    <span class="icon-user mr-2"></span> Thông tin cá nhân
-                  </router-link>
+                  <router-link to="/ho-so"><span class="icon-user mr-2"></span> Thông tin cá nhân</router-link>
                 </li>
                 <li>
-                  <router-link to="/don-hang">
-                    <span class="icon-list mr-2"></span> Đơn hàng của tôi
-                  </router-link>
+                  <router-link to="/don-hang"><span class="icon-list mr-2"></span> Đơn hàng của tôi</router-link>
                 </li>
                 <li>
-                  <router-link to="/dia-chi">
-                    <span class="icon-map-marker mr-2"></span> Quản lý sổ địa chỉ
-                  </router-link>
+                  <router-link to="/dia-chi"><span class="icon-map-marker mr-2"></span> Quản lý sổ địa chỉ</router-link>
                 </li>
                 <li>
-                  <a href="#" @click.prevent="">
-                    <span class="icon-event_available mr-2"></span> Lịch hẹn tiêm chủng
-                  </a>
-                </li>
-                <li>
-                  <a href="#" @click.prevent="">
-                    <span class="icon-healing mr-2"></span> Đơn thuốc của tôi
-                  </a>
-                </li>
-                <li>
-                  <a href="#" @click.prevent="dangXuat">
-                    <span class="icon-exit_to_app mr-2"></span> Đăng xuất
-                  </a>
+                  <a href="#" @click.prevent="dangXuat"><span class="icon-exit_to_app mr-2"></span> Đăng xuất</a>
                 </li>
               </ul>
             </div>
@@ -74,11 +54,10 @@
               </div>
               <div class="account-profile-body">
                 <div class="account-profile-avatar text-center mb-4">
-                  <div class="avatar-circle" @click="triggerUpload" style="cursor: pointer">
+                  <div class="avatar-circle" @click="moModalTuyChonAnh" style="cursor: pointer">
                     <img v-if="nguoiDung.anhDaiDien" 
                     :src="getFullUrl(nguoiDung.anhDaiDien)" 
-                    class="img-fluid rounded-circle" 
-                    style="width: 100%; height: 100%; object-fit: cover;">
+                    class="img-fluid rounded-circle">
                     <span v-else class="icon-user"></span>
                   </div>
                 </div>
@@ -103,9 +82,7 @@
                       </tr>
                       <tr>
                         <td class="label-col">Ngày sinh</td>
-                        <td class="value-col text-right text-primary" style="cursor: pointer">
-                          {{ dinhDangNgay(nguoiDung.ngaySinh) }}
-                        </td>
+                        <td class="value-col text-right text-primary">{{ dinhDangNgay(nguoiDung.ngaySinh) }}</td>
                       </tr>
                       <tr>
                         <td class="label-col">Vai trò</td>
@@ -127,6 +104,40 @@
       </div>
     </div>
 
+    <div class="modal fade" id="modalTuyChonAnh" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-body p-0">
+            <div class="list-group list-group-flush text-center">
+              <button v-if="nguoiDung.anhDaiDien" class="list-group-item list-group-item-action py-3" @click="xemAnhFull">
+                Xem hình ảnh
+              </button>
+              <button class="list-group-item list-group-item-action py-3 text-primary font-weight-bold" @click="triggerUpload">
+                Chọn ảnh mới
+              </button>
+              <button v-if="nguoiDung.anhDaiDien" class="list-group-item list-group-item-action py-3 text-danger" @click="xuLyXoaAvatar">
+                Xóa ảnh hiện tại
+              </button>
+              <button class="list-group-item list-group-item-action py-3 text-secondary" data-dismiss="modal">
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="modalXemAnh" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+          <div class="modal-body p-0 text-center position-relative">
+            <button type="button" class="close text-white position-absolute" style="top: -30px; right: 0; font-size: 2rem;" data-dismiss="modal">&times;</button>
+            <img :src="getFullUrl(nguoiDung.anhDaiDien)" class="img-fluid rounded shadow-lg" style="max-height: 85vh;">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="modal fade" id="modalChinhSua" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -140,27 +151,17 @@
             <form @submit.prevent="xuLyCapNhat">
               <div class="form-group">
                 <label>Họ và tên</label>
-                <input type="text" 
-                       class="form-control" 
-                       v-model="formCapNhat.hoTen" 
-                       @input="validateTen"
-                       :class="{'is-invalid': errors.hoTen}">
+                <input type="text" class="form-control" v-model="formCapNhat.hoTen" @input="validateTen" :class="{'is-invalid': errors.hoTen}">
                 <small class="text-danger" v-if="errors.hoTen">{{ errors.hoTen }}</small>
               </div>
-
               <div class="form-group">
                 <label>Email</label>
-                <input type="email" 
-                       class="form-control" 
-                       v-model="formCapNhat.email" 
-                       @input="validateEmail"
-                       :class="{'is-invalid': errors.email}">
+                <input type="email" class="form-control" v-model="formCapNhat.email" @input="validateEmail" :class="{'is-invalid': errors.email}">
                 <small class="text-danger" v-if="errors.email">{{ errors.email }}</small>
               </div>
               <div class="form-group">
                 <label>Số điện thoại</label>
                 <input type="text" class="form-control" v-model="formCapNhat.soDienThoai" disabled>
-                <small class="text-muted">Không thể thay đổi số điện thoại</small>
               </div>
               <div class="form-group">
                 <label class="font-weight-bold">Giới tính</label>
@@ -185,6 +186,8 @@
         </div>
       </div>
     </div>
+
+    <input type="file" ref="fileInput" class="d-none" accept="image/*" @change="xuLyUploadAvatar">
   </div>
 </template>
 
@@ -193,7 +196,10 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient'; 
 import Swal from 'sweetalert2';
+// Import bootstrap để truy cập trực tiếp các Class Modal
+import * as bootstrap from 'bootstrap'; 
 
+// --- KHAI BÁO BIẾN ---
 const loading = ref(false);
 const router = useRouter();
 const fileInput = ref(null);
@@ -206,37 +212,55 @@ const Toast = Swal.mixin({
   timerProgressBar: true
 });
 
-const formCapNhat = ref({
-  hoTen: '',
-  email: '',
-  soDienThoai: '',
-  gioiTinh: '',
-  ngaySinh: ''
-});
-
-const nguoiDung = ref({
+const nguoiDung = ref({ 
   maNguoiDung: null,
-  hoTen: '',
-  soDienThoai: '',
-  email: '',
-  anhDaiDien: '',
-  gioiTinh: '',
-  ngaySinh: null,
-  tenVaiTro: ''
+  anhDaiDien: '', 
+  hoTen: '', 
+  soDienThoai: '', 
+  email: '', 
+  gioiTinh: '', 
+  ngaySinh: null, 
+  tenVaiTro: '' 
 });
 
-const errors = ref({
-  hoTen: '',
-  email: ''
+const formCapNhat = ref({ 
+  hoTen: '', 
+  email: '', 
+  soDienThoai: '', 
+  gioiTinh: '', 
+  ngaySinh: '' 
 });
 
+const errors = ref({ hoTen: '', email: '' });
+
+// --- UTILITIES ---
 const getFullUrl = (path) => {
   if (!path) return '';
-  if (path.startsWith('http')) return path;
-  return `https://localhost:7070${path}`;
+  return path.startsWith('http') ? path : `https://localhost:7070${path}`;
+};
+
+const dinhDangNgay = (chuoi) => chuoi ? new Date(chuoi).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
+
+// Hàm điều khiển Modal bằng Bootstrap Native để fix lỗi console
+const toggleModal = (modalId, action) => {
+  const modalElement = document.getElementById(modalId);
+  if (modalElement) {
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+    if (action === 'show') modalInstance.show();
+    else modalInstance.hide();
+  }
+};
+
+// --- XỬ LÝ ẢNH (AVATAR) ---
+const moModalTuyChonAnh = () => toggleModal('modalTuyChonAnh', 'show');
+
+const xemAnhFull = () => {
+  toggleModal('modalTuyChonAnh', 'hide');
+  setTimeout(() => toggleModal('modalXemAnh', 'show'), 300);
 };
 
 const triggerUpload = () => {
+  toggleModal('modalTuyChonAnh', 'hide');
   fileInput.value.click();
 };
 
@@ -249,58 +273,134 @@ const xuLyUploadAvatar = async (event) => {
 
   try {
     loading.value = true;
-    const response = await axiosClient.put('/HoSo/cap-nhat-avatar', formData, {
+    // Gửi yêu cầu cập nhật ảnh đến server
+    await axiosClient.put('/HoSo/cap-nhat-avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
+    
+    // Hiển thị thông báo khi thêm mới/cập nhật thành công
+    Toast.fire({ 
+      icon: 'success', 
+      title: 'Cập nhật ảnh đại diện thành công' 
+    });
 
-    if (response) {
-      Toast.fire({ icon: 'success', title: 'Cập nhật ảnh đại diện thành công' });
-      await taiThongTinHoSo();
-    }
+    // Tải lại thông tin để hiển thị ảnh mới trên giao diện
+    await taiThongTinHoSo();
   } catch (loi) {
     console.error("Lỗi upload:", loi);
-    Toast.fire({ icon: 'error', title: 'Không thể tải ảnh lên' });
+    Toast.fire({ 
+      icon: 'error', 
+      title: 'Không thể tải ảnh lên' 
+    });
   } finally {
     loading.value = false;
+    event.target.value = ''; // Reset input file để có thể chọn lại cùng 1 file nếu muốn
   }
 };
 
-const moModalCapNhat = () => {
-  formCapNhat.value = {
-    hoTen: nguoiDung.value.hoTen,
-    email: nguoiDung.value.email,
-    soDienThoai: nguoiDung.value.soDienThoai,
-    gioiTinh: nguoiDung.value.gioiTinh || 'Nam',
-    ngaySinh: nguoiDung.value.ngaySinh ? nguoiDung.value.ngaySinh.split('T')[0] : ''
-  };
-  errors.value = { hoTen: '', email: '' };
+const xuLyXoaAvatar = async () => {
+  // Đóng modal lựa chọn trước khi hiện hộp thoại xác nhận
+  toggleModal('modalTuyChonAnh', 'hide');
+
+  const result = await Swal.fire({
+    title: 'Xác nhận xóa?',
+    text: "Ảnh đại diện của bạn sẽ trở về mặc định.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Xóa ngay',
+    cancelButtonText: 'Hủy'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      loading.value = true;
+
+      // Gọi API xóa ảnh dựa trên mã người dùng
+      await axiosClient.delete(`/HoSo/xoa-avatar/${nguoiDung.value.maNguoiDung}`); 
+
+      // Hiển thị thông báo sau khi xác nhận xóa thành công
+      Toast.fire({ 
+        icon: 'success', 
+        title: 'Đã xóa ảnh đại diện thành công' 
+      });
+
+      // Tải lại dữ liệu để cập nhật lại avatar mặc định
+      await taiThongTinHoSo(); 
+    } catch (loi) {
+      console.error("Lỗi xóa avatar:", loi);
+      const message = loi.response?.data?.message || 'Lỗi khi thực hiện xóa ảnh';
+      Toast.fire({ 
+        icon: 'error', 
+        title: message 
+      });
+    } finally {
+      loading.value = false;
+    }
+  }
 };
 
+// --- XỬ LÝ DỮ LIỆU ---
 const taiThongTinHoSo = async () => {
   try {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/auth/dang-nhap');
-      return;
-    }
     const data = await axiosClient.get('/HoSo/thong-tin');
     if (data) {
       nguoiDung.value = data;
     }
   } catch (loi) {
-    console.error("Lỗi khi lấy thông tin người dùng:", loi);
+    console.error("Lỗi lấy thông tin:", loi);
+    if (loi.response?.status === 401) {
+      router.push('/auth/dang-nhap');
+    }
   }
 };
 
-const dinhDangNgay = (chuoiNgay) => {
-  if (!chuoiNgay) return 'Chưa cập nhật';
-  const ngay = new Date(chuoiNgay);
-  return ngay.toLocaleDateString('vi-VN');
+const moModalCapNhat = () => {
+  formCapNhat.value = { 
+    ...nguoiDung.value, 
+    ngaySinh: nguoiDung.value.ngaySinh ? nguoiDung.value.ngaySinh.split('T')[0] : '' 
+  };
+  errors.value = { hoTen: '', email: '' };
+  toggleModal('modalChinhSua', 'show');
+};
+
+const validateTen = () => {
+  const regexTen = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỵỷỹýỳỷỹý\s]+$/;
+  errors.value.hoTen = !formCapNhat.value.hoTen?.trim() ? "Họ tên không được trống" : 
+                       !regexTen.test(formCapNhat.value.hoTen.trim()) ? "Tên không chứa số/ký tự đặc biệt" : "";
+};
+
+const validateEmail = () => {
+  const regexEmail = /^[^\s@]+@[^\s@]+\.(com|vn|net|edu|org)$/i;
+  errors.value.email = !formCapNhat.value.email?.trim() ? "Email không được trống" : 
+                        !regexEmail.test(formCapNhat.value.email.trim()) ? "Email sai định dạng" : "";
+};
+
+const xuLyCapNhat = async () => {
+  validateTen(); 
+  validateEmail();
+  if (errors.value.hoTen || errors.value.email) return;
+
+  try {
+    loading.value = true;
+    await axiosClient.put('/HoSo/cap-nhat', { 
+      ...formCapNhat.value, 
+      maNguoiDung: nguoiDung.value.maNguoiDung 
+    });
+    
+    Swal.fire({ icon: 'success', title: 'Thành công!', timer: 1500, showConfirmButton: false });
+    await taiThongTinHoSo();
+    toggleModal('modalChinhSua', 'hide');
+  } catch (loi) {
+    Swal.fire({ icon: 'error', title: 'Thất bại', text: loi.response?.data?.message || "Có lỗi xảy ra" });
+  } finally {
+    loading.value = false;
+  }
 };
 
 const dangXuat = () => {
   Swal.fire({
-    title: 'Bạn muốn đăng xuất?',
+    title: 'Đăng xuất?',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Đồng ý',
@@ -310,86 +410,47 @@ const dangXuat = () => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       router.push('/auth/dang-nhap');
-      Toast.fire({ icon: 'success', title: 'Đã đăng xuất' });
     }
   });
 };
 
-const validateTen = () => {
-  const regexTen = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỵỷỹýỳỷỹý\s]+$/;
-  if (!formCapNhat.value.hoTen?.trim()) {
-    errors.value.hoTen = "Họ tên không được để trống";
-  } else if (!regexTen.test(formCapNhat.value.hoTen.trim())) {
-    errors.value.hoTen = "Tên không được chứa số hoặc ký tự đặc biệt";
-  } else {
-    errors.value.hoTen = "";
-  }
-};
-
-const validateEmail = () => {
-  const regexEmail = /^[^\s@]+@[^\s@]+\.(com|vn|net|edu|org)$/i;
-  if (!formCapNhat.value.email?.trim()) {
-    errors.value.email = "Email không được để trống";
-  } else if (!regexEmail.test(formCapNhat.value.email.trim())) {
-    errors.value.email = "Email sai định dạng";
-  } else {
-    errors.value.email = "";
-  }
-};
-
-const xuLyCapNhat = async () => {
-  validateTen();
-  validateEmail();
-  if (errors.value.hoTen || errors.value.email) return;
-
-  try {
-    loading.value = true;
-    const dataGuiDi = {
-      maNguoiDung: nguoiDung.value.maNguoiDung,
-      hoTen: formCapNhat.value.hoTen.trim(),
-      email: formCapNhat.value.email.trim(),
-      soDienThoai: formCapNhat.value.soDienThoai,
-      gioiTinh: formCapNhat.value.gioiTinh, 
-      ngaySinh: formCapNhat.value.ngaySinh  
-    };
-
-    const response = await axiosClient.put('/HoSo/cap-nhat', dataGuiDi);
-    if (response) {
-      Swal.fire({ icon: 'success', title: 'Thành công!', timer: 1500, showConfirmButton: false });
-      await taiThongTinHoSo();
-      const closeButton = document.querySelector('#modalChinhSua [data-dismiss="modal"]');
-      if (closeButton) closeButton.click();
-    }
-  } catch (loi) {
-    Swal.fire({ icon: 'error', title: 'Thất bại', text: loi.response?.data?.message });
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(() => {
-  taiThongTinHoSo();
-});
+onMounted(taiThongTinHoSo);
 </script>
 
 <style scoped>
-/* Đảm bảo ảnh luôn cover hết vòng tròn dù kích thước gốc thế nào */
-.avatar-circle img, 
-.account-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+/* CSS cho avatar */
+.avatar-circle, .account-avatar {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 2px solid #eee;
+  transition: all 0.3s ease;
 }
 
-/* Các style bổ trợ để vòng tròn trông đẹp hơn */
-.avatar-circle, 
-.account-avatar {
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f8f9fa;
-    border: 2px solid #eee;
+.avatar-circle:hover, .account-avatar:hover {
+  border-color: #007bff;
+  transform: scale(1.02);
 }
+
+.avatar-circle img, .account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CSS cho Modal 3 nút */
+#modalTuyChonAnh .modal-content {
+  border-radius: 12px;
+}
+
+#modalTuyChonAnh .list-group-item {
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+}
+
+#modalTuyChonAnh .list-group-item:first-child { border-top: none; }
+#modalTuyChonAnh .list-group-item:last-child { border-bottom: none; }
 </style>

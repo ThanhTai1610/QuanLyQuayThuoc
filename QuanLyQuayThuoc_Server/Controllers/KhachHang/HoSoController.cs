@@ -108,5 +108,20 @@ namespace QuanLyQuayThuoc.Controllers
                 return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
             }
         }
+        [HttpDelete("xoa-avatar/{maNguoiDung}")]
+        public async Task<IActionResult> XoaAvatar(int maNguoiDung)
+        {
+            // Sử dụng _repo thay vì _db vì Controller này không có DbContext trực tiếp
+            var success = await _repo.CapNhatDuongDanAvatar(maNguoiDung, "default-avatar.png");
+
+            if (success)
+            {
+                return Ok(new { message = "Đã xóa ảnh đại diện thành công" });
+            }
+            else
+            {
+                return NotFound(new { message = "Không tìm thấy người dùng hoặc lỗi hệ thống" });
+            }
+        }
     }
 }

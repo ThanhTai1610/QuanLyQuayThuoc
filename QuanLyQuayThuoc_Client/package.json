@@ -12,6 +12,7 @@
     "@fortawesome/fontawesome-free": "^7.2.0",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.13.6",
+    "bootstrap": "^5.3.8",
     "jquery": "^4.0.0",
     "pinia": "^3.0.4",
     "sweetalert2": "^11.26.24",
