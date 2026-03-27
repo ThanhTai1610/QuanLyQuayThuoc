@@ -89,45 +89,32 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
         [HttpPost("quen-mat-khau")]
         public async Task<IActionResult> QuenMatKhau([FromBody] QuenMatKhauDto model)
         {
-            // 1. Kiểm tra Email có tồn tại trong hệ thống không
+            // 1. Kiểm tra Email
             var user = await _context.NguoiDungs.FirstOrDefaultAsync(u => u.Email == model.Email);
-            if (user == null)
-            {
-                return NotFound(new { message = "Email không tồn tại trong hệ thống." });
-            }
+            if (user == null) return NotFound(new { message = "Email không tồn tại." });
 
-            // 2. Tạo mã OTP ngẫu nhiên 6 số
+            // 2. Tạo OTP và lưu DB
             string otp = new Random().Next(100000, 999999).ToString();
-
-            // 3. Cập nhật mã OTP và thời gian hết hạn vào Database
-            // (Tài đảm bảo bảng NguoiDung đã có 2 cột này nhé)
             user.MaOtp = otp;
-            user.HanOtp = DateTime.Now.AddMinutes(5); // Mã có hiệu lực trong 5 phút
-
+            user.HanOtp = DateTime.Now.AddMinutes(5);
             await _context.SaveChangesAsync();
 
-            // 4. Gửi Email thông qua Helper của Tài
-            string subject = "Mã xác nhận quên mật khẩu - Pharmative";
-            string body = $@"
-        <div style='font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee;'>
-            <h2 style='color: #e91e63;'>Xác thực tài khoản</h2>
-            <p>Chào bạn, mã OTP để đặt lại mật khẩu của bạn là:</p>
-            <div style='font-size: 32px; font-weight: bold; color: #333; letter-spacing: 5px; margin: 20px 0;'>
-                {otp}
-            </div>
-            <p>Mã này có hiệu lực trong <b>5 phút</b>. Vui lòng không cung cấp mã này cho người khác.</p>
-        </div>";
+            // 3. GỬI MAIL CHẠY NGẦM (Fire and Forget)
+            // Không dùng await ở đây để trả về Ok ngay lập tức
+            _ = Task.Run(async () => {
+                try
+                {
+                    string subject = "Mã xác nhận quên mật khẩu - Pharmative";
+                    string body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực 5 phút.";
+                    await EmailHelper.SendEmailAsync(model.Email, subject, body);
+                }
+                catch (Exception ex)
+                {
+                    // Log lỗi ra file nếu cần để kiểm tra sau
+                }
+            });
 
-            bool checkSend = await EmailHelper.SendEmailAsync(model.Email, subject, body);
-
-            if (checkSend)
-            {
-                return Ok(new { message = "Mã OTP đã được gửi thành công." });
-            }
-            else
-            {
-                return StatusCode(500, new { message = "Gửi mail thất bại, vui lòng thử lại sau." });
-            }
+            return Ok(new { message = "Mã OTP đang được gửi." });
         }
         [AllowAnonymous]
         [HttpPost("dat-lai-mat-khau")]

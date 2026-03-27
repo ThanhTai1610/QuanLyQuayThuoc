@@ -71,37 +71,20 @@ const dangGui = ref(false);
 const guiMaOtp = async () => {
   loi.value = '';
   const emailTrim = email.value.trim();
-
-  // 1. Kiểm tra trống
-  if (!emailTrim) {
-    loi.value = 'Vui lòng nhập địa chỉ email.';
-    return;
-  }
-
-  // 2. Kiểm tra định dạng Email chuẩn
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(emailTrim)) {
-    loi.value = 'Định dạng email không hợp lệ (Ví dụ: abc@gmail.com).';
-    return;
-  }
+  if (!emailTrim) { loi.value = 'Vui lòng nhập email.'; return; }
 
   dangGui.value = true;
   try {
+    // Gọi API (Backend giờ đã trả về rất nhanh vì gửi mail ngầm)
     await axiosClient.post('/NguoiDung/quen-mat-khau', { email: emailTrim });
 
-    // THÊM DÒNG NÀY: Lưu email vào máy để Bước 2 lấy ra dùng
+    // Lưu lại email để Bước 2 sử dụng
     localStorage.setItem('pharmative_reset_email', emailTrim);
 
-    // Chuyển sang trang nhập OTP
-    router.push({
-      name: 'QuenMatKhauOtp'
-    });
+    // Chuyển trang liền
+    router.push({ name: 'QuenMatKhauOtp' });
   } catch (error) {
-    if (error.response?.status === 404) {
-      loi.value = 'Email không tồn tại trong hệ thống.';
-    } else {
-      loi.value = 'Có lỗi xảy ra. Vui lòng thử lại.';
-    }
+    loi.value = error.response?.data?.message || 'Có lỗi xảy ra.';
   } finally {
     dangGui.value = false;
   }
