@@ -9,7 +9,7 @@ namespace QuanLyQuayThuoc.Repositories
     public class NguoiDungRepository : INguoiDungRepository
     {
         private readonly ApplicationDbContext _db;
-        private readonly ApplicationDbContext _context;
+        
         public NguoiDungRepository(ApplicationDbContext db) => _db = db;
 
         public async Task<NguoiDungInfoDto?> LayHoSoCaNhan(int maNguoiDung)
@@ -48,6 +48,16 @@ namespace QuanLyQuayThuoc.Repositories
             return await _db.NguoiDungs
                 .Include(n => n.MaVaiTroNavigation)
                 .FirstOrDefaultAsync(u => u.Email == email);
+        }
+        public async Task<bool> CapNhatDuongDanAvatar(int userId, string path)
+        {
+            // Thêm chữ 's' vào sau NguoiDung để khớp với DbContext của bạn
+            var user = await _db.NguoiDungs.FindAsync(userId);
+
+            if (user == null) return false;
+
+            user.AnhDaiDien = path;
+            return await _db.SaveChangesAsync() > 0;
         }
     }
 }
