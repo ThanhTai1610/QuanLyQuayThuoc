@@ -51,7 +51,7 @@
             
             <p class="mt-4 mb-0 text-center small">
               Chưa có tài khoản?
-              <router-link to="/auth/dang-ky">Đăng ký ngay</router-link>
+              <router-link :to="{ name: 'DangKy' }">Đăng ký ngay</router-link>
             </p>
           </div>
         </div>
@@ -61,12 +61,14 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
- // Kiểm tra lại đường dẫn file này
 
 const router = useRouter();
+const loi = ref(''); // Hiển thị thông báo lỗi lên màn hình
+const dangGui = ref(false); // Trạng thái loading
+
 const auth = reactive({
   email: '',
   password: '',
@@ -74,34 +76,53 @@ const auth = reactive({
 });
 
 const handleLogin = async () => {
+  // 1. Reset trạng thái
+  loi.value = '';
+  const emailTrim = auth.email.trim();
+
+  // 2. Validate phía Client (Chặn trước khi gọi API)
+  if (!emailTrim) {
+    loi.value = 'Vui lòng nhập email.';
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(emailTrim)) {
+    loi.value = 'Email không đúng định dạng.';
+    return;
+  }
+
+  if (auth.password.length < 6) {
+    loi.value = 'Mật khẩu phải có ít nhất 6 ký tự.';
+    return;
+  }
+
+  // 3. Bắt đầu gửi dữ liệu
+  dangGui.value = true;
   try {
-    // Gửi request đăng nhập
     const response = await axiosClient.post('/NguoiDung/dang-nhap', {
-      email: auth.email,
+      email: emailTrim,
       matKhau: auth.password
     });
 
-    // Kiểm tra nếu có token (Backend phải trả về trường này)
     if (response.token) {
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       
       const roleId = response.user.maVaiTro; 
 
-      // Điều hướng dựa trên MaVaiTro từ database
-      if (roleId === 1) {
-        router.push('/admin/thong-ke');
-      } else if (roleId === 2) {
-        router.push('/nhan-vien/ban-hang');
-      } else {
-        router.push('/');
-      }
+      // Điều hướng dựa trên vai trò
+      if (roleId === 1) router.push('/admin/thong-ke');
+      else if (roleId === 2) router.push('/nhan-vien/ban-hang');
+      else router.push('/');
     } else {
-      alert("Đăng nhập thành công nhưng không nhận được mã xác thực!");
+      loi.value = "Không nhận được mã xác thực từ máy chủ.";
     }
   } catch (error) {
-    console.error("Lỗi đăng nhập:", error);
-    alert(error.response?.data?.message || "Email hoặc mật khẩu không đúng!");
+    // Hiển thị lỗi từ Backend trả về
+    loi.value = error.response?.data?.message || "Email hoặc mật khẩu không chính xác!";
+  } finally {
+    dangGui.value = false;
   }
 };
 </script>

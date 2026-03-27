@@ -12,10 +12,13 @@ const dangGui = ref(false);
 const email = ref('');
 
 onMounted(() => {
-  const emailFromState = history.state?.email;
-  if (emailFromState) {
-    email.value = emailFromState;
+  // Lấy từ LocalStorage thay vì history.state
+  const savedEmail = localStorage.getItem('pharmative_reset_email');
+  
+  if (savedEmail) {
+    email.value = savedEmail;
   } else {
+    // Nếu lỡ tay xóa cache hoặc vào thẳng link này thì mới đuổi về B1
     router.push({ name: 'QuenMatKhau' });
   }
 });
@@ -35,15 +38,22 @@ const luuMatKhau = async () => {
 
   dangGui.value = true;
   try {
+    // LẤY OTP ĐÃ LƯU TỪ BƯỚC TRƯỚC
+    const otpDaLuu = localStorage.getItem('pharmative_temp_otp'); 
+
+    // GỬI KÈM OTP TRONG REQUEST
     await axiosClient.post('/NguoiDung/dat-lai-mat-khau', {
       email: email.value,
+      maOtp: otpDaLuu, // <--- THÊM DÒNG NÀY ĐỂ HẾT LỖI TRONG HÌNH B3324F
       matKhauMoi: matKhauMoi.value,
     });
 
-    alert('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
+    alert('Đổi mật khẩu thành công!');
+    localStorage.removeItem('pharmative_reset_email');
+    localStorage.removeItem('pharmative_temp_otp');
     router.push({ name: 'DangNhap' });
   } catch (error) {
-    loi.value = error.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại.';
+    loi.value = error.response?.data?.message || 'Có lỗi xảy ra.';
   } finally {
     dangGui.value = false;
   }

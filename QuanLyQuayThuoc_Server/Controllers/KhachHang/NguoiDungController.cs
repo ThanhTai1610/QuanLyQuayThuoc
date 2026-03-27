@@ -7,6 +7,7 @@ using QuanLyQuayThuoc.DTOs.NguoiDung;
 using QuanLyQuayThuoc.Helpers;
 using QuanLyQuayThuoc.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using QuanLyQuayThuoc.Models;
 
 namespace QuanLyQuayThuoc.Controllers.KhachHang
 {
@@ -172,6 +173,47 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                 return BadRequest(new { message = "Mã OTP không chính xác." });
             }
             return Ok(new { message = "Mã OTP hợp lệ." });
+        }
+        [AllowAnonymous]
+        [HttpPost("gui-otp-dang-ky")]
+        public async Task<IActionResult> GuiOtpDangKy([FromBody] DangKyDto model)
+        {
+            // 1. Kiểm tra email đã tồn tại chưa
+            if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
+                return Conflict(new { message = "Email này đã được đăng ký." });
+
+            // 2. Tạo OTP
+            string otp = new Random().Next(100000, 999999).ToString();
+
+            // 3. Gửi Email (Dùng EmailHelper Tài đã có)
+            string subject = "Mã xác thực đăng ký tài khoản - Pharmative";
+            string body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực trong 5 phút.";
+
+            bool isSent = await EmailHelper.SendEmailAsync(model.Email, subject, body);
+
+            if (!isSent) return StatusCode(500, "Không thể gửi email.");
+
+            return Ok(new { otpXacThuc = otp, message = "Mã OTP đã gửi về Email." });
+        }
+        [AllowAnonymous]
+        [HttpPost("dang-ky-otp")]
+        public async Task<IActionResult> DangKyChinhThuc([FromBody] DangKyDto model)
+        {
+            var user = new NguoiDung
+            {
+                // Gộp Họ và Tên từ DTO vào cột HoTen trong Model
+                HoTen = $"{model.Ho} {model.Ten}".Trim(),
+                Email = model.Email,
+                SoDienThoai = model.SoDienThoai,
+                MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau),
+                MaVaiTro = 3, // Giả sử 2 là Vai trò Khách hàng
+                TrangThai = "Hoạt động",
+                NgayTao = DateTime.Now
+            };
+
+            _context.NguoiDungs.Add(user);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Đăng ký thành công!" });
         }
     }
 }

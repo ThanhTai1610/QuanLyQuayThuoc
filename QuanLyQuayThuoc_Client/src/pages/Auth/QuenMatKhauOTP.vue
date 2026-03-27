@@ -1,84 +1,105 @@
 <template>
-  <div class="auth-card p-4 shadow">
-    <h2 class="text-center">Xác nhận OTP</h2>
-    <p class="text-center">Mã gửi đến: <strong>{{ email }}</strong></p>
+  <div class="site-section auth-section forgot-step-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5">
+          <div class="auth-card forgot-auth-card">
 
-    <div class="form-group mb-3">
-      <label class="fw-bold">Nhập 6 số OTP</label>
-      <input
-        type="text"
-        class="form-control text-center fw-bold"
-        style="letter-spacing: 5px; font-size: 1.2rem;"
-        v-model="otp" 
-        placeholder="000000"
-        maxlength="6"
-        @keyup.enter="xacNhanOtp"
-      />
-      <p v-if="loi" class="text-danger small mt-2">{{ loi }}</p>
+            <!-- Step indicator -->
+            <div class="otp-stepper" aria-label="Quên mật khẩu - các bước">
+              <div class="otp-step-item completed">
+                <div class="otp-step-circle">1</div>
+              </div>
+              <div class="otp-step-item active">
+                <div class="otp-step-circle">2</div>
+              </div>
+              <div class="otp-step-item">
+                <div class="otp-step-circle">3</div>
+              </div>
+            </div>
+
+            <h2 class="mb-2 text-center">Nhập mã OTP</h2>
+            <p class="mb-3 text-center sub-text">
+              Nhập OTP đã được gửi tới email của bạn
+            </p>
+            <p class="mb-4 text-center sub-text" style="margin-top: -6px;">
+              <span class="text-muted">Email: </span><strong>{{ email }}</strong>
+            </p>
+
+            <div class="otp-error" :class="{ show: loi }">{{ loi }}</div>
+
+            <div class="form-group mb-3">
+              <label for="otp">Mã OTP</label>
+              <input
+                type="text"
+                class="form-control"
+                id="otp"
+                v-model="otp"
+                placeholder="Nhập mã OTP"
+                maxlength="10"
+                @keyup.enter="xacNhan"
+              />
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-primary btn-block w-100 mt-2"
+              :disabled="dangGui"
+              @click="xacNhan"
+            >
+              <span v-if="dangGui">Đang xác nhận...</span>
+              <span v-else>XÁC NHẬN</span>
+            </button>
+
+            <div class="small-links mt-4 text-center">
+              <router-link to="/quen-mat-khau">Quay lại bước 1</router-link>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </div>
-
-    <button class="btn btn-primary w-100 fw-bold" :disabled="dangGui" @click="xacNhanOtp">
-      <span v-if="dangGui">ĐANG XÁC NHẬN...</span>
-      <span v-else>XÁC NHẬN</span>
-    </button>
   </div>
 </template>
 
 <script setup>
+import '../../assets/css/forgot-password.css';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
 
 const router = useRouter();
-const email = ref(''); 
+const email = ref('');
 const otp = ref('');
 const loi = ref('');
-const dangGui = ref(false); // <--- TÀI THIẾU DÒNG NÀY NÊN KHÔNG BẤM ĐƯỢC
+const dangGui = ref(false);
 
 onMounted(() => {
-  // Lấy từ LocalStorage - Nơi chắc chắn có dữ liệu (theo hình Tài gửi)
-  const savedEmail = localStorage.getItem('pharmative_reset_email');
-  if (savedEmail) {
-    email.value = savedEmail;
-  } else {
-    loi.value = "Không tìm thấy email. Hãy quay lại bước 1.";
-  }
+  email.value = localStorage.getItem('pharmative_reset_email') || '(chưa có)';
 });
 
-const xacNhanOtp = async () => {
+const xacNhan = async () => {
   loi.value = '';
-  
-  // Lấy trực tiếp từ LocalStorage ngay lúc này
-  const emailChinhXac = localStorage.getItem('pharmative_reset_email');
-  const otpValue = otp.value.trim();
+  const otpTrim = otp.value.trim();
 
-  console.log("Dữ liệu chuẩn bị gửi:", { email: emailChinhXac, otp: otpValue });
-
-  if (!emailChinhXac) {
-    loi.value = "Lỗi: Mất email. Quay lại B1.";
-    return;
-  }
-  if (!otpValue) {
-    loi.value = "Vui lòng nhập mã OTP.";
+  if (!otpTrim || otpTrim.length < 4) {
+    loi.value = 'OTP không hợp lệ.';
     return;
   }
 
   dangGui.value = true;
   try {
-    // GỬI CHÍNH XÁC OBJECT NÀY
-    await axiosClient.post('/NguoiDung/xac-nhan-otp', {
-      email: emailChinhXac, 
-      otp: otpValue
+    await axiosClient.post('/TaiKhoan/xac-nhan-otp', {
+      email: email.value,
+      otp: otpTrim,
     });
-    
-    // Lưu OTP để dùng cho Bước 3
-    localStorage.setItem('pharmative_temp_otp', otpValue);
-    
-    // Chuyển sang Bước 3
     router.push({ name: 'DatLaiMatKhau' });
   } catch (error) {
-    console.error("Lỗi API:", error.response?.data);
-    loi.value = error.response?.data?.message || "OTP không đúng hoặc đã hết hạn!";
+    if (error.response?.status === 400) {
+      loi.value = 'Mã OTP không đúng hoặc đã hết hạn.';
+    } else {
+      loi.value = 'Có lỗi xảy ra. Vui lòng thử lại.';
+    }
   } finally {
     dangGui.value = false;
   }
