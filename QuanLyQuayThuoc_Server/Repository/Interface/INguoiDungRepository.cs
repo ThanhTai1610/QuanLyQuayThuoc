@@ -8,5 +8,6 @@ namespace QuanLyQuayThuoc.Repositories.Interfaces
         Task<NguoiDungInfoDto?> LayHoSoCaNhan(int maNguoiDung);
         Task<bool> LuuCapNhatHoSo(int maNguoiDung, CapNhatHoSoDto duLieu);
         Task<NguoiDung?> GetByEmailAsync(string email);
+        Task<bool> CapNhatDuongDanAvatar(int userId, string path);
     }
 }

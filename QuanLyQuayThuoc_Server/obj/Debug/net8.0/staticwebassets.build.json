@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "qokEnSKyCvLQQhtf5V88M7+IozdscWo195QIEggJRG8=",
+  "Hash": "Eip7ubgLwuuXpuqXTh6JLNWNlhuuxSKI57Zv0QNxuEE=",
   "Source": "QuanLyQuayThuoc",
   "BasePath": "_content/QuanLyQuayThuoc",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "QuanLyQuayThuoc\\wwwroot",
       "Source": "QuanLyQuayThuoc",
-      "ContentRoot": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
+      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "images/products/product_01#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -36,12 +36,117 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\images\\products\\product_01.png"
+    },
+    {
+      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
+      "SourceId": "QuanLyQuayThuoc",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "BasePath": "_content/QuanLyQuayThuoc",
+      "RelativePath": "uploads/avatars/avatar_4_20260327102538#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b5zvsh3arc",
+      "Integrity": "r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png"
+    },
+    {
+      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
+      "SourceId": "QuanLyQuayThuoc",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "BasePath": "_content/QuanLyQuayThuoc",
+      "RelativePath": "uploads/avatars/avatar_4_20260327103641#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b5zvsh3arc",
+      "Integrity": "r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png"
+    },
+    {
+      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
+      "SourceId": "QuanLyQuayThuoc",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "BasePath": "_content/QuanLyQuayThuoc",
+      "RelativePath": "uploads/avatars/avatar_4_20260327104154#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b5zvsh3arc",
+      "Integrity": "r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png"
+    },
+    {
+      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
+      "SourceId": "QuanLyQuayThuoc",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "BasePath": "_content/QuanLyQuayThuoc",
+      "RelativePath": "uploads/avatars/avatar_4_20260327104659#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b5zvsh3arc",
+      "Integrity": "r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png"
+    },
+    {
+      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
+      "SourceId": "QuanLyQuayThuoc",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "BasePath": "_content/QuanLyQuayThuoc",
+      "RelativePath": "uploads/products/product_01#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "doybj5k14s",
+      "Integrity": "s9Q73iBgCCHaOMm/cgaw7eMjc5/91bE8jPUci3Hm/4M=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\products\\product_01.png"
     }
   ],
   "Endpoints": [
     {
       "Route": "images/products/product_01.doybj5k14s.png",
-      "AssetFile": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -62,7 +167,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 25 Mar 2026 09:32:14 GMT"
+          "Value": "Wed, 25 Mar 2026 10:38:02 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -86,7 +191,7 @@
     },
     {
       "Route": "images/products/product_01.png",
-      "AssetFile": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -107,7 +212,417 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 25 Mar 2026 09:32:14 GMT"
+          "Value": "Wed, 25 Mar 2026 10:38:02 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-s9Q73iBgCCHaOMm/cgaw7eMjc5/91bE8jPUci3Hm/4M="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327102538.b5zvsh3arc.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:25:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b5zvsh3arc"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/avatars/avatar_4_20260327102538.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327102538.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:25:38 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327103641.b5zvsh3arc.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:36:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b5zvsh3arc"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/avatars/avatar_4_20260327103641.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327103641.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:36:41 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327104154.b5zvsh3arc.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:41:54 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b5zvsh3arc"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/avatars/avatar_4_20260327104154.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327104154.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:41:54 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327104659.b5zvsh3arc.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:46:59 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b5zvsh3arc"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/avatars/avatar_4_20260327104659.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327104659.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 03:46:59 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/products/product_01.doybj5k14s.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "38883"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"s9Q73iBgCCHaOMm/cgaw7eMjc5/91bE8jPUci3Hm/4M=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 02:55:07 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "doybj5k14s"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/products/product_01.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-s9Q73iBgCCHaOMm/cgaw7eMjc5/91bE8jPUci3Hm/4M="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/products/product_01.png",
+      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "38883"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"s9Q73iBgCCHaOMm/cgaw7eMjc5/91bE8jPUci3Hm/4M=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 27 Mar 2026 02:55:07 GMT"
         },
         {
           "Name": "Cache-Control",
