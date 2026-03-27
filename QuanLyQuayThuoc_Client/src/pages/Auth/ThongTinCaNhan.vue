@@ -93,7 +93,7 @@
                 </div>
                 <div class="text-center mt-4">
                   <button type="button" class="btn btn-primary px-5 py-2 rounded-pill shadow" 
-                          data-toggle="modal" data-target="#modalChinhSua" @click="moModalCapNhat">
+                          data-bs-toggle="modal" data-bs-target="#modalChinhSua" @click="moModalCapNhat">
                     Chỉnh sửa thông tin
                   </button>
                 </div>
@@ -118,7 +118,7 @@
               <button v-if="nguoiDung.anhDaiDien" class="list-group-item list-group-item-action py-3 text-danger" @click="xuLyXoaAvatar">
                 Xóa ảnh hiện tại
               </button>
-              <button class="list-group-item list-group-item-action py-3 text-secondary" data-dismiss="modal">
+              <button class="list-group-item list-group-item-action py-3 text-secondary" data-bs-dismiss="modal">
                 Hủy
               </button>
             </div>
@@ -176,7 +176,11 @@
                 <input type="date" class="form-control" v-model="formCapNhat.ngaySinh">
               </div>
               <div class="text-right mt-4">
-                <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Hủy</button>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                  
+                </button>
+
+                <button type="button" class="btn btn-secondary mr-2" data-bs-dismiss="modal">Hủy</button>
                 <button type="submit" class="btn btn-primary" :disabled="loading">
                   {{ loading ? 'Đang lưu...' : 'Lưu thay đổi' }}
                 </button>
@@ -242,15 +246,23 @@ const getFullUrl = (path) => {
 const dinhDangNgay = (chuoi) => chuoi ? new Date(chuoi).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
 
 // Hàm điều khiển Modal bằng Bootstrap Native để fix lỗi console
+// Cập nhật hàm toggleModal để chắc chắn hơn
 const toggleModal = (modalId, action) => {
   const modalElement = document.getElementById(modalId);
   if (modalElement) {
     const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-    if (action === 'show') modalInstance.show();
-    else modalInstance.hide();
+    if (action === 'show') {
+      modalInstance.show();
+    } else {
+      modalInstance.hide();
+      // Đôi khi backdrop bị kẹt, dòng này sẽ dọn dẹp nó
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) backdrop.remove();
+      document.body.classList.remove('modal-open');
+      document.body.style.paddingRight = '';
+    }
   }
 };
-
 // --- XỬ LÝ ẢNH (AVATAR) ---
 const moModalTuyChonAnh = () => toggleModal('modalTuyChonAnh', 'show');
 
