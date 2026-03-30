@@ -27,7 +27,10 @@ builder.Services.AddCors(options => {
 
 // --- 2. ĐĂNG KÝ REPOSITORY & SERVICES ---
 builder.Services.AddScoped<INguoiDungRepository, NguoiDungRepository>();
+builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
+builder.Services.AddScoped<IKhoRepository, KhoRepository>();
 builder.Services.AddScoped<INguoiDungService, NguoiDungService>();
+builder.Services.AddScoped<IBanHangService, BanHangService>();
 builder.Services.AddScoped<JwtHelper>();
 
 builder.Services.AddControllers();

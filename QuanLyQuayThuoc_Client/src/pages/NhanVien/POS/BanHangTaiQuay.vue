@@ -1,125 +1,206 @@
 <template>
   <div class="container-fluid pos-root">
-    <TimKiem @add-to-cart="addToCart" />
+    <TimKiem @add-to-cart="themVaoGioHang" />
 
     <div class="row mt-3">
       <div class="col-xl-8 col-lg-7">
-        <GioHang 
-          :cartItems="cartItems" 
-          @remove-item="removeItem" 
-          @update-quantity="updateQuantity" 
-        />
+        <GioHang :cartItems="cacSanPhamTrongGio" @remove-item="xoaSanPham" @update-quantity="capNhatSoLuong" />
       </div>
 
       <div class="col-xl-4 col-lg-5">
-        <ThanhToan 
-          :tongTienHang="totalAmount" 
-          :maDonHang="maDonHang"
-          @checkout="openInvoice" 
-          @clear-cart="clearCart"
-        />
+        <ThanhToan :tongTienHang="tongTienHang" :maDonHang="maDonHang" @checkout="moHoaDon" @clear-cart="xoaGioHang" />
       </div>
     </div>
 
-    <Modals 
-      :invoiceData="invoiceData"
-      @add-quick-item="addToCart"
-      @finish-payment="resetPage"
-    />
+    <Modals :invoiceData="duLieuHoaDon" @add-quick-item="themVaoGioHang" @finish-payment="xuLyHoanThanhThanhToan" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, reactive } from 'vue';
+import axios from 'axios';
 import TimKiem from '../../NhanVien/POS/TimKiem.vue';
 import GioHang from '../../NhanVien/POS/GioHang.vue';
 import ThanhToan from '../../NhanVien/POS/ThanhToan.vue';
 import Modals from '../../NhanVien/POS/Modals.vue';
+import Swal from 'sweetalert2';
 
-// 1. Quản lý trạng thái giỏ hàng
-const cartItems = ref([]);
+// STATE
+const cacSanPhamTrongGio = ref([]);
 const maDonHang = ref('POS-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'));
 
-// 2. Tính tổng tiền tự động (Computed)
-const totalAmount = computed(() => {
-  return cartItems.value.reduce((sum, item) => sum + (item.giaBan * item.soLuong), 0);
-});
-
-// 3. Dữ liệu chuẩn bị cho Hóa đơn
-const invoiceData = reactive({
+const duLieuHoaDon = reactive({
   maHd: maDonHang.value,
   thoiGian: '',
   khachHang: '',
-  cartItems: [],
+  cacSanPhamTrongGio: [],
   tongTienHang: 0,
   giamGia: 0,
   canTra: 0,
-  phuongThuc: 'Tiền mặt'
+  phuongThuc: 'Tiền mặt',
+  _chiTietThanhToan: null
 });
 
-// --- CÁC HÀM XỬ LÝ (LOGIC) ---
+// COMPUTED
+const tongTienHang = computed(() => {
+  return cacSanPhamTrongGio.value.reduce((tong, sanPham) => tong + (sanPham.giaBan * sanPham.soLuong), 0);
+});
 
-// Thêm thuốc vào giỏ
-const addToCart = (product) => {
-  const existing = cartItems.value.find(i => i.id === product.id && product.id !== undefined);
-  if (existing) {
-    existing.soLuong += product.soLuong;
+// CART LOGIC
+const themVaoGioHang = (sanPham) => {
+  const sanPhamHienCo = cacSanPhamTrongGio.value.find(i => i.maThuoc === sanPham.maThuoc);
+
+  if (sanPhamHienCo) {
+    sanPhamHienCo.soLuong += 1;
   } else {
-    cartItems.value.push({ ...product });
+    cacSanPhamTrongGio.value.push({
+      ...sanPham,
+      soLuong: 1,
+      maDvtSelected: sanPham.maDvtSelected || sanPham.danhSachDonVi[0]?.maDvt,
+      loHangSelected: sanPham.loHangSelected || sanPham.danhSachLo[0]?.maLo
+    });
   }
 };
 
-// Cập nhật số lượng (+/-)
-const updateQuantity = ({ index, change }) => {
-  const item = cartItems.value[index];
-  if (item) {
-    item.soLuong += change;
-    if (item.soLuong <= 0) removeItem(index);
+const capNhatSoLuong = ({ index, change }) => { 
+  const sanPham = cacSanPhamTrongGio.value[index];
+  if (sanPham) {
+    sanPham.soLuong += change;
+    if (sanPham.soLuong <= 0) xoaSanPham(index);
   }
 };
 
-// Xóa 1 dòng
-const removeItem = (index) => {
-  cartItems.value.splice(index, 1);
+const xoaSanPham = (viTri) => {
+  cacSanPhamTrongGio.value.splice(viTri, 1);
 };
 
-// Xóa sạch giỏ
-const clearCart = () => {
-  if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
-    cartItems.value = [];
+const xoaGioHang = () => {
+  if (cacSanPhamTrongGio.value.length === 0) return;
+
+  Swal.fire({
+    title: 'Xác nhận xóa?',
+    text: "Toàn bộ thuốc trong giỏ sẽ bị loại bỏ",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Xoá',
+    cancelButtonText: 'Hoàn tác'
+  }).then((ketQua) => {
+    if (ketQua.isConfirmed) {
+      cacSanPhamTrongGio.value = [];
+      Swal.fire(
+        'Đã xóa!',
+        'Giỏ hàng của bạn hiện đang trống.',
+        'success'
+      );
+    }
+  });
+};
+
+
+// OPEN INVOICE
+const moHoaDon = (chiTietThanhToan) => {
+  if (cacSanPhamTrongGio.value.length === 0) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Giỏ hàng trống',
+      text: 'Vui lòng chọn ít nhất một loại thuốc để thanh toán!',
+      confirmButtonColor: '#3085d6'
+    });
+    return;
+  }
+
+  duLieuHoaDon.maHd = maDonHang.value;
+  duLieuHoaDon.thoiGian = new Date().toLocaleString('vi-VN');
+  duLieuHoaDon.cartItems = [...cacSanPhamTrongGio.value];
+  duLieuHoaDon.tongTienHang = tongTienHang.value;
+  duLieuHoaDon.giamGia = chiTietThanhToan.giamGia;
+  duLieuHoaDon.canTra = chiTietThanhToan.khachCanTra;
+  duLieuHoaDon.phuongThuc = chiTietThanhToan.phuongThuc === 'tien-mat' ? 'Tiền mặt' : 'Chuyển khoản';
+  duLieuHoaDon._chiTietThanhToan = chiTietThanhToan;
+
+  const phanTuModal = document.getElementById('modalHoaDon');
+  if (phanTuModal) {
+    const modalCuaToi = window.bootstrap.Modal.getOrCreateInstance(phanTuModal);
+    modalCuaToi.show();
   }
 };
 
-// Mở hóa đơn (Khi bấm F10 ở ThanhToan.vue)
-const openInvoice = (paymentDetail) => {
-  invoiceData.maHd = maDonHang.value;
-  invoiceData.thoiGian = new Date().toLocaleString('vi-VN');
-  invoiceData.cartItems = [...cartItems.value];
-  invoiceData.tongTienHang = totalAmount.value;
-  invoiceData.giamGia = paymentDetail.giamGia;
-  invoiceData.canTra = paymentDetail.khachCanTra;
-  invoiceData.phuongThuc = paymentDetail.phuongThuc === 'tien-mat' ? 'Tiền mặt' : 'Chuyển khoản';
-  
-  // Kích hoạt Modal bằng Bootstrap (Nếu dùng jQuery)
-  // eslint-disable-next-line no-undef
-  $('#modalHoaDon').modal('show');
+// CALL API THANH TOÁN
+const goiApiThanhToan = async (chiTietThanhToan) => {
+  if (cacSanPhamTrongGio.value.length === 0) return;
+
+  try {
+    const dto = {
+      maKhachHang: 0,
+      phuongThucThanhToan: chiTietThanhToan.phuongThuc === 'tien-mat' ? 'tienmat' : 'chuyenkhoan',
+      giamGia: chiTietThanhToan.giamGia || 0,
+      chiTiet: cacSanPhamTrongGio.value.map(sanPham => ({
+        maLo: sanPham.loHangSelected,
+        maDVT: sanPham.maDvtSelected,
+        soLuong: sanPham.soLuong,
+        giaBan: sanPham.giaBan
+      }))
+    };
+
+    const ketQua = await axios.post(
+      'https://localhost:7070/api/BanHang/thanh-toan',
+      dto
+    );
+
+    if (ketQua.data.success) {
+      Swal.fire({
+        title: 'Thành công!',
+        text: `Hóa đơn ${ketQua.data.maDonHang} đã được lưu hệ thống.`,
+        icon: 'success',
+        confirmButtonText: 'Đóng',
+        confirmButtonColor: '#28a745',
+        timer: 2500,
+        timerProgressBar: true
+      });
+
+      datLaiTrang();
+    }
+  } catch (loi) {
+    console.error(loi);
+    Swal.fire({
+      title: 'Lỗi thanh toán',
+      text: loi.response?.data?.message || 'Không thể kết nối Server, vui lòng thử lại!',
+      icon: 'error',
+      confirmButtonText: 'Kiểm tra lại'
+    });
+  }
 };
 
-// Reset sau khi thanh toán xong
-const resetPage = () => {
-  cartItems.value = [];
+const xuLyHoanThanhThanhToan = () => {
+  goiApiThanhToan(duLieuHoaDon._chiTietThanhToan);
+};
+
+const datLaiTrang = () => {
+  cacSanPhamTrongGio.value = [];
   maDonHang.value = 'POS-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  // eslint-disable-next-line no-undef
-  $('.modal').modal('hide');
-};
+  const phanTuModal = document.getElementById('modalHoaDon');
+  if (phanTuModal) {
+    const phienBanModal = window.bootstrap.Modal.getInstance(phanTuModal);
+    if (phienBanModal) {
+      phienBanModal.hide();
+    }
+  }
 
+  const nenModal = document.querySelector('.modal-backdrop');
+  if (nenModal) {
+    nenModal.remove();
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+};
 </script>
 
 <style scoped>
-/* Gắn CSS đặc thù của trang POS */
 @import "../../../assets/css_admin/pos.css";
 
-/* Bổ sung một số style để giao diện cân đối hơn trong Layout Admin */
 .pos-root {
   padding-top: 1rem;
   padding-bottom: 2rem;
