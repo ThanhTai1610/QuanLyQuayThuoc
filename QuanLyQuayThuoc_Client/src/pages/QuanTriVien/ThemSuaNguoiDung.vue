@@ -138,7 +138,6 @@ const handleLuu = async () => {
           <label>Vai trò</label>
           <select v-model="form.maVaiTro" class="form-control">
             <option :value="2">Nhân viên</option>
-            <option :value="3">Khách hàng</option>
           </select>
         </div>
       </div>

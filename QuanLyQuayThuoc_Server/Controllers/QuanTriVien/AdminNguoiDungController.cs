@@ -53,20 +53,25 @@ namespace QuanLyQuayThuoc.Controllers.QuanTriVien
         {
             try
             {
-                // 1. Tạo đối tượng mới, chỉ gán các trường cần thiết
+                // 1. Kiểm tra xem Email đã tồn tại chưa (Tránh lỗi trùng Unique trong DB)
+                var exists = await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email);
+                if (exists) return BadRequest(new { message = "Email này đã được sử dụng!" });
+
+                // 2. Tạo đối tượng mới hoàn toàn "sạch"
                 var nhanVienMoi = new NguoiDung
                 {
-                    HoTen = model.HoTen ?? "Chưa đặt tên", // Tránh lỗi null HoTen
+                    HoTen = model.HoTen ?? "Nhân viên mới",
                     Email = model.Email,
                     SoDienThoai = model.SoDienThoai,
-                    MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau), // Mã hóa mật khẩu
-                    MaVaiTro = 2, // Gán cứng là Nhân viên
+                    // Sử dụng BCrypt để băm mật khẩu (Nhớ cài gói NuGet BCrypt.Net-Next)
+                    MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau ?? "123456"),
+                    MaVaiTro = 2, // Mặc định là nhân viên
                     TrangThai = "Hoạt động",
                     NgayTao = DateTime.Now,
-                    GioiTinh = model.GioiTinh ?? "Nam"
+                    GioiTinh = model.GioiTinh ?? "Nam",
+                    // Đảm bảo MaNguoiDung không được gán để DB tự tăng
                 };
 
-                // 2. Chỉ add đối tượng sạch này vào DB
                 _context.NguoiDungs.Add(nhanVienMoi);
                 await _context.SaveChangesAsync();
 
@@ -74,9 +79,9 @@ namespace QuanLyQuayThuoc.Controllers.QuanTriVien
             }
             catch (Exception ex)
             {
-                // Trả về lỗi chi tiết để debug dễ hơn
-                var innerException = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return BadRequest(new { message = "Lỗi DB: " + innerException });
+                // Lấy lỗi chi tiết nhất từ SQL Server
+                var error = ex.InnerException?.Message ?? ex.Message;
+                return StatusCode(500, new { message = "Lỗi Database: " + error });
             }
         }
         // 2. Lấy chi tiết 1 người dùng
@@ -142,5 +147,7 @@ namespace QuanLyQuayThuoc.Controllers.QuanTriVien
                 message = "Cập nhật thành công"
             });
         }
+
+
     }
 }
