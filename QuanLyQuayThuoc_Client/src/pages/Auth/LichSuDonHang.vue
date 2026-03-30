@@ -70,9 +70,9 @@
                       <div v-if="don.soSanPhamKhac > 0" class="small text-muted">
                         +{{ don.soSanPhamKhac }} sản phẩm khác
                       </div>
-                      <router-link :to="`/don-hang/${don.maDonHang}`" class="btn btn-link btn-sm p-0 mt-1">
+                      <button class="btn btn-link btn-sm p-0 mt-1" @click="moXemChiTiet(don.maDonHang)">
                         Xem chi tiết
-                      </router-link>
+                      </button>
                     </div>
                     <div class="order-summary text-end">
                       <div class="text-muted small">x{{ don.soLuong }} {{ don.donVi }}</div>
@@ -94,6 +94,57 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="modalChiTiet" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" v-if="chiTiet">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title fw-bold">Chi tiết đơn hàng #{{ chiTiet.maDonHang }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-3 pb-3 border-bottom">
+              <div class="col-md-6">
+                <p class="mb-1 text-muted small text-uppercase fw-bold">Địa chỉ nhận hàng</p>
+                <p class="mb-0 fw-bold text-primary">{{ chiTiet.hoTenNguoiNhan || 'Người nhận' }}</p>
+                <p class="mb-0 small"><i class="icon-phone me-1"></i>{{ chiTiet.soDienThoaiNhan }}</p>
+                <p class="mb-0 small text-secondary"><i class="icon-room me-1"></i>{{ chiTiet.diaChiGiaoHang }}</p>
+              </div>
+              <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                <p class="mb-1 text-muted small text-uppercase fw-bold">Trạng thái</p>
+                <span class="badge mb-2" :class="bgTrangThai(chiTiet.trangThai)">{{ chiTiet.trangThai }}</span>
+                <p class="mb-0 small text-muted">Ngày đặt: {{ dinhDangNgay(chiTiet.ngayDat) }}</p>
+              </div>
+            </div>
+
+            <div class="product-list mt-3">
+              <div v-for="sp in chiTiet.sanPhams" :key="sp.tenThuoc" class="d-flex align-items-center mb-3 pb-2 border-bottom-dashed">
+                <img :src="getFullUrl(sp.hinhAnh)" class="rounded border" style="width: 60px; height: 60px; object-fit: cover;">
+                <div class="ms-3 flex-grow-1">
+                  <div class="fw-bold">{{ sp.tenThuoc }}</div>
+                  <div class="text-muted small">Số lượng: {{ sp.soLuong }} {{ sp.donVi }}</div>
+                </div>
+                <div class="text-end">
+                  <div class="small text-muted">{{ formatGia(sp.donGia) }}</div>
+                  <div class="fw-bold text-dark">{{ formatGia(sp.donGia * sp.soLuong) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-light d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <div class="text-muted small">Tổng cộng</div>
+              <div class="fw-bold text-primary fs-4">{{ formatGia(chiTiet.tongTien) }}</div>
+            </div>
+            <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+        <div class="modal-content py-5 text-center" v-else>
+           <div class="spinner-border text-primary mx-auto"></div>
+           <p class="mt-2 text-muted">Đang tải chi tiết...</p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -103,21 +154,22 @@ import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
 import Swal from 'sweetalert2';
 import AccountSidebar from '../../components/AccountSidebar.vue';
+import { Modal } from 'bootstrap'; 
 
 const router = useRouter();
 
-// State cho Sidebar (Dùng chung cấu trúc với trang HoSo)
+// State
 const nguoiDungSidebar = ref({ hoTen: '', soDienThoai: '', anhDaiDien: '' });
-
-// State cho Đơn hàng
 const donHang = ref([]);
+const chiTiet = ref(null); 
 const dangTai = ref(false);
 const tuKhoa = ref('');
 const tabHienTai = ref('');
+let modalInstance = null;
 
 const tabs = [
   { label: 'Tất cả',      value: '' },
-  { label: 'Chờ xử lý',   value: 'Đang xử lý' },
+  { label: 'Chờ xử lý',   value: 'Chờ xử lý' },
   { label: 'Đang giao',   value: 'Đang giao' },
   { label: 'Đã giao',     value: 'Đã giao' },
   { label: 'Đã hủy',      value: 'Đã hủy' },
@@ -125,25 +177,37 @@ const tabs = [
 
 const loadData = async () => {
   dangTai.value = true;
-  
-  // 1. Lấy thông tin User để hiện ảnh đại diện (Không để đơn hàng làm lỗi cái này)
   try {
-    const resUser = await axiosClient.get('/HoSo/thong-tin');
-    // Lưu ý: Kiểm tra xem resUser có .data không tùy vào cấu hình axios của bạn
+    const [resUser, resDon] = await Promise.all([
+      axiosClient.get('/HoSo/thong-tin'),
+      axiosClient.get('/DonHangKhach/cua-toi')
+    ]);
     nguoiDungSidebar.value = resUser.data || resUser;
-  } catch (err) {
-    console.error('Lỗi lấy profile:', err);
-  }
-
-  // 2. Lấy đơn hàng (Nếu lỗi 404 cũng không sao, ảnh vẫn đã hiện ở trên)
-  try {
-    const resDon = await axiosClient.get('/DonHang/cua-toi');
     donHang.value = resDon.data || resDon;
   } catch (err) {
-    console.error('Lỗi lấy đơn hàng:', err);
-    donHang.value = []; // Gán mảng rỗng để giao diện không bị crash
+    console.error('Lỗi tải dữ liệu:', err);
+    if (err.response?.status === 401) router.push('/auth/dang-nhap');
   } finally {
     dangTai.value = false;
+  }
+};
+
+const moXemChiTiet = async (id) => {
+  chiTiet.value = null; // Hiển thị spinner loading trong modal
+  
+  if (!modalInstance) {
+    modalInstance = new Modal(document.getElementById('modalChiTiet'));
+  }
+  modalInstance.show();
+
+  try {
+    // Chỉ dùng /DonHangKhach/id vì axiosClient đã cấu hình tiền tố /api
+    const res = await axiosClient.get(`DonHangKhach/${id}`); 
+    chiTiet.value = res.data;
+  } catch (err) {
+    console.error("Lỗi gọi API chi tiết:", err);
+    modalInstance.hide();
+    Swal.fire('Lỗi', 'Không thể lấy thông tin đơn hàng', 'error');
   }
 };
 
@@ -158,35 +222,45 @@ const donHangDaLoc = computed(() =>
   })
 );
 
-// Helpers
 const getFullUrl = (path) => {
-  if (!path) return 'https://via.placeholder.com/80';
-  return path.startsWith('http') ? path : `https://localhost:7070${path}`;
+  if (!path) return '/img/default-product.png';
+  if (path.startsWith('http')) return path;
+  // Thêm tiền tố /uploads/ nếu database chỉ lưu tên file
+  const prefix = path.startsWith('/') ? '' : '/uploads/';
+  return `https://localhost:7070${prefix}${path}`;
 };
 
-const dinhDangNgay = (val) => val ? new Date(val).toLocaleDateString('vi-VN') : '';
+const dinhDangNgay = (val) => {
+  if (!val) return '---';
+  return new Date(val).toLocaleDateString('vi-VN', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+};
 
-const formatGia = (value) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+const formatGia = (value) => 
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
 
-const bgTrangThai = (trangThai) => ({
-  'bg-success': trangThai === 'Đã giao',
-  'bg-primary': trangThai === 'Đang giao',
-  'bg-warning text-dark': trangThai === 'Đang xử lý',
-  'bg-danger':  trangThai === 'Đã hủy',
-  'bg-secondary': trangThai === 'Trả hàng',
-});
+const bgTrangThai = (trangThai) => {
+  switch (trangThai) {
+    case 'Đã giao': return 'bg-success';
+    case 'Đang giao': return 'bg-info text-white';
+    case 'Chờ xử lý': return 'bg-warning text-dark';
+    case 'Đã hủy': return 'bg-danger';
+    default: return 'bg-secondary text-white';
+  }
+};
 
-const muaLai = (don) => {
-  // Logic mua lại (Ví dụ: Chuyển hướng sang trang sản phẩm hoặc thêm thẳng vào giỏ)
+const muaLai = async (don) => {
   Swal.fire({
     icon: 'success',
     title: 'Đã thêm vào giỏ hàng',
-    text: `Đang chuẩn bị đơn hàng cho ${don.tenSanPham}`,
-    timer: 1500,
-    showConfirmButton: false
+    text: `Đơn hàng #${don.maDonHang} đã được thêm lại.`,
+    showConfirmButton: true,
+    confirmButtonText: 'Xem giỏ hàng'
+  }).then((result) => {
+    if (result.isConfirmed) router.push('/gio-hang');
   });
-  router.push('/gio-hang');
 };
 
 const dangXuat = () => {
@@ -229,5 +303,8 @@ onMounted(loadData);
   color: #007bff;
   border-bottom: 2px solid #007bff;
   font-weight: bold;
+}
+.border-bottom-dashed {
+  border-bottom: 1px dashed #dee2e6;
 }
 </style>
