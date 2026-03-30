@@ -92,62 +92,57 @@ namespace QuanLyQuayThuoc.Controllers.QuanTriVien
         [HttpPost("luu")]
         public async Task<IActionResult> LuuNguoiDung([FromBody] NguoiDung model)
         {
-            if (model.MaNguoiDung == 0) // Trường hợp Thêm mới
+            if (model.MaNguoiDung == 0)
             {
-                if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
-                    return BadRequest("Email này đã tồn tại trên hệ thống.");
-
-                // Hash mật khẩu bảo mật
                 model.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau);
                 model.NgayTao = DateTime.Now;
                 _context.NguoiDungs.Add(model);
             }
-            else // Trường hợp Chỉnh sửa
+            else
             {
-                var existingUser = await _context.NguoiDungs.FindAsync(model.MaNguoiDung);
-                if (existingUser == null) return NotFound();
-
-                existingUser.HoTen = model.HoTen;
-                existingUser.SoDienThoai = model.SoDienThoai;
-                existingUser.MaVaiTro = model.MaVaiTro;
-                existingUser.TrangThai = model.TrangThai;
-                existingUser.AnhDaiDien = model.AnhDaiDien;
-
-                // Nếu admin nhập mật khẩu mới thì mới hash và cập nhật
+                var user = await _context.NguoiDungs.FindAsync(model.MaNguoiDung);
+                user.HoTen = model.HoTen;
+                user.SoDienThoai = model.SoDienThoai;
+                user.MaVaiTro = model.MaVaiTro;
+                user.TrangThai = model.TrangThai;
                 if (!string.IsNullOrEmpty(model.MatKhau) && model.MatKhau.Length < 30)
-                {
-                    existingUser.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau);
-                }
+                    user.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau);
+            }
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Lưu thành công" });
+        }
+
+        public class DoiTrangThaiRequest
+        {
+            public string LyDo { get; set; }
+        }
+
+        [HttpPut("doi-trang-thai/{id}")]
+        public async Task<IActionResult> DoiTrangThai(int id, [FromBody] DoiTrangThaiRequest request)
+        {
+            var user = await _context.NguoiDungs.FindAsync(id);
+            if (user == null) return NotFound(new { message = "Không tìm thấy người dùng" });
+
+            // Đảo trạng thái
+            if (user.TrangThai == "Hoạt động")
+            {
+                user.TrangThai = "Bị khóa";
+                // user.GhiChu = "Bị khóa vì: " + request.LyDo;
+            }
+            else
+            {
+                user.TrangThai = "Hoạt động";
             }
 
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Lưu dữ liệu thành công!" });
+
+            return Ok(new
+            {
+                trangThaiMoi = user.TrangThai,
+                message = "Cập nhật thành công"
+            });
         }
 
-        // 4. Khóa hoặc Mở khóa tài khoản
-        [HttpPut("doi-trang-thai/{id}")]
-        public async Task<IActionResult> DoiTrangThai(int id)
-        {
-            var user = await _context.NguoiDungs.FindAsync(id);
-            if (user == null) return NotFound();
-
-            user.TrangThai = (user.TrangThai == "Hoạt động") ? "Bị khóa" : "Hoạt động";
-            await _context.SaveChangesAsync();
-
-            return Ok(new { trangThaiMoi = user.TrangThai });
-        }
-
-        // 5. Xóa người dùng (Cẩn thận: Thường nên dùng Khóa thay vì Xóa nếu đã có đơn hàng)
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Xoa(int id)
-        {
-            var user = await _context.NguoiDungs.FindAsync(id);
-            if (user == null) return NotFound();
-
-            // Kiểm tra nếu là Admin cuối cùng thì không cho xóa (tùy logic shop Tài)
-            _context.NguoiDungs.Remove(user);
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Đã xóa người dùng khỏi hệ thống." });
-        }
+        
     }
 }

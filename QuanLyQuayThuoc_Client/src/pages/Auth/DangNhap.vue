@@ -1,7 +1,5 @@
 <template>
-    
   <div class="site-section auth-section">
-    
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-5">
@@ -9,6 +7,10 @@
             <h2 class="mb-4 text-center">Đăng nhập</h2>
             <p class="mb-4 text-center text-muted">Vui lòng đăng nhập để tiếp tục mua sắm tại Pharmative.</p>
             
+            <div v-if="loi" class="alert alert-danger py-2 mb-3 small text-center">
+              <i class="fas fa-exclamation-circle mr-1"></i> {{ loi }}
+            </div>
+
             <form @submit.prevent="handleLogin">
               <div class="form-group">
                 <label for="email">Email</label>
@@ -18,6 +20,7 @@
                   class="form-control" 
                   id="email" 
                   placeholder="Nhập địa chỉ email"
+                  :disabled="dangGui"
                   required
                 >
               </div>
@@ -29,6 +32,7 @@
                   class="form-control" 
                   id="password" 
                   placeholder="Nhập mật khẩu"
+                  :disabled="dangGui"
                   required
                 >
               </div>
@@ -46,7 +50,10 @@
                 <router-link to="/auth/quen-mat-khau" class="small">Quên mật khẩu?</router-link>
               </div>
               
-              <button type="submit" class="btn btn-primary btn-block py-2">Đăng nhập</button>
+              <button type="submit" class="btn btn-primary btn-block py-2 font-weight-bold" :disabled="dangGui">
+                <span v-if="dangGui"><i class="fas fa-spinner fa-spin mr-2"></i> ĐANG XỬ LÝ...</span>
+                <span v-else>ĐĂNG NHẬP</span>
+              </button>
             </form>
             
             <p class="mt-4 mb-0 text-center small">
@@ -64,10 +71,12 @@
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
+import Swal from 'sweetalert2';
+import { authState } from '../../api/auth'; // Import để cập nhật tên lên Header ngay lập tức
 
 const router = useRouter();
-const loi = ref(''); // Hiển thị thông báo lỗi lên màn hình
-const dangGui = ref(false); // Trạng thái loading
+const loi = ref(''); 
+const dangGui = ref(false); 
 
 const auth = reactive({
   email: '',
@@ -76,28 +85,15 @@ const auth = reactive({
 });
 
 const handleLogin = async () => {
-  // 1. Reset trạng thái
   loi.value = '';
   const emailTrim = auth.email.trim();
 
-  // 2. Validate phía Client (Chặn trước khi gọi API)
-  if (!emailTrim) {
-    loi.value = 'Vui lòng nhập email.';
+  // Validate đơn giản phía Client
+  if (!emailTrim || auth.password.length < 6) {
+    loi.value = 'Vui lòng kiểm tra lại Email và Mật khẩu (tối thiểu 6 ký tự).';
     return;
   }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(emailTrim)) {
-    loi.value = 'Email không đúng định dạng.';
-    return;
-  }
-
-  if (auth.password.length < 6) {
-    loi.value = 'Mật khẩu phải có ít nhất 6 ký tự.';
-    return;
-  }
-
-  // 3. Bắt đầu gửi dữ liệu
   dangGui.value = true;
   try {
     const response = await axiosClient.post('/NguoiDung/dang-nhap', {
@@ -105,41 +101,41 @@ const handleLogin = async () => {
       matKhau: auth.password
     });
 
-    if (response.token) {
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
-      
-      const roleId = response.user.maVaiTro; 
+    // Bóc tách dữ liệu linh hoạt (phòng trường hợp axiosClient trả về response.data)
+    const dataRes = response.data || response;
 
-      // Điều hướng dựa trên vai trò
+    if (dataRes.token) {
+      // 1. Lưu vào LocalStorage
+      localStorage.setItem('token', dataRes.token);
+      localStorage.setItem('user', JSON.stringify(dataRes.user));
+      
+      // 2. Cập nhật State Global (Để Header đổi chữ "Đăng nhập" thành "Chào Tài")
+      authState.login(dataRes.user);
+
+      // 3. Thông báo thành công giống Đăng xuất
+      await Swal.fire({
+        title: 'Đăng nhập thành công!',
+        text: `Chào mừng ${dataRes.user.hoTen || 'bạn'} quay trở lại!`,
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      // 4. Điều hướng dựa trên vai trò
+      const roleId = dataRes.user.maVaiTro; 
       if (roleId === 1) router.push('/admin/thong-ke');
       else if (roleId === 2) router.push('/nhan-vien/ban-hang');
       else router.push('/');
+      
     } else {
-      loi.value = "Không nhận được mã xác thực từ máy chủ.";
+      loi.value = "Máy chủ không phản hồi mã xác thực.";
     }
   } catch (error) {
-    // Hiển thị lỗi từ Backend trả về
     loi.value = error.response?.data?.message || "Email hoặc mật khẩu không chính xác!";
+    // Thông báo lỗi kiểu SweetAlert nếu muốn
+    Swal.fire('Thất bại', loi.value, 'error');
   } finally {
     dangGui.value = false;
   }
 };
 </script>
-
-<style scoped>
-/* Giữ nguyên các class từ login.css của bạn */
-.auth-section {
-  padding: 80px 0;
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-}
-
-.auth-card {
-  background: #fff;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-}
-</style>

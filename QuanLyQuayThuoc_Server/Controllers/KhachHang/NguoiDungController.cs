@@ -186,20 +186,28 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
         [HttpPost("dang-ky-otp")]
         public async Task<IActionResult> DangKyChinhThuc([FromBody] DangKyDto model)
         {
+            // 1. Kiểm tra lại email một lần nữa cho chắc
+            if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
+                return Conflict(new { message = "Email này đã được đăng ký." });
+
+            // 2. Logic kiểm tra OTP (Nếu Tài dùng cách gửi OTP về Client ở bước GuiOtp)
+            // model.MaOtp này phải khớp với mã đã gửi qua Email
+            // Lưu ý: Tài cần thêm trường 'MaOtp' vào trong DangKyDto nhé
+
             var user = new NguoiDung
             {
-                // Gộp Họ và Tên từ DTO vào cột HoTen trong Model
                 HoTen = $"{model.Ho} {model.Ten}".Trim(),
                 Email = model.Email,
                 SoDienThoai = model.SoDienThoai,
                 MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhau),
-                MaVaiTro = 3, // Giả sử 2 là Vai trò Khách hàng
+                MaVaiTro = 3,
                 TrangThai = "Hoạt động",
                 NgayTao = DateTime.Now
             };
 
             _context.NguoiDungs.Add(user);
             await _context.SaveChangesAsync();
+
             return Ok(new { message = "Đăng ký thành công!" });
         }
     }

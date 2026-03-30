@@ -1,100 +1,73 @@
 <template>
   <div class="site-wrap">
-    <div class="account-breadcrumb">
-      <div class="container">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><router-link to="/">Trang chủ</router-link></li>
-            <li class="breadcrumb-item"><router-link to="/ho-so">Cá nhân</router-link></li>
-            <li class="breadcrumb-item active" aria-current="page">Thông tin cá nhân</li>
-          </ol>
-        </nav>
-      </div>
-    </div>
-
-    <div class="account-wrapper">
+    <div class="account-wrapper py-5 bg-light">
       <div class="container">
         <div class="row">
-          <div class="col-lg-3 mb-4 mb-lg-0">
-            <div class="account-sidebar">
-              <div class="account-user-card">
-                <div class="account-avatar" @click="moModalTuyChonAnh" style="cursor: pointer">
-                  <img v-if="nguoiDung.anhDaiDien" 
-                  :src="getFullUrl(nguoiDung.anhDaiDien)" 
-                  class="img-fluid rounded-circle" 
-                  alt="Avatar">
-                  <span v-else class="icon-user"></span>
-                </div>
-                <div class="account-user-info">
-                  <div class="account-user-name">{{ nguoiDung.hoTen || 'Đang tải...' }}</div>
-                  <div class="account-user-phone">{{ nguoiDung.soDienThoai }}</div>
-                </div>
-              </div>
-              <ul class="account-menu list-unstyled">
-                <li class="active">
-                  <router-link to="/ho-so"><span class="icon-user mr-2"></span> Thông tin cá nhân</router-link>
-                </li>
-                <li>
-                  <router-link to="/don-hang"><span class="icon-list mr-2"></span> Đơn hàng của tôi</router-link>
-                </li>
-                <li>
-                  <router-link to="/dia-chi"><span class="icon-map-marker mr-2"></span> Quản lý sổ địa chỉ</router-link>
-                </li>
-                <li>
-                  <a href="#" @click.prevent="dangXuat"><span class="icon-exit_to_app mr-2"></span> Đăng xuất</a>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <AccountSidebar 
+            :user="nguoiDung" 
+            activeMenu="profile" 
+            activeTitle="Thông tin cá nhân"
+            @open-avatar-modal="moModalTuyChonAnh"
+            @logout="dangXuat"
+          />
 
           <div class="col-lg-9">
-            <div class="account-content-card">
-              <div class="account-content-header">
-                <h2 class="mb-0">Thông tin cá nhân</h2>
+            <div class="account-content-card shadow-sm border-0 bg-white">
+              <div class="account-content-header border-bottom p-4 d-flex justify-content-between align-items-center">
+                <div>
+                  <h2 class="mb-0 h4 font-weight-bold text-dark">Hồ Sơ Của Tôi</h2>
+                  <p class="text-muted small mb-0">Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+                </div>
+                <span class="badge bg-soft-primary text-primary px-3 py-2 rounded-pill">
+                  <i class="fa fa-shield-alt me-1"></i> {{ nguoiDung.tenVaiTro }}
+                </span>
               </div>
-              <div class="account-profile-body">
-                <div class="account-profile-avatar text-center mb-4">
-                  <div class="avatar-circle" @click="moModalTuyChonAnh" style="cursor: pointer">
-                    <img v-if="nguoiDung.anhDaiDien" 
-                    :src="getFullUrl(nguoiDung.anhDaiDien)" 
-                    class="img-fluid rounded-circle">
-                    <span v-else class="icon-user"></span>
+              
+              <div class="account-profile-body p-4">
+                <div class="account-profile-avatar text-center mb-5">
+                  <div class="avatar-wrapper position-relative d-inline-block">
+                    <div class="avatar-circle shadow-sm" @click="moModalTuyChonAnh">
+                      <img v-if="nguoiDung.anhDaiDien" 
+                           :src="getFullUrl(nguoiDung.anhDaiDien)" 
+                           class="img-fluid rounded-circle">
+                      <div v-else class="avatar-placeholder">
+                        <i class="fa fa-user text-secondary"></i>
+                      </div>
+                    </div>
+                    <button class="btn-change-avatar shadow" @click="moModalTuyChonAnh" title="Đổi ảnh đại diện">
+                      <i class="fa fa-camera"></i>
+                    </button>
+                  </div>
+                  <h5 class="mt-3 font-weight-bold mb-0">{{ nguoiDung.hoTen }}</h5>
+                  <p class="text-muted small">{{ nguoiDung.email }}</p>
+                </div>
+                
+                <div class="info-grid mb-5">
+                  <div class="row g-0 border-bottom py-3">
+                    <div class="col-sm-4 text-muted"><i class="fa fa-id-card me-2"></i> Họ và tên</div>
+                    <div class="col-sm-8 font-weight-bold text-dark text-sm-end">{{ nguoiDung.hoTen }}</div>
+                  </div>
+                  <div class="row g-0 border-bottom py-3">
+                    <div class="col-sm-4 text-muted"><i class="fa fa-phone me-2"></i> Số điện thoại</div>
+                    <div class="col-sm-8 text-dark text-sm-end">{{ nguoiDung.soDienThoai }}</div>
+                  </div>
+                  <div class="row g-0 border-bottom py-3">
+                    <div class="col-sm-4 text-muted"><i class="fa fa-envelope me-2"></i> Email</div>
+                    <div class="col-sm-8 text-dark text-sm-end">{{ nguoiDung.email }}</div>
+                  </div>
+                  <div class="row g-0 border-bottom py-3">
+                    <div class="col-sm-4 text-muted"><i class="fa fa-venus-mars me-2"></i> Giới tính</div>
+                    <div class="col-sm-8 text-sm-end">{{ nguoiDung.gioiTinh || 'Chưa cập nhật' }}</div>
+                  </div>
+                  <div class="row g-0 border-bottom py-3">
+                    <div class="col-sm-4 text-muted"><i class="fa fa-calendar-alt me-2"></i> Ngày sinh</div>
+                    <div class="col-sm-8 text-primary text-sm-end font-weight-bold">{{ dinhDangNgay(nguoiDung.ngaySinh) }}</div>
                   </div>
                 </div>
-                <div class="table-responsive">
-                  <table class="table account-profile-table">
-                    <tbody>
-                      <tr>
-                        <td class="label-col">Họ và tên</td>
-                        <td class="value-col text-right">{{ nguoiDung.hoTen }}</td>
-                      </tr>
-                      <tr>
-                        <td class="label-col">Số điện thoại</td>
-                        <td class="value-col text-right">{{ nguoiDung.soDienThoai }}</td>
-                      </tr>
-                      <tr>
-                        <td class="label-col">Email</td>
-                        <td class="value-col text-right">{{ nguoiDung.email }}</td>
-                      </tr>
-                      <tr>
-                        <td class="label-col">Giới tính</td>
-                        <td class="value-col text-right">{{ nguoiDung.gioiTinh || 'Chưa cập nhật' }}</td>
-                      </tr>
-                      <tr>
-                        <td class="label-col">Ngày sinh</td>
-                        <td class="value-col text-right text-primary">{{ dinhDangNgay(nguoiDung.ngaySinh) }}</td>
-                      </tr>
-                      <tr>
-                        <td class="label-col">Vai trò</td>
-                        <td class="value-col text-right"><span class="badge badge-info">{{ nguoiDung.tenVaiTro }}</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="text-center mt-4">
-                  <button type="button" class="btn btn-primary px-5 py-2 rounded-pill shadow" 
-                          data-bs-toggle="modal" data-bs-target="#modalChinhSua" @click="moModalCapNhat">
-                    Chỉnh sửa thông tin
+
+                <div class="text-center">
+                  <button class="btn btn-primary px-5 py-2 rounded-pill shadow" @click="moModalCapNhat">
+                    <i class="fa fa-edit me-2"></i> Chỉnh sửa thông tin
                   </button>
                 </div>
               </div>
@@ -106,84 +79,96 @@
 
     <div class="modal fade" id="modalTuyChonAnh" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-          <div class="modal-body p-0">
-            <div class="list-group list-group-flush text-center">
-              <button v-if="nguoiDung.anhDaiDien" class="list-group-item list-group-item-action py-3" @click="xemAnhFull">
-                Xem hình ảnh
-              </button>
-              <button class="list-group-item list-group-item-action py-3 text-primary font-weight-bold" @click="triggerUpload">
-                Chọn ảnh mới
-              </button>
-              <button v-if="nguoiDung.anhDaiDien" class="list-group-item list-group-item-action py-3 text-danger" @click="xuLyXoaAvatar">
-                Xóa ảnh hiện tại
-              </button>
-              <button class="list-group-item list-group-item-action py-3 text-secondary" data-bs-dismiss="modal">
-                Hủy
-              </button>
-            </div>
+        <div class="modal-content border-0 shadow-lg overflow-hidden" style="border-radius: 15px;">
+          <div class="list-group list-group-flush text-center">
+            <button v-if="nguoiDung.anhDaiDien" class="list-group-item list-group-item-action py-3 fw-bold" @click="xemAnhFull">
+              <i class="fa fa-image me-2 text-info"></i> Xem ảnh đại diện
+            </button>
+            <button class="list-group-item list-group-item-action py-3 text-primary fw-bold" @click="triggerUpload">
+              <i class="fa fa-upload me-2"></i> Chọn ảnh mới
+            </button>
+            <button v-if="nguoiDung.anhDaiDien" class="list-group-item list-group-item-action py-3 text-danger fw-bold" @click="xuLyXoaAvatar">
+              <i class="fa fa-trash-alt me-2"></i> Xóa ảnh hiện tại
+            </button>
+            <button class="list-group-item list-group-item-action py-3 text-secondary" data-bs-dismiss="modal">Hủy</button>
           </div>
         </div>
       </div>
     </div>
 
     <div class="modal fade" id="modalXemAnh" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content bg-transparent border-0">
           <div class="modal-body p-0 text-center position-relative">
-            <button type="button" class="close text-white position-absolute" style="top: -30px; right: 0; font-size: 2rem;" data-dismiss="modal">&times;</button>
-            <img :src="getFullUrl(nguoiDung.anhDaiDien)" class="img-fluid rounded shadow-lg" style="max-height: 85vh;">
+            <button type="button" class="btn-close btn-close-white position-absolute shadow" style="top: -40px; right: 0; z-index: 9999" data-bs-dismiss="modal"></button>
+            <img :src="getFullUrl(nguoiDung.anhDaiDien)" class="img-fluid rounded shadow-lg border border-white border-4" style="max-height: 80vh;">
           </div>
         </div>
       </div>
     </div>
 
-    <div class="modal fade" id="modalChinhSua" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalChinhSua" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Cập nhật thông tin cá nhân</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 15px;">
+          <div class="modal-header bg-light border-0 py-3">
+            <h5 class="modal-title font-weight-bold text-dark"><i class="fa fa-user-edit me-2 text-primary"></i> Cập nhật hồ sơ</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-          <div class="modal-body">
-            <form @submit.prevent="xuLyCapNhat">
-              <div class="form-group">
-                <label>Họ và tên</label>
-                <input type="text" class="form-control" v-model="formCapNhat.hoTen" @input="validateTen" :class="{'is-invalid': errors.hoTen}">
-                <small class="text-danger" v-if="errors.hoTen">{{ errors.hoTen }}</small>
+          <div class="modal-body p-4">
+            <form @submit.prevent="xuLyCapNhat" novalidate>
+              <div class="mb-3">
+                <label class="form-label small font-weight-bold text-uppercase text-muted">Họ và tên <span class="text-danger">*</span></label>
+                <div class="input-group has-validation">
+                  <span class="input-group-text bg-light border-end-0"><i class="fa fa-user text-muted"></i></span>
+                  <input type="text" class="form-control bg-light border-start-0" 
+                         v-model="formCapNhat.hoTen" 
+                         @blur="validateTen"
+                         :class="{'is-invalid': errors.hoTen}"
+                         placeholder="Nhập họ tên của bạn">
+                  <div class="invalid-feedback">{{ errors.hoTen }}</div>
+                </div>
               </div>
-              <div class="form-group">
-                <label>Email</label>
-                <input type="email" class="form-control" v-model="formCapNhat.email" @input="validateEmail" :class="{'is-invalid': errors.email}">
-                <small class="text-danger" v-if="errors.email">{{ errors.email }}</small>
-              </div>
-              <div class="form-group">
-                <label>Số điện thoại</label>
-                <input type="text" class="form-control" v-model="formCapNhat.soDienThoai" disabled>
-              </div>
-              <div class="form-group">
-                <label class="font-weight-bold">Giới tính</label>
-                <select class="form-control" v-model="formCapNhat.gioiTinh">
-                  <option value="Nam">Nam</option>
-                  <option value="Nữ">Nữ</option>
-                  <option value="Khác">Khác</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="font-weight-bold">Ngày sinh</label>
-                <input type="date" class="form-control" v-model="formCapNhat.ngaySinh">
-              </div>
-              <div class="text-right mt-4">
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                  
-                </button>
 
-                <button type="button" class="btn btn-secondary mr-2" data-bs-dismiss="modal">Hủy</button>
-                <button type="submit" class="btn btn-primary" :disabled="loading">
-                  {{ loading ? 'Đang lưu...' : 'Lưu thay đổi' }}
+              <div class="mb-3">
+                <label class="form-label small font-weight-bold text-uppercase text-muted">Email <span class="text-danger">*</span></label>
+                <div class="input-group has-validation">
+                  <span class="input-group-text bg-light border-end-0"><i class="fa fa-envelope text-muted"></i></span>
+                  <input type="email" class="form-control bg-light border-start-0" 
+                         v-model="formCapNhat.email" 
+                         @blur="validateEmail"
+                         :class="{'is-invalid': errors.email}"
+                         placeholder="example@gmail.com">
+                  <div class="invalid-feedback">{{ errors.email }}</div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label small font-weight-bold text-uppercase text-muted">Giới tính</label>
+                  <select class="form-select bg-light" v-model="formCapNhat.gioiTinh">
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label small font-weight-bold text-uppercase text-muted">Ngày sinh</label>
+                  <input type="date" class="form-control bg-light" 
+                         v-model="formCapNhat.ngaySinh"
+                         :max="maxDate">
+                </div>
+              </div>
+
+              <div class="alert alert-secondary border-0 small mt-2 py-2">
+                <i class="fa fa-info-circle me-1"></i> Số điện thoại đăng ký không thể thay đổi.
+              </div>
+
+              <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary py-2 fw-bold shadow-sm" :disabled="loading">
+                  <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  LƯU THÔNG TIN
                 </button>
+                <button type="button" class="btn btn-link text-decoration-none text-muted" data-bs-dismiss="modal">Hủy bỏ</button>
               </div>
             </form>
           </div>
@@ -196,74 +181,53 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient'; 
 import Swal from 'sweetalert2';
-// Import bootstrap để truy cập trực tiếp các Class Modal
 import * as bootstrap from 'bootstrap'; 
+import AccountSidebar from '../../components/AccountSidebar.vue';
 
-// --- KHAI BÁO BIẾN ---
-const loading = ref(false);
 const router = useRouter();
+const loading = ref(false);
 const fileInput = ref(null);
-
-const Toast = Swal.mixin({
-  toast: true,
-  position: 'top-end',
-  showConfirmButton: false,
-  timer: 3000,
-  timerProgressBar: true
-});
-
-const nguoiDung = ref({ 
-  maNguoiDung: null,
-  anhDaiDien: '', 
-  hoTen: '', 
-  soDienThoai: '', 
-  email: '', 
-  gioiTinh: '', 
-  ngaySinh: null, 
-  tenVaiTro: '' 
-});
-
-const formCapNhat = ref({ 
-  hoTen: '', 
-  email: '', 
-  soDienThoai: '', 
-  gioiTinh: '', 
-  ngaySinh: '' 
-});
-
 const errors = ref({ hoTen: '', email: '' });
 
-// --- UTILITIES ---
+// Profile data
+const nguoiDung = ref({ 
+  maNguoiDung: null, anhDaiDien: '', hoTen: '', soDienThoai: '', email: '', gioiTinh: '', ngaySinh: null, tenVaiTro: '' 
+});
+
+// Form data cho update
+const formCapNhat = ref({ hoTen: '', email: '', gioiTinh: '', ngaySinh: '' });
+
+// Toast notification
+const Toast = Swal.mixin({
+  toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true
+});
+
+// Giới hạn ngày sinh (không chọn tương lai)
+const maxDate = computed(() => new Date().toISOString().split('T')[0]);
+
+// --- Tải dữ liệu ---
+const taiThongTinHoSo = async () => {
+  try {
+    const data = await axiosClient.get('/HoSo/thong-tin');
+    if (data) nguoiDung.value = data;
+  } catch (err) {
+    if (err.response?.status === 401) {
+      localStorage.clear();
+      router.push('/auth/dang-nhap');
+    }
+  }
+};
+
+// --- Xử lý Ảnh đại diện ---
 const getFullUrl = (path) => {
   if (!path) return '';
   return path.startsWith('http') ? path : `https://localhost:7070${path}`;
 };
 
-const dinhDangNgay = (chuoi) => chuoi ? new Date(chuoi).toLocaleDateString('vi-VN') : 'Chưa cập nhật';
-
-// Hàm điều khiển Modal bằng Bootstrap Native để fix lỗi console
-// Cập nhật hàm toggleModal để chắc chắn hơn
-const toggleModal = (modalId, action) => {
-  const modalElement = document.getElementById(modalId);
-  if (modalElement) {
-    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-    if (action === 'show') {
-      modalInstance.show();
-    } else {
-      modalInstance.hide();
-      // Đôi khi backdrop bị kẹt, dòng này sẽ dọn dẹp nó
-      const backdrop = document.querySelector('.modal-backdrop');
-      if (backdrop) backdrop.remove();
-      document.body.classList.remove('modal-open');
-      document.body.style.paddingRight = '';
-    }
-  }
-};
-// --- XỬ LÝ ẢNH (AVATAR) ---
 const moModalTuyChonAnh = () => toggleModal('modalTuyChonAnh', 'show');
 
 const xemAnhFull = () => {
@@ -280,117 +244,82 @@ const xuLyUploadAvatar = async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
+  // Validate file size (ví dụ < 2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    Toast.fire({ icon: 'error', title: 'Ảnh không được vượt quá 2MB' });
+    return;
+  }
+
   const formData = new FormData();
   formData.append('File', file);
 
   try {
     loading.value = true;
-    // Gửi yêu cầu cập nhật ảnh đến server
     await axiosClient.put('/HoSo/cap-nhat-avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    
-    // Hiển thị thông báo khi thêm mới/cập nhật thành công
-    Toast.fire({ 
-      icon: 'success', 
-      title: 'Cập nhật ảnh đại diện thành công' 
-    });
-
-    // Tải lại thông tin để hiển thị ảnh mới trên giao diện
+    Toast.fire({ icon: 'success', title: 'Cập nhật ảnh đại diện thành công' });
     await taiThongTinHoSo();
-  } catch (loi) {
-    console.error("Lỗi upload:", loi);
-    Toast.fire({ 
-      icon: 'error', 
-      title: 'Không thể tải ảnh lên' 
-    });
+  } catch (err) {
+    Toast.fire({ icon: 'error', title: 'Lỗi khi tải ảnh lên' });
   } finally {
     loading.value = false;
-    event.target.value = ''; // Reset input file để có thể chọn lại cùng 1 file nếu muốn
+    event.target.value = ''; // Reset input
   }
 };
 
 const xuLyXoaAvatar = async () => {
-  // Đóng modal lựa chọn trước khi hiện hộp thoại xác nhận
   toggleModal('modalTuyChonAnh', 'hide');
-
-  const result = await Swal.fire({
+  const res = await Swal.fire({
     title: 'Xác nhận xóa?',
-    text: "Ảnh đại diện của bạn sẽ trở về mặc định.",
+    text: "Ảnh đại diện của bạn sẽ quay về mặc định",
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#d33',
-    confirmButtonText: 'Xóa ngay',
+    confirmButtonText: 'Có, xóa nó!',
     cancelButtonText: 'Hủy'
   });
 
-  if (result.isConfirmed) {
+  if (res.isConfirmed) {
     try {
-      loading.value = true;
-
-      // Gọi API xóa ảnh dựa trên mã người dùng
-      await axiosClient.delete(`/HoSo/xoa-avatar/${nguoiDung.value.maNguoiDung}`); 
-
-      // Hiển thị thông báo sau khi xác nhận xóa thành công
-      Toast.fire({ 
-        icon: 'success', 
-        title: 'Đã xóa ảnh đại diện thành công' 
-      });
-
-      // Tải lại dữ liệu để cập nhật lại avatar mặc định
-      await taiThongTinHoSo(); 
-    } catch (loi) {
-      console.error("Lỗi xóa avatar:", loi);
-      const message = loi.response?.data?.message || 'Lỗi khi thực hiện xóa ảnh';
-      Toast.fire({ 
-        icon: 'error', 
-        title: message 
-      });
-    } finally {
-      loading.value = false;
+      await axiosClient.delete(`/HoSo/xoa-avatar/${nguoiDung.value.maNguoiDung}`);
+      Toast.fire({ icon: 'success', title: 'Đã xóa ảnh đại diện' });
+      await taiThongTinHoSo();
+    } catch (err) {
+      Toast.fire({ icon: 'error', title: 'Không thể xóa ảnh' });
     }
   }
 };
 
-// --- XỬ LÝ DỮ LIỆU ---
-const taiThongTinHoSo = async () => {
-  try {
-    const data = await axiosClient.get('/HoSo/thong-tin');
-    if (data) {
-      nguoiDung.value = data;
-    }
-  } catch (loi) {
-    console.error("Lỗi lấy thông tin:", loi);
-    if (loi.response?.status === 401) {
-      router.push('/auth/dang-nhap');
-    }
-  }
-};
-
+// --- Xử lý Cập nhật thông tin ---
 const moModalCapNhat = () => {
   formCapNhat.value = { 
     ...nguoiDung.value, 
-    ngaySinh: nguoiDung.value.ngaySinh ? nguoiDung.value.ngaySinh.split('T')[0] : '' 
+    ngaySinh: nguoiDung.value.ngaySinh?.split('T')[0] || '' 
   };
-  errors.value = { hoTen: '', email: '' };
+  errors.value = { hoTen: '', email: '' }; // Reset lỗi
   toggleModal('modalChinhSua', 'show');
 };
 
 const validateTen = () => {
-  const regexTen = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỵỷỹýỳỷỹý\s]+$/;
-  errors.value.hoTen = !formCapNhat.value.hoTen?.trim() ? "Họ tên không được trống" : 
-                       !regexTen.test(formCapNhat.value.hoTen.trim()) ? "Tên không chứa số/ký tự đặc biệt" : "";
+  const val = formCapNhat.value.hoTen?.trim();
+  if (!val) errors.value.hoTen = "Họ và tên không được để trống";
+  else if (val.length < 5) errors.value.hoTen = "Vui lòng nhập đầy đủ họ và tên (ít nhất 5 ký tự)";
+  else errors.value.hoTen = "";
 };
 
 const validateEmail = () => {
-  const regexEmail = /^[^\s@]+@[^\s@]+\.(com|vn|net|edu|org)$/i;
-  errors.value.email = !formCapNhat.value.email?.trim() ? "Email không được trống" : 
-                        !regexEmail.test(formCapNhat.value.email.trim()) ? "Email sai định dạng" : "";
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const val = formCapNhat.value.email?.trim();
+  if (!val) errors.value.email = "Email không được để trống";
+  else if (!regex.test(val)) errors.value.email = "Định dạng email không hợp lệ";
+  else errors.value.email = "";
 };
 
 const xuLyCapNhat = async () => {
   validateTen(); 
   validateEmail();
+
   if (errors.value.hoTen || errors.value.email) return;
 
   try {
@@ -400,27 +329,48 @@ const xuLyCapNhat = async () => {
       maNguoiDung: nguoiDung.value.maNguoiDung 
     });
     
-    Swal.fire({ icon: 'success', title: 'Thành công!', timer: 1500, showConfirmButton: false });
+    Swal.fire({ 
+      icon: 'success', title: 'Thành công', 
+      text: 'Thông tin hồ sơ đã được cập nhật', 
+      timer: 1500, showConfirmButton: false 
+    });
+    
     await taiThongTinHoSo();
     toggleModal('modalChinhSua', 'hide');
-  } catch (loi) {
-    Swal.fire({ icon: 'error', title: 'Thất bại', text: loi.response?.data?.message || "Có lỗi xảy ra" });
+  } catch (err) {
+    Swal.fire({ 
+      icon: 'error', title: 'Thất bại', 
+      text: err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại' 
+    });
   } finally {
     loading.value = false;
   }
 };
 
+// --- Tiện ích ---
+const toggleModal = (modalId, action) => {
+  const el = document.getElementById(modalId);
+  if (el) {
+    const instance = bootstrap.Modal.getOrCreateInstance(el);
+    action === 'show' ? instance.show() : instance.hide();
+  }
+};
+
+const dinhDangNgay = (val) => {
+  if (!val) return 'Chưa cập nhật';
+  return new Date(val).toLocaleDateString('vi-VN');
+};
+
 const dangXuat = () => {
   Swal.fire({
-    title: 'Đăng xuất?',
-    icon: 'warning',
+    title: 'Bạn muốn đăng xuất?',
+    icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Đồng ý',
-    cancelButtonText: 'Hủy'
+    cancelButtonText: 'Ở lại'
   }).then((result) => {
     if (result.isConfirmed) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.clear();
       router.push('/auth/dang-nhap');
     }
   });
@@ -430,39 +380,38 @@ onMounted(taiThongTinHoSo);
 </script>
 
 <style scoped>
-/* CSS cho avatar */
-.avatar-circle, .account-avatar {
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f8f9fa;
-  border: 2px solid #eee;
+/* Layout */
+.account-wrapper { min-height: 80vh; }
+.account-content-card { border-radius: 15px; }
+
+/* Avatar */
+.avatar-circle {
+  width: 140px; height: 140px; margin: 0 auto;
+  border-radius: 50%; overflow: hidden;
+  border: 5px solid #fff; cursor: pointer;
+  background: #f8f9fa; display: flex; align-items: center; justify-content: center;
   transition: all 0.3s ease;
 }
+.avatar-circle:hover { filter: brightness(0.9); transform: scale(1.02); }
+.avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+.avatar-placeholder i { font-size: 60px; color: #dee2e6; }
 
-.avatar-circle:hover, .account-avatar:hover {
-  border-color: #007bff;
-  transform: scale(1.02);
+.btn-change-avatar {
+  position: absolute; bottom: 8px; right: 8px;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: #007bff; color: #fff; border: 3px solid #fff;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
 }
+.btn-change-avatar:hover { background: #0056b3; transform: scale(1.1); }
 
-.avatar-circle img, .account-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+/* Info list */
+.info-grid .row:last-child { border-bottom: none !important; }
+.bg-soft-primary { background-color: rgba(0, 123, 255, 0.1); }
 
-/* CSS cho Modal 3 nút */
-#modalTuyChonAnh .modal-content {
-  border-radius: 12px;
-}
-
-#modalTuyChonAnh .list-group-item {
-  border-left: none;
-  border-right: none;
-  cursor: pointer;
-}
-
-#modalTuyChonAnh .list-group-item:first-child { border-top: none; }
-#modalTuyChonAnh .list-group-item:last-child { border-bottom: none; }
+/* Form styles */
+.input-group-text { border: none; }
+.form-control, .form-select { border: none; padding: 10px 15px; }
+.form-control:focus, .form-select:focus { box-shadow: none; background: #fff !important; border: 1px solid #007bff; }
+.font-weight-bold { font-weight: 600 !important; }
 </style>

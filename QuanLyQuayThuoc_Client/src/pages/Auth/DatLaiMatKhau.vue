@@ -1,65 +1,3 @@
-<script setup>
-import '../../assets/css/forgot-password.css';
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axiosClient from '../../api/axiosClient';
-
-const router = useRouter();
-const matKhauMoi = ref('');
-const xacNhanMatKhau = ref('');
-const loi = ref('');
-const dangGui = ref(false);
-const email = ref('');
-
-onMounted(() => {
-  // Lấy từ LocalStorage thay vì history.state
-  const savedEmail = localStorage.getItem('pharmative_reset_email');
-  
-  if (savedEmail) {
-    email.value = savedEmail;
-  } else {
-    // Nếu lỡ tay xóa cache hoặc vào thẳng link này thì mới đuổi về B1
-    router.push({ name: 'QuenMatKhau' });
-  }
-});
-
-const luuMatKhau = async () => {
-  loi.value = '';
-
-  if (matKhauMoi.value.length < 6) {
-    loi.value = 'Mật khẩu phải có ít nhất 6 ký tự.';
-    return;
-  }
-
-  if (matKhauMoi.value !== xacNhanMatKhau.value) {
-    loi.value = 'Mật khẩu xác nhận không khớp.';
-    return;
-  }
-
-  dangGui.value = true;
-  try {
-    // LẤY OTP ĐÃ LƯU TỪ BƯỚC TRƯỚC
-    const otpDaLuu = localStorage.getItem('pharmative_temp_otp'); 
-
-    // GỬI KÈM OTP TRONG REQUEST
-    await axiosClient.post('/NguoiDung/dat-lai-mat-khau', {
-      email: email.value,
-      maOtp: otpDaLuu, // <--- THÊM DÒNG NÀY ĐỂ HẾT LỖI TRONG HÌNH B3324F
-      matKhauMoi: matKhauMoi.value,
-    });
-
-    alert('Đổi mật khẩu thành công!');
-    localStorage.removeItem('pharmative_reset_email');
-    localStorage.removeItem('pharmative_temp_otp');
-    router.push({ name: 'DangNhap' });
-  } catch (error) {
-    loi.value = error.response?.data?.message || 'Có lỗi xảy ra.';
-  } finally {
-    dangGui.value = false;
-  }
-};
-</script>
-
 <template>
   <div class="site-section auth-section forgot-step-section">
     <div class="container">
@@ -74,14 +12,14 @@ const luuMatKhau = async () => {
             </div>
 
             <h2 class="mb-2 text-center">Đặt mật khẩu mới</h2>
-            <p class="mb-4 text-center sub-text">
-              Thiết lập mật khẩu mới cho email:<br>
+            <p class="mb-3 text-center sub-text">
+              Thiết lập mật khẩu mới cho email:
+            </p>
+            <p class="mb-4 text-center sub-text" style="margin-top: -12px;">
               <strong>{{ email }}</strong>
             </p>
 
-            <div v-if="loi" class="alert alert-danger py-2 small text-center mb-3">
-              {{ loi }}
-            </div>
+            <div class="otp-error" :class="{ show: loi }">{{ loi }}</div>
 
             <div class="form-group mb-3">
               <label for="newPassword">Mật khẩu mới</label>
@@ -130,3 +68,77 @@ const luuMatKhau = async () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import '../../assets/css/forgot-password.css';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import axiosClient from '../../api/axiosClient';
+
+const router = useRouter();
+const matKhauMoi = ref('');
+const xacNhanMatKhau = ref('');
+const loi = ref('');
+const dangGui = ref(false);
+const email = ref('');
+
+onMounted(() => {
+  const savedEmail = localStorage.getItem('pharmative_reset_email');
+  if (savedEmail) {
+    email.value = savedEmail;
+  } else {
+    router.push({ name: 'QuenMatKhau' });
+  }
+});
+
+const luuMatKhau = async () => {
+  loi.value = '';
+
+  // 1. Lấy dữ liệu xác thực
+  const savedEmail = localStorage.getItem('pharmative_reset_email');
+  const otpDaLuu = localStorage.getItem('pharmative_temp_otp');
+
+  if (!savedEmail || !otpDaLuu) {
+    loi.value = 'Phiên làm việc hết hạn. Vui lòng quay lại Bước 1.';
+    return;
+  }
+
+  // 2. Validate Client
+  if (matKhauMoi.value.length < 6) {
+    loi.value = 'Mật khẩu phải từ 6 ký tự trở lên.';
+    return;
+  }
+
+  if (matKhauMoi.value !== xacNhanMatKhau.value) {
+    loi.value = 'Mật khẩu xác nhận không khớp.';
+    return;
+  }
+
+  dangGui.value = true;
+  try {
+    // 3. Gửi dữ liệu (Key viết Hoa khớp DatLaiMatKhauDto)
+    const data = {
+      Email: savedEmail,
+      MaOtp: otpDaLuu,
+      MatKhauMoi: matKhauMoi.value
+    };
+
+    await axiosClient.post('/NguoiDung/dat-lai-mat-khau', data);
+
+    alert('Đổi mật khẩu thành công!');
+    
+    // Dọn dẹp bộ nhớ tạm
+    localStorage.removeItem('pharmative_reset_email');
+    localStorage.removeItem('pharmative_temp_otp');
+    
+    router.push({ name: 'DangNhap' });
+
+  } catch (error) {
+    // Hiển thị lỗi từ Backend (ví dụ: OTP sai hoặc hết hạn)
+    loi.value = error.response?.data?.message || 'Không thể đặt lại mật khẩu. Vui lòng thử lại.';
+    console.error("Chi tiết lỗi:", error.response?.data);
+  } finally {
+    dangGui.value = false;
+  }
+};
+</script>

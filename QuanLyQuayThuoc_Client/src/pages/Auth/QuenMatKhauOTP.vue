@@ -4,8 +4,6 @@
       <div class="row justify-content-center">
         <div class="col-md-8 col-lg-5">
           <div class="auth-card forgot-auth-card">
-
-            <!-- Step indicator -->
             <div class="otp-stepper" aria-label="Quên mật khẩu - các bước">
               <div class="otp-step-item completed">
                 <div class="otp-step-circle">1</div>
@@ -54,7 +52,6 @@
             <div class="small-links mt-4 text-center">
               <router-link to="/quen-mat-khau">Quay lại bước 1</router-link>
             </div>
-
           </div>
         </div>
       </div>
@@ -83,23 +80,24 @@ const xacNhan = async () => {
   const otpTrim = otp.value.trim();
 
   if (!otpTrim || otpTrim.length < 4) {
-    loi.value = 'OTP không hợp lệ.';
+    loi.value = 'Vui lòng nhập mã OTP hợp lệ.';
     return;
   }
 
   dangGui.value = true;
   try {
-    await axiosClient.post('/TaiKhoan/xac-nhan-otp', {
-      email: email.value,
-      otp: otpTrim,
+    // Lưu ý: Key 'Email' và 'Otp' phải khớp với DTO ở Backend của bạn
+    await axiosClient.post('/NguoiDung/xac-nhan-otp', {
+      Email: email.value,
+      Otp: otpTrim,
     });
+
+    // LƯU VÀO LOCALSTORAGE TRƯỚC KHI CHUYỂN TRANG
+    localStorage.setItem('pharmative_temp_otp', otpTrim);
+    
     router.push({ name: 'DatLaiMatKhau' });
   } catch (error) {
-    if (error.response?.status === 400) {
-      loi.value = 'Mã OTP không đúng hoặc đã hết hạn.';
-    } else {
-      loi.value = 'Có lỗi xảy ra. Vui lòng thử lại.';
-    }
+    loi.value = error.response?.data?.message || 'Mã OTP không đúng hoặc đã hết hạn.';
   } finally {
     dangGui.value = false;
   }

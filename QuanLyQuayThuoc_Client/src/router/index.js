@@ -24,7 +24,7 @@ const routes = [
       { path: 'chi-tiet/:id', name: 'ChiTietSanPham', component: () => import('../pages/KhachHang/ChiTietSanPham.vue') },
       { path: 'gio-hang', name: 'GioHang', component: () => import('../pages/KhachHang/GioHang.vue') },
       { path: 'dat-hang', name: 'DatHang', component: () => import('../pages/KhachHang/DatHang.vue') },
-      { path: 'lich-su-don-hang', name: 'LichSuDonHang', component: () => import('../pages/KhachHang/LichSuDonHang.vue') },
+      { path: 'lich-su-don-hang', name: 'LichSuDonHang', component: () => import('../pages/Auth/LichSuDonHang.vue') },
       { path: 'ho-so', name: 'ThongTinCaNhan', component: () => import('../pages/Auth/ThongTinCaNhan.vue') },
       { path: 'tu-van', name: 'ChatbotTuVan', component: () => import('../pages/KhachHang/ChatbotTuVan.vue') },
     ]
