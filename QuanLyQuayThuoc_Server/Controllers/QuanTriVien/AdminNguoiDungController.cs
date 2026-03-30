@@ -142,7 +142,5 @@ namespace QuanLyQuayThuoc.Controllers.QuanTriVien
                 message = "Cập nhật thành công"
             });
         }
-
-        
     }
 }
