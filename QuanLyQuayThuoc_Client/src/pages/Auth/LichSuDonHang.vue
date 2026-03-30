@@ -154,26 +154,40 @@ import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
 import Swal from 'sweetalert2';
 import AccountSidebar from '../../components/AccountSidebar.vue';
-import { Modal } from 'bootstrap'; 
+import { Modal } from 'bootstrap';
 
 const router = useRouter();
 
 // State
 const nguoiDungSidebar = ref({ hoTen: '', soDienThoai: '', anhDaiDien: '' });
 const donHang = ref([]);
-const chiTiet = ref(null); 
+const chiTiet = ref(null);
 const dangTai = ref(false);
 const tuKhoa = ref('');
 const tabHienTai = ref('');
 let modalInstance = null;
 
 const tabs = [
-  { label: 'Tất cả',      value: '' },
-  { label: 'Chờ xử lý',   value: 'Chờ xử lý' },
-  { label: 'Đang giao',   value: 'Đang giao' },
-  { label: 'Đã giao',     value: 'Đã giao' },
-  { label: 'Đã hủy',      value: 'Đã hủy' },
+  { label: 'Tất cả',    value: '' },
+  { label: 'Chờ xử lý', value: 'Chờ xử lý' },
+  { label: 'Đang giao', value: 'Đang giao' },
+  { label: 'Đã giao',   value: 'Đã giao' },
+  { label: 'Đã hủy',    value: 'Đã hủy' },
 ];
+
+// Chuyển PascalCase → camelCase đệ quy
+const toCamel = (obj) => {
+  if (Array.isArray(obj)) return obj.map(toCamel);
+  if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [
+        k.charAt(0).toLowerCase() + k.slice(1),
+        toCamel(v)
+      ])
+    );
+  }
+  return obj;
+};
 
 const loadData = async () => {
   dangTai.value = true;
@@ -182,8 +196,9 @@ const loadData = async () => {
       axiosClient.get('/HoSo/thong-tin'),
       axiosClient.get('/DonHangKhach/cua-toi')
     ]);
-    nguoiDungSidebar.value = resUser.data || resUser;
-    donHang.value = resDon.data || resDon;
+    // interceptor đã unwrap response.data, nên res chính là data
+    nguoiDungSidebar.value = toCamel(resUser);
+    donHang.value = toCamel(resDon);
   } catch (err) {
     console.error('Lỗi tải dữ liệu:', err);
     if (err.response?.status === 401) router.push('/auth/dang-nhap');
@@ -193,19 +208,18 @@ const loadData = async () => {
 };
 
 const moXemChiTiet = async (id) => {
-  chiTiet.value = null; // Hiển thị spinner loading trong modal
-  
+  chiTiet.value = null; // hiện spinner trong modal
   if (!modalInstance) {
     modalInstance = new Modal(document.getElementById('modalChiTiet'));
   }
   modalInstance.show();
 
   try {
-    // Chỉ dùng /DonHangKhach/id vì axiosClient đã cấu hình tiền tố /api
-    const res = await axiosClient.get(`DonHangKhach/${id}`); 
-    chiTiet.value = res.data;
+    const res = await axiosClient.get(`/DonHangKhach/${id}`);
+    // interceptor đã unwrap, res chính là data — không cần res.data
+    chiTiet.value = toCamel(res);
   } catch (err) {
-    console.error("Lỗi gọi API chi tiết:", err);
+    console.error('Lỗi gọi API chi tiết:', err);
     modalInstance.hide();
     Swal.fire('Lỗi', 'Không thể lấy thông tin đơn hàng', 'error');
   }
@@ -225,7 +239,6 @@ const donHangDaLoc = computed(() =>
 const getFullUrl = (path) => {
   if (!path) return '/img/default-product.png';
   if (path.startsWith('http')) return path;
-  // Thêm tiền tố /uploads/ nếu database chỉ lưu tên file
   const prefix = path.startsWith('/') ? '' : '/uploads/';
   return `https://localhost:7070${prefix}${path}`;
 };
@@ -238,16 +251,16 @@ const dinhDangNgay = (val) => {
   });
 };
 
-const formatGia = (value) => 
+const formatGia = (value) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
 
 const bgTrangThai = (trangThai) => {
   switch (trangThai) {
-    case 'Đã giao': return 'bg-success';
+    case 'Đã giao':   return 'bg-success';
     case 'Đang giao': return 'bg-info text-white';
     case 'Chờ xử lý': return 'bg-warning text-dark';
-    case 'Đã hủy': return 'bg-danger';
-    default: return 'bg-secondary text-white';
+    case 'Đã hủy':    return 'bg-danger';
+    default:          return 'bg-secondary text-white';
   }
 };
 

@@ -223,8 +223,6 @@ const categories = [
 const testimonials = [
   { author: 'Kelly Holmes', avatar: person1, content: '"Tôi luôn tin tưởng đặt mua thuốc tại Pharmative. Dược sĩ tư vấn rất tận tâm và giao hàng nhanh chóng."' },
   { author: 'Rebecca Morando', avatar: person2, content: '"Giá cả hợp lý, sản phẩm đa dạng và luôn có sẵn. Tôi rất hài lòng với chất lượng dịch vụ."' },
-  { author: 'Lucas Gallone', avatar: person3, content: '"Đặt thuốc online tại Pharmative rất tiện lợi, tư vấn rõ ràng và giao thuốc đến tận nhà đúng giờ."' },
-  { author: 'Andrew Neel', avatar: person4, content: '"Nhân viên hỗ trợ nhiệt tình, hướng dẫn sử dụng thuốc kỹ lưỡng. Tôi sẽ tiếp tục ủng hộ lâu dài."' },
 ];
 
 const promises = [

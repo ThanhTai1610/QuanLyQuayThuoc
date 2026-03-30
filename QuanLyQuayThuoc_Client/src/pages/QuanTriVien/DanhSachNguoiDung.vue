@@ -119,7 +119,7 @@ const handleDoiTrangThai = async (nd) => {
     const { value } = await Swal.fire({
       title: 'Lý do khóa?',
       input: 'select',
-      inputOptions: { 'Vi phạm': 'Vi phạm', 'Nghỉ việc': 'Nghỉ việc', 'Khác': 'Khác' },
+      inputOptions: { 'Vi phạm': 'Vi phạm', 'Nghỉ việc': 'Nghỉ việc','Vi phạm quy tắc cộng đồng': 'Vi pham quy tắc công đồng', 'Khác': 'Khác' },
       showCancelButton: true
     });
     if (!value) return;
