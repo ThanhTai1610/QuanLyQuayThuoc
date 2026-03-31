@@ -122,6 +122,7 @@
                   <span class="input-group-text bg-light border-end-0"><i class="fa fa-user text-muted"></i></span>
                   <input type="text" class="form-control bg-light border-start-0" 
                          v-model="formCapNhat.hoTen" 
+                         @input="validateTen"
                          @blur="validateTen"
                          :class="{'is-invalid': errors.hoTen}"
                          placeholder="Nhập họ tên của bạn">
@@ -135,6 +136,7 @@
                   <span class="input-group-text bg-light border-end-0"><i class="fa fa-envelope text-muted"></i></span>
                   <input type="email" class="form-control bg-light border-start-0" 
                          v-model="formCapNhat.email" 
+                         @input="validateEmail"
                          @blur="validateEmail"
                          :class="{'is-invalid': errors.email}"
                          placeholder="example@gmail.com">
@@ -193,23 +195,24 @@ const loading = ref(false);
 const fileInput = ref(null);
 const errors = ref({ hoTen: '', email: '' });
 
-// Profile data
+// Regex mẫu
+// Tên: Chỉ chữ cái và khoảng trắng (hỗ trợ Unicode tiếng Việt)
+const regexTen = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/;
+// Email: Kiểm tra cấu trúc chặt chẽ, không cho phép ký tự lạ sau đuôi
+const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 const nguoiDung = ref({ 
   maNguoiDung: null, anhDaiDien: '', hoTen: '', soDienThoai: '', email: '', gioiTinh: '', ngaySinh: null, tenVaiTro: '' 
 });
 
-// Form data cho update
 const formCapNhat = ref({ hoTen: '', email: '', gioiTinh: '', ngaySinh: '' });
 
-// Toast notification
 const Toast = Swal.mixin({
   toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true
 });
 
-// Giới hạn ngày sinh (không chọn tương lai)
 const maxDate = computed(() => new Date().toISOString().split('T')[0]);
 
-// --- Tải dữ liệu ---
 const taiThongTinHoSo = async () => {
   try {
     const data = await axiosClient.get('/HoSo/thong-tin');
@@ -222,7 +225,6 @@ const taiThongTinHoSo = async () => {
   }
 };
 
-// --- Xử lý Ảnh đại diện ---
 const getFullUrl = (path) => {
   if (!path) return '';
   return path.startsWith('http') ? path : `https://localhost:7070${path}`;
@@ -244,7 +246,6 @@ const xuLyUploadAvatar = async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Validate file size (ví dụ < 2MB)
   if (file.size > 2 * 1024 * 1024) {
     Toast.fire({ icon: 'error', title: 'Ảnh không được vượt quá 2MB' });
     return;
@@ -264,7 +265,7 @@ const xuLyUploadAvatar = async (event) => {
     Toast.fire({ icon: 'error', title: 'Lỗi khi tải ảnh lên' });
   } finally {
     loading.value = false;
-    event.target.value = ''; // Reset input
+    event.target.value = ''; 
   }
 };
 
@@ -291,29 +292,37 @@ const xuLyXoaAvatar = async () => {
   }
 };
 
-// --- Xử lý Cập nhật thông tin ---
 const moModalCapNhat = () => {
   formCapNhat.value = { 
     ...nguoiDung.value, 
     ngaySinh: nguoiDung.value.ngaySinh?.split('T')[0] || '' 
   };
-  errors.value = { hoTen: '', email: '' }; // Reset lỗi
+  errors.value = { hoTen: '', email: '' }; 
   toggleModal('modalChinhSua', 'show');
 };
 
 const validateTen = () => {
   const val = formCapNhat.value.hoTen?.trim();
-  if (!val) errors.value.hoTen = "Họ và tên không được để trống";
-  else if (val.length < 5) errors.value.hoTen = "Vui lòng nhập đầy đủ họ và tên (ít nhất 5 ký tự)";
-  else errors.value.hoTen = "";
+  if (!val) {
+    errors.value.hoTen = "Họ và tên không được để trống";
+  } else if (!regexTen.test(val)) {
+    errors.value.hoTen = "Tên không được chứa số hoặc ký tự đặc biệt";
+  } else if (val.length < 5) {
+    errors.value.hoTen = "Họ tên phải từ 5 ký tự trở lên";
+  } else {
+    errors.value.hoTen = "";
+  }
 };
 
 const validateEmail = () => {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const val = formCapNhat.value.email?.trim();
-  if (!val) errors.value.email = "Email không được để trống";
-  else if (!regex.test(val)) errors.value.email = "Định dạng email không hợp lệ";
-  else errors.value.email = "";
+  if (!val) {
+    errors.value.email = "Email không được để trống";
+  } else if (!regexEmail.test(val)) {
+    errors.value.email = "Email không hợp lệ (ví dụ: abc@gmail.com)";
+  } else {
+    errors.value.email = "";
+  }
 };
 
 const xuLyCapNhat = async () => {
@@ -347,7 +356,6 @@ const xuLyCapNhat = async () => {
   }
 };
 
-// --- Tiện ích ---
 const toggleModal = (modalId, action) => {
   const el = document.getElementById(modalId);
   if (el) {
