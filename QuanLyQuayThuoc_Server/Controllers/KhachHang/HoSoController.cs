@@ -38,13 +38,21 @@ namespace QuanLyQuayThuoc.Controllers
         [HttpPut("cap-nhat")]
         public async Task<IActionResult> UpdateProfile([FromBody] CapNhatHoSoDto data)
         {
+            // Kiểm tra xem các ràng buộc (Validation) ở DTO có vượt qua không
+            if (!ModelState.IsValid)
+            {
+                // Lấy thông báo lỗi đầu tiên để gửi về cho Client
+                var errorMsg = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).FirstOrDefault();
+                return BadRequest(new { message = errorMsg });
+            }
+
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userIdStr)) return Unauthorized();
 
             var userId = int.Parse(userIdStr);
             var success = await _repo.LuuCapNhatHoSo(userId, data);
 
-            return success ? Ok(new { message = "Thành công" }) : BadRequest();
+            return success ? Ok(new { message = "Thành công" }) : BadRequest(new { message = "Cập nhật thất bại" });
         }
 
         [HttpPut("cap-nhat-avatar")]

@@ -2,7 +2,6 @@
   <div class="site-wrap">
     <div class="container py-4">
 
-      <!-- Header -->
       <div class="d-flex align-items-center justify-content-between mb-3">
         <router-link to="/" class="btn btn-link p-0">← Về trang chủ</router-link>
         <div class="products-page-title">Danh sách sản phẩm nhà thuốc</div>
@@ -10,12 +9,10 @@
 
       <div class="row">
 
-        <!-- ── Sidebar bộ lọc ── -->
         <div class="col-lg-3 mb-4">
           <aside class="filter-sidebar">
             <h2 class="filter-title">Bộ lọc thông minh</h2>
 
-            <!-- Lọc theo DanhMuc -->
             <div class="filter-group">
               <div class="filter-label">Danh mục</div>
               <label class="filter-option" v-for="dm in danhSachDanhMuc" :key="dm.maDanhMuc">
@@ -24,7 +21,6 @@
               </label>
             </div>
 
-            <!-- Lọc theo DoiTuongSuDung trong bảng Thuoc -->
             <div class="filter-group">
               <div class="filter-label">Đối tượng</div>
               <label class="filter-option" v-for="dt in danhSachDoiTuong" :key="dt">
@@ -33,7 +29,6 @@
               </label>
             </div>
 
-            <!-- Lọc theo NhaSanXuat trong bảng Thuoc -->
             <div class="filter-group">
               <div class="filter-label">Nhà sản xuất</div>
               <label class="filter-option" v-for="nsx in danhSachNSX" :key="nsx">
@@ -42,7 +37,6 @@
               </label>
             </div>
 
-            <!-- Lọc theo GiaBan trong DonViTinh -->
             <div class="filter-group">
               <div class="filter-label">Khoảng giá</div>
               <label class="filter-option" v-for="g in danhSachGia" :key="g.value">
@@ -51,7 +45,6 @@
               </label>
             </div>
 
-            <!-- Lọc theo DangBaoChe trong bảng Thuoc -->
             <div class="filter-group mb-0">
               <div class="filter-label">Dạng bào chế</div>
               <label class="filter-option" v-for="dbc in danhSachDBC" :key="dbc">
@@ -66,7 +59,6 @@
           </aside>
         </div>
 
-        <!-- ── Danh sách sản phẩm ── -->
         <div class="col-lg-9">
 
           <div class="products-toolbar">
@@ -85,7 +77,6 @@
             </div>
           </div>
 
-          <!-- Loading -->
           <div v-if="dangTai" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
               <span class="sr-only">Đang tải...</span>
@@ -93,21 +84,22 @@
           </div>
 
           <div v-else>
-            <!-- Lưới sản phẩm -->
             <div class="row" v-if="danhSachSanPham.length > 0">
               <div class="col-md-4 col-sm-6 mb-4" v-for="sp in danhSachSanPham" :key="sp.maThuoc">
                 <article class="product-card">
-                  <!-- Badge thuốc kê đơn — LaThuocKeDon trong bảng Thuoc -->
+                  <div class="product-origin-badge" v-if="sp.tenThuoc"> 
+                    <img :src="getFlagUrl(sp.nuocSanXuat || 'việt nam')" class="flag-icon" />
+                    <span>{{ sp.nuocSanXuat || 'Việt Nam' }}</span>
+                  </div>
+                  
                   <div v-if="sp.laThuocKeDon" class="product-badge-prescription">🔴 Thuốc kê đơn</div>
 
                   <img :src="getImageUrl(sp.hinhAnhChinh)" :alt="sp.tenThuoc" class="product-image" />
 
                   <h3 class="product-name">{{ sp.tenThuoc }}</h3>
 
-                  <!-- QuyCach + NuocSanXuat từ bảng Thuoc -->
-                  <p class="product-meta">{{ sp.quyCach }} • {{ sp.nuocSanXuat }}</p>
+                  <p class="product-meta">{{ sp.quyCach }} • {{ sp.nuocSanXuat || 'Chưa rõ' }}</p>
 
-                  <!-- GiaBan từ DonViTinh (đơn vị cơ bản) -->
                   <div class="product-price">
                     {{ formatGia(sp.giaBan) }}
                     <span>/ {{ sp.tenDonVi }}</span>
@@ -122,14 +114,13 @@
                     </router-link>
                   </div>
                 </article>
-              </div>
+                </div>
             </div>
 
             <div v-else class="text-center py-5 text-muted">
               <p>Không tìm thấy sản phẩm phù hợp.</p>
             </div>
 
-            <!-- Phân trang -->
             <nav aria-label="Phân trang sản phẩm" v-if="tongTrang > 1">
               <ul class="pagination justify-content-center products-pagination">
                 <li class="page-item" :class="{ disabled: trangHienTai === 1 }">
@@ -168,61 +159,77 @@ const dangTai         = ref(false);
 const tongSanPham     = ref(0);
 const trangHienTai    = ref(1);
 const tongTrang       = ref(1);
-const soTrangMoiTrang = 12;
+const soLuongMoiTrang = 12;
 
-// Lấy từ query param (tìm kiếm từ header)
 const tuKhoa = ref(route.query.q || '');
 const sapXep = ref('ban-chay');
 
-// Bộ lọc — ánh xạ với các cột trong bảng Thuoc + DonViTinh
-const locDanhMuc  = ref([]);   // MaDanhMuc
-const locDoiTuong = ref([]);   // DoiTuongSuDung
-const locNSX      = ref([]);   // NhaSanXuat
-const locGia      = ref('');   // khoảng GiaBan
-const locDBC      = ref([]);   // DangBaoChe
+const locDanhMuc  = ref([]);
+const locDoiTuong = ref([]);
+const locNSX      = ref([]);
+const locGia      = ref('');
+const locDBC      = ref([]);
 
-// ── Dữ liệu cho sidebar (load từ API) ──
+// ── Dữ liệu cho sidebar ──
 const danhSachDanhMuc = ref([]);
 const danhSachNSX     = ref([]);
-
 const danhSachDoiTuong = ['Trẻ em', 'Người lớn', 'Phụ nữ mang thai', 'Người già'];
 const danhSachDBC      = ['Viên nén', 'Viên nang', 'Siro', 'Bột pha'];
 const danhSachGia = [
-  { label: 'Dưới 100.000đ',           value: '0-100000'         },
+  { label: 'Dưới 100.000đ',         value: '0-100000'         },
   { label: '100.000đ - 500.000đ',      value: '100000-500000'    },
   { label: '500.000đ - 1.000.000đ',    value: '500000-1000000'   },
   { label: 'Trên 1.000.000đ',          value: '1000000-99999999' },
 ];
 
+const getFlagUrl = (countryName) => {
+  if (!countryName) return 'https://flagcdn.com/w40/vn.png';
+  const name = countryName.toLowerCase();
+  if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
+  if (name.includes('hoa kỳ') || name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
+  if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
+  if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
+  if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
+  return 'https://flagcdn.com/w40/un.png';
+};
+
 // ── Load sản phẩm ──
-// GET /Thuoc?trang=1&soLuong=12&danhMuc=...&nsx=...&gia=...&dbc=...&q=...&sapXep=...
 const loadData = async (resetTrang = false) => {
   if (resetTrang) trangHienTai.value = 1;
   dangTai.value = true;
+  
   try {
     const params = {
-      trang:     trangHienTai.value,
-      soLuong:   soTrangMoiTrang,
-      sapXep:    sapXep.value,
-      q:         tuKhoa.value || undefined,
-      danhMuc:   locDanhMuc.value.join(',')  || undefined,
-      doiTuong:  locDoiTuong.value.join(',') || undefined,
-      nsx:       locNSX.value.join(',')      || undefined,
-      gia:       locGia.value                || undefined,
-      dangBaoChe:locDBC.value.join(',')      || undefined,
+      trang:      trangHienTai.value,
+      soLuong:    soLuongMoiTrang,
+      sapXep:     sapXep.value,
+      q:          tuKhoa.value || undefined,
+      danhMuc:    locDanhMuc.value.length > 0 ? locDanhMuc.value.join(',') : undefined,
+      doiTuong:   locDoiTuong.value.length > 0 ? locDoiTuong.value.join(',') : undefined,
+      nsx:        locNSX.value.length > 0 ? locNSX.value.join(',') : undefined,
+      gia:        locGia.value || undefined,
+      dangBaoChe: locDBC.value.length > 0 ? locDBC.value.join(',') : undefined,
     };
+    
     const res = await axiosClient.get('/Thuoc', { params });
-    danhSachSanPham.value = res.data.items;
-    tongSanPham.value     = res.data.total;
-    tongTrang.value       = Math.ceil(res.data.total / soTrangMoiTrang);
+    
+    if (res) {
+      danhSachSanPham.value = res.items || [];
+      tongSanPham.value     = res.total || 0;
+      tongTrang.value       = Math.ceil(tongSanPham.value / soLuongMoiTrang);
+    } else {
+      danhSachSanPham.value = [];
+      tongSanPham.value = 0;
+    }
   } catch (err) {
     console.error('Lỗi tải sản phẩm:', err);
+    danhSachSanPham.value = [];
+    tongSanPham.value = 0;
   } finally {
     dangTai.value = false;
   }
 };
 
-// ── Load sidebar ──
 const loadSidebar = async () => {
   try {
     const [resDM, resNSX] = await Promise.all([
@@ -236,7 +243,6 @@ const loadSidebar = async () => {
   }
 };
 
-// ── Đổi trang ──
 const doiTrang = (trang) => {
   if (trang < 1 || trang > tongTrang.value) return;
   trangHienTai.value = trang;
@@ -244,7 +250,6 @@ const doiTrang = (trang) => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// ── Thêm vào giỏ — POST /GioHang ──
 const themVaoGio = async (sp) => {
   try {
     await axiosClient.post('/GioHang', {
@@ -255,10 +260,10 @@ const themVaoGio = async (sp) => {
     router.push('/gio-hang');
   } catch (err) {
     console.error('Lỗi thêm giỏ hàng:', err);
+    alert('Vui lòng đăng nhập để mua hàng!');
   }
 };
 
-// ── Xóa bộ lọc ──
 const xoaBoLoc = () => {
   locDanhMuc.value  = [];
   locDoiTuong.value = [];
@@ -268,19 +273,22 @@ const xoaBoLoc = () => {
   loadData(true);
 };
 
-// ── Watch bộ lọc → tải lại ──
-watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => loadData(true), { deep: true });
+watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => {
+  loadData(true);
+}, { deep: true });
 
-// ── Watch query param từ thanh tìm kiếm ──
-watch(() => route.query.q, (val) => {
-  tuKhoa.value = val || '';
+watch(() => route.query.q, (newVal) => {
+  tuKhoa.value = newVal || '';
   loadData(true);
 });
 
+// Sửa lại hàm getImageUrl để không bị dính sát URL
 const getImageUrl = (path) => {
-  if (!path) return '/images/no-image.png';
+  if (!path) return '/images/default-product.png';
   if (path.startsWith('http')) return path;
-  return `https://localhost:7070${path}`;
+  // Thêm dấu / nếu path chưa có
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `https://localhost:7070${cleanPath}`;
 };
 
 const formatGia = (value) =>
@@ -291,3 +299,62 @@ onMounted(() => {
   loadData();
 });
 </script>
+
+<style>
+.product-card {
+  position: relative !important;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+  padding-top: 15px; /* Tăng padding để cờ không bị sát mép */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-origin-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 3px 10px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 1px solid #eee;
+}
+
+.flag-icon {
+  width: 18px !important;
+  height: 12px !important;
+  object-fit: cover;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+
+.product-badge-prescription {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  font-size: 10px;
+  background: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #ff4d4f;
+  color: #ff4d4f;
+}
+
+.product-image {
+  width: 100%;
+  height: 160px;
+  object-fit: contain;
+  margin-top: 15px;
+}
+</style>
