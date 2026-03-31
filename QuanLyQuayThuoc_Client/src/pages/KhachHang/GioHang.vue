@@ -47,7 +47,7 @@
               <div class="cart-header-row">
                 <div>
                   <div class="cart-title">Giỏ hàng của bạn</div>
-                  <div class="cart-meta">{{ gioHang.length }} sản phẩm trong giỏ</div>
+                  <div class="cart-meta">{{ gioHang?.length || 0 }} sản phẩm trong giỏ</div>
                 </div>
                 <router-link to="/san-pham" class="btn btn-outline-primary btn-sm">
                   Tiếp tục mua sắm
@@ -56,7 +56,7 @@
 
               <!-- Danh sách sản phẩm -->
               <div class="cart-items">
-                <div v-if="gioHang.length === 0" class="text-center py-4 text-muted">
+                <div v-if="gioHang?.length === 0" class="text-center py-4 text-muted">
                   Giỏ hàng trống. <router-link to="/san-pham">Mua sắm ngay</router-link>
                 </div>
 
@@ -72,8 +72,8 @@
                     </div>
                     <!-- Chọn đơn vị tính (DonViTinh) -->
                     <div class="mt-1" v-if="item.danhSachDVT && item.danhSachDVT.length > 1">
-                      <select class="form-control form-control-sm w-auto d-inline-block"
-                        v-model="item.maDVT" @change="doiDonVi(item)">
+                      <select class="form-control form-control-sm w-auto d-inline-block" v-model="item.maDVT"
+                        @change="doiDonVi(item)">
                         <option v-for="dvt in item.danhSachDVT" :key="dvt.maDVT" :value="dvt.maDVT">
                           {{ dvt.tenDonVi }} — {{ formatGia(dvt.giaBan) }}
                         </option>
@@ -87,8 +87,7 @@
                           <button class="btn btn-outline-primary" type="button"
                             @click="giamSoLuong(item)">&minus;</button>
                         </div>
-                        <input type="text" class="form-control text-center"
-                          :value="item.soLuong"
+                        <input type="text" class="form-control text-center" :value="item.soLuong"
                           @change="capNhatSoLuong(item, $event.target.value)" />
                         <div class="input-group-append">
                           <button class="btn btn-outline-primary" type="button"
@@ -109,15 +108,13 @@
                 <p>Nhập mã giảm giá nếu bạn có.</p>
                 <div class="form-row">
                   <div class="col-md-8 mb-2 mb-md-0">
-                    <input type="text" class="form-control py-2" v-model="maGiamGia"
-                      placeholder="Nhập mã giảm giá" />
+                    <input type="text" class="form-control py-2" v-model="maGiamGia" placeholder="Nhập mã giảm giá" />
                   </div>
                   <div class="col-md-4">
                     <button class="btn btn-outline-primary btn-block" @click="apDungMa">Áp dụng</button>
                   </div>
                 </div>
-                <p v-if="thongBaoMa" class="small mt-2"
-                  :class="apDungThanhCong ? 'text-success' : 'text-danger'">
+                <p v-if="thongBaoMa" class="small mt-2" :class="apDungThanhCong ? 'text-success' : 'text-danger'">
                   {{ thongBaoMa }}
                 </p>
               </div>
@@ -158,9 +155,7 @@
                 Giá đã bao gồm VAT (nếu có). Vui lòng kiểm tra lại sản phẩm trước khi đặt hàng.
               </div>
               <div class="summary-btn">
-                <button class="btn btn-primary btn-block"
-                  :disabled="gioHang.length === 0"
-                  @click="tiepTucDatHang">
+                <button class="btn btn-primary btn-block" :disabled="gioHang.length === 0" @click="tiepTucDatHang">
                   Tiếp tục đặt hàng
                 </button>
               </div>
@@ -179,13 +174,14 @@ import '../../assets/css/cart-page.css';
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
+import Swal from 'sweetalert2';
 
-const router     = useRouter();
-const gioHang    = ref([]);   // Dữ liệu từ bảng GioHang JOIN Thuoc, DonViTinh
-const dangTai    = ref(false);
-const maGiamGia  = ref('');
+const router = useRouter();
+const gioHang = ref([]);   // Dữ liệu từ bảng GioHang JOIN Thuoc, DonViTinh
+const dangTai = ref(false);
+const maGiamGia = ref('');
 const soTienGiam = ref(0);
-const thongBaoMa      = ref('');
+const thongBaoMa = ref('');
 const apDungThanhCong = ref(false);
 
 // ── Load giỏ hàng từ API ──
@@ -196,19 +192,22 @@ const apDungThanhCong = ref(false);
 const loadGioHang = async () => {
   dangTai.value = true;
   try {
-    const res = await axiosClient.get('/GioHang');
-    gioHang.value = res.data;
+    const res = await axiosClient.get('/GioHang'); // Vì .env đã có /api
+    // Ép kiểu: Nếu res.data null thì lấy mảng rỗng
+    gioHang.value = res.data || []; 
   } catch (err) {
-    console.error('Lỗi tải giỏ hàng:', err);
+    console.error('Lỗi API:', err);
+    gioHang.value = []; // QUAN TRỌNG: Lỗi thì gán mảng rỗng để không hỏng giao diện
   } finally {
     dangTai.value = false;
   }
 };
 
 // ── Tính tổng ──
-const tamTinh = computed(() =>
-  gioHang.value.reduce((sum, item) => sum + item.giaBan * item.soLuong, 0)
-);
+const tamTinh = computed(() => {
+  if (!Array.isArray(gioHang.value)) return 0;  
+  return gioHang.value.reduce((sum, item) => sum + (item.giaBan || 0) * (item.soLuong || 0), 0);
+});
 const tongTien = computed(() => tamTinh.value - soTienGiam.value);
 
 // ── Thay đổi số lượng ──
@@ -228,9 +227,13 @@ const capNhatSoLuong = (item, val) => {
 // ── Đổi đơn vị tính (DonViTinh) ──
 // Khi đổi MaDVT, cập nhật giá tương ứng
 const doiDonVi = (item) => {
+  // Lưu ý: maDVT trong danh sách DVT trả về từ Backend có thể là maDvt (chữ v thường) 
+  // tùy vào cấu hình JSON. Hãy kiểm tra chính xác tên thuộc tính.
+  if (!item.danhSachDVT) return;
   const dvt = item.danhSachDVT.find(d => d.maDVT === item.maDVT);
   if (dvt) {
-    item.giaBan  = dvt.giaBan;
+    item.giaBan = dvt.giaBan;
+    // Cập nhật luôn tenDonVi để hiển thị đúng
     item.tenDonVi = dvt.tenDonVi;
   }
 };
@@ -238,21 +241,47 @@ const doiDonVi = (item) => {
 // ── Xóa sản phẩm ──
 // DELETE /GioHang/{maGioHang}
 const xoaSanPham = async (item) => {
-  try {
-    await axiosClient.delete(`/GioHang/${item.maGioHang}`);
-    gioHang.value = gioHang.value.filter(i => i.maGioHang !== item.maGioHang);
-  } catch (err) {
-    console.error('Lỗi xóa sản phẩm:', err);
+  const result = await Swal.fire({
+    title: 'Xóa sản phẩm?',
+    text: `Bạn có chắc muốn xóa ${item.tenThuoc} khỏi giỏ hàng?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Đồng ý',
+    cancelButtonText: 'Hủy'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await axiosClient.delete(`/GioHang/xoa/${item.maGioHang}`);
+      gioHang.value = gioHang.value.filter(i => i.maGioHang !== item.maGioHang);
+      Swal.fire('Đã xóa!', 'Sản phẩm đã được loại bỏ.', 'success');
+    } catch (err) {
+      Swal.fire('Lỗi!', 'Không thể xóa sản phẩm này.', 'error');
+    }
   }
 };
 
 // ── Xóa tất cả ──
 const xoaTatCa = async () => {
-  try {
-    await axiosClient.delete('/GioHang/xoa-tat-ca');
-    gioHang.value = [];
-  } catch (err) {
-    console.error('Lỗi xóa giỏ hàng:', err);
+  const result = await Swal.fire({
+    title: 'Làm trống giỏ hàng?',
+    text: "Tất cả sản phẩm sẽ bị xóa sạch!",
+    icon: 'danger',
+    showCancelButton: true,
+    confirmButtonText: 'Xóa hết',
+    cancelButtonText: 'Giữ lại'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await axiosClient.delete('/GioHang/xoa-tat-ca');
+      gioHang.value = [];
+      Swal.fire('Đã xóa!', 'Giỏ hàng hiện đang trống.', 'success');
+    } catch (err) {
+      Swal.fire('Lỗi!', 'Không thể làm trống giỏ hàng.', 'error');
+    }
   }
 };
 
@@ -262,11 +291,19 @@ const capNhatGioHang = async () => {
   try {
     await axiosClient.put('/GioHang/cap-nhat', gioHang.value.map(i => ({
       maGioHang: i.maGioHang,
-      soLuong:   i.soLuong,
-      maDVT:     i.maDVT,
+      soLuong: i.soLuong,
+      maDVT: i.maDVT,
     })));
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Đã cập nhật',
+      text: 'Giỏ hàng của bạn đã được lưu!',
+      timer: 1500,
+      showConfirmButton: false
+    });
   } catch (err) {
-    console.error('Lỗi cập nhật giỏ hàng:', err);
+    Swal.fire('Thất bại', 'Có lỗi xảy ra khi đồng bộ dữ liệu.', 'error');
   }
 };
 
@@ -279,13 +316,13 @@ const apDungMa = async () => {
       ma: maGiamGia.value.trim(),
       tongTien: tamTinh.value,
     });
-    soTienGiam.value    = res.data.soTienGiam;
-    thongBaoMa.value    = `Áp dụng thành công! Giảm ${formatGia(soTienGiam.value)}`;
+    soTienGiam.value = res.data.soTienGiam;
+    thongBaoMa.value = `Áp dụng thành công! Giảm ${formatGia(soTienGiam.value)}`;
     apDungThanhCong.value = true;
   } catch {
-    thongBaoMa.value      = 'Mã không hợp lệ hoặc đã hết hạn.';
+    thongBaoMa.value = 'Mã không hợp lệ hoặc đã hết hạn.';
     apDungThanhCong.value = false;
-    soTienGiam.value      = 0;
+    soTienGiam.value = 0;
   }
 };
 
