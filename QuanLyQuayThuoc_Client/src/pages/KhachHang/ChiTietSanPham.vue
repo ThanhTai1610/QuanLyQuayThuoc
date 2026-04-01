@@ -64,6 +64,15 @@
               <span class="prescription-pill">🔴 Thuốc kê đơn - Vui lòng mang toa của bác sĩ</span>
             </div>
 
+            <div class="quantity-wrapper mt-4 d-flex align-items-center">
+            <label class="mr-3 mb-0"><strong>Chọn số lượng:</strong></label>
+            <div class="quantity-controls d-flex align-items-center">
+                <button @click="giamSoLuong" class="qty-btn" :disabled="soLuong <= 1">-</button>
+                <input type="number" v-model.number="soLuong" class="qty-input" min="1" readonly />
+                <button @click="tangSoLuong" class="qty-btn">+</button>
+              </div>
+            </div>
+
             <div class="action-row mt-4">
               <button @click="themGioHang" class="btn btn-primary btn-action mr-2">Thêm vào giỏ hàng</button>
               <button class="btn btn-success btn-action">Mua ngay</button>
@@ -155,11 +164,13 @@
 import '../../assets/css/product-detail-page.css';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
-import { authState } from '../../api/auth';
+// Import axiosClient đã cấu hình interceptor để dùng token và baseURL
+import axiosClient from '../../api/axiosClient'; 
+import { authState } from '../../api/auth'; // Kiểm tra đúng đường dẫn đến file auth.js của Tài
 
 const route = useRoute();
 
+// --- STATE ---
 const thuoc = ref({
   tenThuoc: '',
   nhaSanXuat: '',
@@ -189,12 +200,15 @@ const selectedUnitIndex = ref(0);
 const activeTab = ref('dacdiem');
 const dsSanPhamTuongTu = ref([]);
 const dsThuongMuaCung = ref([]); 
+const soLuong = ref(1); // Số lượng chọn mua
 
+// --- COMPUTED ---
 const tongTonKho = computed(() => {
   if (!thuoc.value.loHangs) return 0;
   return thuoc.value.loHangs.reduce((sum, lo) => sum + lo.soLuongTon, 0);
 });
 
+// --- HELPERS ---
 const formatTien = (so) => {
   if (so === undefined || so === null) return '0đ';
   return so.toLocaleString('vi-VN') + 'đ';
@@ -206,14 +220,31 @@ const getImageUrl = (path) => {
   return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
+// --- LOGIC TĂNG GIẢM SỐ LƯỢNG ---
+const tangSoLuong = () => {
+  if (soLuong.value < tongTonKho.value) {
+    soLuong.value++;
+  } else {
+    alert("Số lượng đạt giới hạn tồn kho!");
+  }
+};
+
+const giamSoLuong = () => {
+  if (soLuong.value > 1) {
+    soLuong.value--;
+  }
+};
+
+// --- CALL APIS ---
 const loadProduct = async () => {
   const productId = route.params.id;
   try {
-    const response = await axios.get(`https://localhost:7070/api/ThuocKhachHang/${productId}`);
-    const data = response.data;
-
+    // Dùng axiosClient: không cần ghi lại baseURL https://localhost:7070/api
+    const data = await axiosClient.get(`/ThuocKhachHang/${productId}`);
+    
     thuoc.value = data;
 
+    // Xử lý ảnh
     const images = [];
     if (data.hinhAnhChinh) images.push(data.hinhAnhChinh);
     if (data.hinhAnhThuocs && data.hinhAnhThuocs.length > 0) {
@@ -225,33 +256,30 @@ const loadProduct = async () => {
     danhSachAnh.value = images;
     anhHienTai.value = data.hinhAnhChinh || images[0] || '';
 
+    // Reset trạng thái
     selectedUnitIndex.value = 0;
     activeTab.value = 'dacdiem';
+    soLuong.value = 1;
 
     if (data.maDanhMuc) {
       loadRelatedProducts(data.maDanhMuc, productId);
     }
-
     loadFrequentlyBoughtProducts(productId);
 
   } catch (error) {
-    console.error('Không thể tải dữ liệu thuốc từ API:', error);
+    console.error('Không thể tải dữ liệu thuốc:', error);
   }
 };
 
 const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
-  if (!maDanhMuc) return;
   try {
-    const response = await axios.get(
-      `https://localhost:7070/api/ThuocKhachHang/Related`, 
-      {
-        params: {
-          maDanhMuc: Number(maDanhMuc),
-          currentProductId: Number(currentProductId)
-        }
+    const data = await axiosClient.get(`/ThuocKhachHang/Related`, {
+      params: {
+        maDanhMuc: Number(maDanhMuc),
+        currentProductId: Number(currentProductId)
       }
-    );
-    dsSanPhamTuongTu.value = response.data;
+    });
+    dsSanPhamTuongTu.value = data;
   } catch (error) {
     console.error('Lỗi khi tải thuốc tương tự:', error);
   }
@@ -259,20 +287,16 @@ const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
 
 const loadFrequentlyBoughtProducts = async (currentProductId) => {
   try {
-    const response = await axios.get(
-      `https://localhost:7070/api/ThuocKhachHang/FrequentlyBoughtWith`, 
-      {
-        params: { 
-          currentProductId: Number(currentProductId) 
-        }
-      }
-    );
-    dsThuongMuaCung.value = response.data;
+    const data = await axiosClient.get(`/ThuocKhachHang/FrequentlyBoughtWith`, {
+      params: { currentProductId: Number(currentProductId) }
+    });
+    dsThuongMuaCung.value = data;
   } catch (error) {
     console.error('Lỗi khi tải thuốc thường mua cùng:', error);
   }
 };
 
+// HÀM DUY NHẤT ĐỂ THÊM VÀO GIỎ HÀNG
 const themGioHang = async () => {
   const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
   
@@ -285,82 +309,22 @@ const themGioHang = async () => {
     maKhachHang: authState.user.id, 
     maThuoc: thuoc.value.maThuoc,
     maDvt: activeUnit.maDvt,
-    soLuong: 1
+    soLuong: soLuong.value 
   };
 
   try {
-    await axios.post('https://localhost:7070/api/ThuocKhachHang/AddToCart', payload);
+    await axiosClient.post('/ThuocKhachHang/AddToCart', payload);
     alert('Thêm vào giỏ hàng thành công!');
   } catch (error) {
     console.error('Lỗi khi thêm giỏ hàng:', error);
-    alert('Không thể thêm vào giỏ hàng.');
+    // Nếu lỗi 401, axiosClient sẽ tự chuyển hướng người dùng đi đăng nhập
   }
 };
 
+// --- LIFECYCLE ---
 onMounted(loadProduct);
 
 watch(() => route.params.id, (newId) => {
   if (newId) loadProduct();
 });
 </script>
-
-<style scoped>
-.site-wrap, 
-.site-wrap h1, .site-wrap h2, .site-wrap h3, 
-.site-wrap p, .site-wrap span, .site-wrap select, .site-wrap button {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
-  -webkit-font-smoothing: antialiased; 
-  -moz-osx-font-smoothing: grayscale;
-}
-
-
-/* Tiêu đề mục (Thành phần, Công dụng...) */
-.tab-content h3 {
-  font-size: 1.15rem;
-  font-weight: 600; 
-  color: #111827; 
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-}
-
-/* Nội dung chữ mô tả */
-.tab-content p {
-  font-size: 0.95rem;
-  font-weight: 400;
-  color: #4b5563; 
-  line-height: 1.6; 
-}
-
-
-.related-card h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #111827;
-  margin-bottom: 1.25rem;
-}
-
-/* Tên sản phẩm nhỏ dưới hình */
-.related-item .mt-2 {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #374151;
-  line-height: 1.4;
-}
-
-
-.thumb-item.active { border: 2px solid #28a745; }
-.tab-content { display: block; }
-.prescription-pill { color: red; font-weight: bold; }
-.related-item { min-width: 150px; text-decoration: none; color: black; }
-
-.thumb-list { display: flex; gap: 8px; margin-top: 10px; }
-.thumb-item { border: 1px solid #eee; background: #fff; padding: 4px; cursor: pointer; }
-.thumb-item img { width: 60px; height: 60px; object-fit: cover; }
-.main-image { width: 100%; border-radius: 8px; height: 350px; object-fit: contain; background-color: #f8f9fa; }
-
-
-.tab-btn.active { 
-  background-color: #0062cc; 
-  color: #fff; 
-}
-</style>
