@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string TenThuoc { get; set; } = string.Empty;
-        public string? HinhAnh { get; set; }
+        public string HinhAnhChinh { get; set; }
         public string? TenDanhMuc { get; set; }
 
         // Giá bán hiện tại (lấy từ đơn vị tính cơ bản)

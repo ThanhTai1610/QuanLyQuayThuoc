@@ -77,7 +77,7 @@ namespace QuanLyQuayThuoc.Services
                 TenThuoc = t.TenThuoc,
 
                 // ⬇️ Đổi từ HinhAnhChinh thành HinhAnh cho khớp với DTO của bạn
-                HinhAnh = t.HinhAnhChinh,
+                HinhAnhChinh = t.HinhAnhChinh,
 
                 // Có thể bổ sung lấy giá bán cơ bản (nếu Repository của bạn đã include DonViTinhs)
                 GiaBan = t.DonViTinhs?.FirstOrDefault(d => d.LaDonViCoBan == true)?.GiaBan ?? 0

@@ -25,7 +25,7 @@
               -{{ product.phanTramGiamGia }}%
             </span>
 
-            <img :src="getImageUrl(product.hinhAnh)" :alt="product.tenThuoc" class="pharmacy-product-image">
+            <img :src="getImageUrl(product.hinhAnhChinh)" :alt="product.tenThuoc" class="pharmacy-product-image">
 
             <div class="pharmacy-product-meta">{{ product.tenDanhMuc }}</div>
             <h3 class="pharmacy-product-name">{{ product.tenThuoc }}</h3>
@@ -64,9 +64,18 @@ const taiDanhSachSanPham = async () => {
 };
 
 const getImageUrl = (path) => {
-  if (!path) return '/images/no-image.png';
-  if (path.startsWith('http')) return path;
-  return `https://localhost:7070${path}`;
+  // 1. Nếu không có path, trả về ảnh mặc định
+  if (!path) return 'https://via.placeholder.com/300x300.png?text=No+Image';
+
+  // 2. Kiểm tra nếu path đã là một link đầy đủ (bắt đầu bằng http hoặc https)
+  // Sử dụng .trim() để loại bỏ khoảng trắng thừa nếu có
+  if (path.trim().startsWith('http')) {
+    return path.trim(); 
+  }
+
+  // 3. Nếu là đường dẫn nội bộ (ví dụ: /images/sanpham.jpg)
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `https://localhost:7070${cleanPath}`;
 };
 
 const formatPrice = (value) => {

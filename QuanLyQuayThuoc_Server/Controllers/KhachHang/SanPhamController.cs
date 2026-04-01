@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.DTOs.SanPham;
+using QuanLyQuayThuoc.Repository.Interfaces;
 
 namespace QuanLyQuayThuoc.Controllers.KhachHang
 {
@@ -10,12 +11,15 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
     public class SanPhamController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly ISanPhamRepository _repo;
 
-        public SanPhamController(ApplicationDbContext context)
+        public SanPhamController(ApplicationDbContext context, ISanPhamRepository repo)
         {
             _context = context;
+            _repo = repo;
         }
 
+        // GET api/SanPham/trang-chu
         [HttpGet("trang-chu")]
         public async Task<ActionResult<IEnumerable<SanPhamCardDto>>> GetSanPhamTrangChu()
         {
@@ -27,9 +31,7 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                                   {
                                       Id = t.MaThuoc,
                                       TenThuoc = t.TenThuoc,
-                                      // Nối thêm đường dẫn thư mục để Frontend nhận được link đầy đủ
-                                      // Bỏ chữ wwwroot đi, chỉ bắt đầu từ dấu gạch chéo /
-                                      HinhAnh = "/images/products/" + t.HinhAnhChinh,
+                                      HinhAnhChinh = t.HinhAnhChinh,
                                       TenDanhMuc = d.TenDanhMuc,
                                       GiaBan = dvt.GiaBan ?? 0,
                                       GiaCu = (dvt.GiaBan * 1.2m) ?? 0,
@@ -41,6 +43,25 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                                  .ToListAsync();
 
             return Ok(sanPhams);
+        }
+
+
+        [HttpGet("search-quick")]
+        public async Task<ActionResult<IEnumerable<SanPhamSearchDto>>> SearchQuick([FromQuery] string q)
+        {
+            // Trả về rỗng nếu không có từ khóa
+            if (string.IsNullOrWhiteSpace(q))
+                return Ok(new List<SanPhamSearchDto>());
+
+            try
+            {
+                var results = await _repo.SearchQuickAsync(q);
+                return Ok(results);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Lỗi tìm kiếm", error = ex.Message });
+            }
         }
     }
 }

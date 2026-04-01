@@ -280,15 +280,17 @@ watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => {
 watch(() => route.query.q, (newVal) => {
   tuKhoa.value = newVal || '';
   loadData(true);
-});
+}, { immediate: true });
 
-// Sửa lại hàm getImageUrl để không bị dính sát URL
 const getImageUrl = (path) => {
-  if (!path) return '/images/default-product.png';
+  // 1. Nếu không có đường dẫn, trả về ảnh mặc định (placeholder)
+  if (!path) return 'https://via.placeholder.com/300x300.png?text=No+Image';
+
+  // 2. Nếu đường dẫn bắt đầu bằng http hoặc https (link mạng), dùng luôn link đó
   if (path.startsWith('http')) return path;
-  // Thêm dấu / nếu path chưa có
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `https://localhost:7070${cleanPath}`;
+
+  // 3. Nếu là đường dẫn cục bộ (ví dụ: /images/thuoc.jpg), nối với URL của Backend
+  return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
 const formatGia = (value) =>
@@ -296,7 +298,6 @@ const formatGia = (value) =>
 
 onMounted(() => {
   loadSidebar();
-  loadData();
 });
 </script>
 

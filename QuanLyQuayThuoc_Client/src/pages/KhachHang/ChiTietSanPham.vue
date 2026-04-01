@@ -156,6 +156,7 @@ import '../../assets/css/product-detail-page.css';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import { authState } from '../../api/auth';
 
 const route = useRoute();
 
@@ -200,9 +201,9 @@ const formatTien = (so) => {
 };
 
 const getImageUrl = (path) => {
-  if (!path) return '/images/no-image.png';
+  if (!path) return 'https://via.placeholder.com/400x400.png?text=Duoc+Pham';
   if (path.startsWith('http')) return path;
-  return `https://localhost:7070${path}`;
+  return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
 const loadProduct = async () => {
@@ -281,7 +282,7 @@ const themGioHang = async () => {
   }
 
   const payload = {
-    maKhachHang: 1, 
+    maKhachHang: authState.user.id, 
     maThuoc: thuoc.value.maThuoc,
     maDvt: activeUnit.maDvt,
     soLuong: 1
