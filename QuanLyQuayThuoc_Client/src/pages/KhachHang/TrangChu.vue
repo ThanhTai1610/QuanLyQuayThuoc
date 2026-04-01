@@ -83,7 +83,7 @@
         </div>
       </div>
     </div>
-
+    <BenhTheoMua />
     <!-- Banner đăng ký -->
     <div class="site-section bg-image overlay" style="background-image: url('/images/hero_bg_2.jpg');">
       <div class="container">
@@ -175,6 +175,7 @@ import person1 from '../../assets/images/person_1.jpg';
 import person2 from '../../assets/images/person_2.jpg';
 import person3 from '../../assets/images/person_3.jpg';
 import person4 from '../../assets/images/person_4.jpg';
+import BenhTheoMua from './BenhTheoMua.vue';
 
 const bestSellers = [
   {

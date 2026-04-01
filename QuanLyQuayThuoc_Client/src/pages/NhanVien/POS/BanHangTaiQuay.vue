@@ -132,6 +132,8 @@ const goiApiThanhToan = async (chiTietThanhToan) => {
   if (cacSanPhamTrongGio.value.length === 0) return;
 
   try {
+    const token = localStorage.getItem('token');
+    
     const dto = {
       maKhachHang: 0,
       phuongThucThanhToan: chiTietThanhToan.phuongThuc === 'tien-mat' ? 'tienmat' : 'chuyenkhoan',
@@ -146,7 +148,12 @@ const goiApiThanhToan = async (chiTietThanhToan) => {
 
     const ketQua = await axios.post(
       'https://localhost:7070/api/BanHang/thanh-toan',
-      dto
+      dto,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     );
 
     if (ketQua.data.success) {

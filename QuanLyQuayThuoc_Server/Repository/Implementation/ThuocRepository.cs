@@ -2,7 +2,7 @@
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.Models;
 
-namespace QuanLyQuayThuoc.Repository
+namespace QuanLyQuayThuoc.Repositories
 {
     public class ThuocRepository : IThuocRepository
     {

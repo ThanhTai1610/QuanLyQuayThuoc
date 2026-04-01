@@ -7,7 +7,9 @@ using QuanLyQuayThuoc.Services.Implementation;
 using Microsoft.AspNetCore.Authentication.JwtBearer; // Giải quyết lỗi JwtBearerDefaults
 using Microsoft.IdentityModel.Tokens;
 using QuanLyQuayThuoc.Helpers;
-using System.Text;                                  // Giải quyết lỗi Encoding
+using System.Text;
+using QuanLyQuayThuoc.Repository.Interfaces;
+using QuanLyQuayThuoc.Repository.Implementation;                                  // Giải quyết lỗi Encoding
 
 // ... các phần Using giữ nguyên ...
 
@@ -31,7 +33,11 @@ builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
 builder.Services.AddScoped<IKhoRepository, KhoRepository>();
 builder.Services.AddScoped<INguoiDungService, NguoiDungService>();
 builder.Services.AddScoped<IBanHangService, BanHangService>();
+builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
+builder.Services.AddScoped<IGioHangService, GioHangService>();
+builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
 builder.Services.AddScoped<JwtHelper>();
+builder.Services.AddScoped<ISanPhamRepository, SanPhamRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
