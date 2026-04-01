@@ -271,3 +271,101 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.site-wrap, 
+.site-wrap h1, .site-wrap h2, .site-wrap h3, 
+.site-wrap p, .site-wrap span, .site-wrap select, .site-wrap button {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased; 
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* Tiêu đề mục (Thành phần, Công dụng...) */
+.tab-content h3 {
+  font-size: 1.15rem;
+  font-weight: 600; 
+  color: #111827; 
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Nội dung chữ mô tả */
+.tab-content p {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #4b5563; 
+  line-height: 1.6; 
+}
+
+
+.related-card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1.25rem;
+}
+
+/* Tên sản phẩm nhỏ dưới hình */
+.related-item .mt-2 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.4;
+}
+
+
+.thumb-item.active { border: 2px solid #28a745; }
+.tab-content { display: block; }
+.prescription-pill { color: red; font-weight: bold; }
+.related-item { min-width: 150px; text-decoration: none; color: black; }
+
+.thumb-list { display: flex; gap: 8px; margin-top: 10px; }
+.thumb-item { border: 1px solid #eee; background: #fff; padding: 4px; cursor: pointer; }
+.thumb-item img { width: 60px; height: 60px; object-fit: cover; }
+.main-image { width: 100%; border-radius: 8px; height: 350px; object-fit: contain; background-color: #f8f9fa; }
+
+
+.tab-btn.active { 
+  background-color: #0062cc; 
+  color: #fff; 
+}
+
+.quantity-controls {
+  border: 1px solid #ced4da;
+  border-radius: 20px; /* Bo tròn giống hình mẫu */
+  overflow: hidden;
+  display: flex;
+  width: fit-content;
+}
+
+.qty-btn {
+  background: #fff;
+  border: none;
+  padding: 5px 15px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.qty-input {
+  width: 50px;
+  text-align: center;
+  border: none;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+  font-weight: 600;
+  outline: none;
+}
+
+/* Ẩn mũi tên mặc định của input number */
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
