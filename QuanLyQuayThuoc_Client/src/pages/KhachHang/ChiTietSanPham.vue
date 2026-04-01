@@ -328,4 +328,3 @@ watch(() => route.params.id, (newId) => {
   if (newId) loadProduct();
 });
 </script>
-
