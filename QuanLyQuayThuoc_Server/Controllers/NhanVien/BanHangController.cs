@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QuanLyQuayThuoc.DTOs.DonHang;
 using QuanLyQuayThuoc.Services.Interfaces;
 using System;
@@ -31,6 +32,7 @@ namespace QuanLyQuayThuoc.Controllers
             return Ok(result);
         }
 
+        [Authorize]
         [HttpPost("thanh-toan")]
         public async Task<IActionResult> ThanhToan([FromBody] TaoDonHangDto dto)
         {
@@ -40,7 +42,14 @@ namespace QuanLyQuayThuoc.Controllers
                 {
                     return BadRequest("Danh sách hàng hóa không được để trống.");
                 }
-                int maNhanVien = 5;
+                var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+                if (userIdClaim == null)
+                {
+                    return Unauthorized("Không tìm thấy thông tin nhân viên. Vui lòng đăng nhập lại.");
+                }
+
+                int maNhanVien = int.Parse(userIdClaim.Value);
                 var maDonHang = await _banHangService.ThanhToanTaiQuayAsync(dto, maNhanVien);
                 return Ok(new
                 {

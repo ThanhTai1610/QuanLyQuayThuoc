@@ -33,6 +33,9 @@ builder.Services.AddScoped<IDonHangRepository, DonHangRepository>();
 builder.Services.AddScoped<IKhoRepository, KhoRepository>();
 builder.Services.AddScoped<INguoiDungService, NguoiDungService>();
 builder.Services.AddScoped<IBanHangService, BanHangService>();
+builder.Services.AddScoped<IGioHangRepository, GioHangRepository>();
+builder.Services.AddScoped<IGioHangService, GioHangService>();
+builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
 builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<ISanPhamRepository, SanPhamRepository>();
 

@@ -1,6 +1,6 @@
 ﻿using QuanLyQuayThuoc.Models;
 
-namespace QuanLyQuayThuoc.Repository
+namespace QuanLyQuayThuoc.Repositories
 {
     public interface IThuocRepository
     {

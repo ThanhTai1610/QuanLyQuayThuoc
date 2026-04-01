@@ -1,5 +1,5 @@
 ﻿using QuanLyQuayThuoc.DTOs.SanPham;
-using QuanLyQuayThuoc.Repository;
+using QuanLyQuayThuoc.Repositories;
 
 namespace QuanLyQuayThuoc.Services
 {
