@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace QuanLyQuayThuoc.Controllers.KhachHang
 {
-    [Route("api/[controller]")]
+    [Route("api/GioHang")]
     [ApiController]
     // [Authorize] // Mở ra nếu bạn đã dùng JWT Token để bảo mật
     public class GioHangController : ControllerBase

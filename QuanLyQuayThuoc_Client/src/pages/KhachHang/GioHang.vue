@@ -95,7 +95,10 @@
                         </div>
                       </div>
                     </div>
-                    <div class="cart-price">{{ formatGia(item.giaBan) }}</div>
+                    <div class="cart-price-wrapper">
+                      <div class="text-muted small">Đơn giá: {{ formatGia(item.giaBan) }}</div>
+                      <div class="font-weight-bold">Thành tiền: {{ formatGia(item.giaBan * item.soLuong) }}</div>
+                    </div>
                     <a href="#" class="cart-remove text-danger small d-inline-block mt-1"
                       @click.prevent="xoaSanPham(item)">Xóa</a>
                   </div>
@@ -192,12 +195,18 @@ const apDungThanhCong = ref(false);
 const loadGioHang = async () => {
   dangTai.value = true;
   try {
-    const res = await axiosClient.get('/GioHang'); // Vì .env đã có /api
-    // Ép kiểu: Nếu res.data null thì lấy mảng rỗng
-    gioHang.value = res.data || []; 
+    // Vì axiosClient đã return response.data, nên 'res' ở đây chính là mảng dữ liệu
+    const res = await axiosClient.get('/GioHang'); 
+    
+    console.log("Dữ liệu thực tế từ API:", res); 
+
+    // Gán trực tiếp res cho gioHang.value
+    // Nếu res null/undefined thì gán mảng rỗng để tránh lỗi giao diện
+    gioHang.value = res || []; 
+    
   } catch (err) {
     console.error('Lỗi API:', err);
-    gioHang.value = []; // QUAN TRỌNG: Lỗi thì gán mảng rỗng để không hỏng giao diện
+    gioHang.value = [];
   } finally {
     dangTai.value = false;
   }
@@ -227,13 +236,12 @@ const capNhatSoLuong = (item, val) => {
 // ── Đổi đơn vị tính (DonViTinh) ──
 // Khi đổi MaDVT, cập nhật giá tương ứng
 const doiDonVi = (item) => {
-  // Lưu ý: maDVT trong danh sách DVT trả về từ Backend có thể là maDvt (chữ v thường) 
-  // tùy vào cấu hình JSON. Hãy kiểm tra chính xác tên thuộc tính.
   if (!item.danhSachDVT) return;
+  // Kiểm tra kỹ: API trả về maDVT hay maDvt? 
+  // Dựa trên hình ảnh JSON, nó là maDVT
   const dvt = item.danhSachDVT.find(d => d.maDVT === item.maDVT);
   if (dvt) {
     item.giaBan = dvt.giaBan;
-    // Cập nhật luôn tenDonVi để hiển thị đúng
     item.tenDonVi = dvt.tenDonVi;
   }
 };
