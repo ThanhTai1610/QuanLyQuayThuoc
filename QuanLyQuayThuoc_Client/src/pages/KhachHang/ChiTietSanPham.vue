@@ -64,6 +64,15 @@
               <span class="prescription-pill">🔴 Thuốc kê đơn - Vui lòng mang toa của bác sĩ</span>
             </div>
 
+            <div class="quantity-wrapper mt-4 d-flex align-items-center">
+            <label class="mr-3 mb-0"><strong>Chọn số lượng:</strong></label>
+            <div class="quantity-controls d-flex align-items-center">
+                <button @click="giamSoLuong" class="qty-btn" :disabled="soLuong <= 1">-</button>
+                <input type="number" v-model.number="soLuong" class="qty-input" min="1" readonly />
+                <button @click="tangSoLuong" class="qty-btn">+</button>
+              </div>
+            </div>
+
             <div class="action-row mt-4">
               <button @click="themGioHang" class="btn btn-primary btn-action mr-2">Thêm vào giỏ hàng</button>
               <button class="btn btn-success btn-action">Mua ngay</button>
@@ -155,10 +164,12 @@
 import '../../assets/css/product-detail-page.css';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
+// Import axiosClient đã cấu hình interceptor để dùng token và baseURL
+import axiosClient from '../../api/axiosClient'; 
 
 const route = useRoute();
 
+// --- STATE ---
 const thuoc = ref({
   tenThuoc: '',
   nhaSanXuat: '',
@@ -188,12 +199,15 @@ const selectedUnitIndex = ref(0);
 const activeTab = ref('dacdiem');
 const dsSanPhamTuongTu = ref([]);
 const dsThuongMuaCung = ref([]); 
+const soLuong = ref(1); // Số lượng chọn mua
 
+// --- COMPUTED ---
 const tongTonKho = computed(() => {
   if (!thuoc.value.loHangs) return 0;
   return thuoc.value.loHangs.reduce((sum, lo) => sum + lo.soLuongTon, 0);
 });
 
+// --- HELPERS ---
 const formatTien = (so) => {
   if (so === undefined || so === null) return '0đ';
   return so.toLocaleString('vi-VN') + 'đ';
@@ -205,14 +219,31 @@ const getImageUrl = (path) => {
   return `https://localhost:7070${path}`;
 };
 
+// --- LOGIC TĂNG GIẢM SỐ LƯỢNG ---
+const tangSoLuong = () => {
+  if (soLuong.value < tongTonKho.value) {
+    soLuong.value++;
+  } else {
+    alert("Số lượng đạt giới hạn tồn kho!");
+  }
+};
+
+const giamSoLuong = () => {
+  if (soLuong.value > 1) {
+    soLuong.value--;
+  }
+};
+
+// --- CALL APIS ---
 const loadProduct = async () => {
   const productId = route.params.id;
   try {
-    const response = await axios.get(`https://localhost:7070/api/ThuocKhachHang/${productId}`);
-    const data = response.data;
-
+    // Dùng axiosClient: không cần ghi lại baseURL https://localhost:7070/api
+    const data = await axiosClient.get(`/ThuocKhachHang/${productId}`);
+    
     thuoc.value = data;
 
+    // Xử lý ảnh
     const images = [];
     if (data.hinhAnhChinh) images.push(data.hinhAnhChinh);
     if (data.hinhAnhThuocs && data.hinhAnhThuocs.length > 0) {
@@ -224,33 +255,30 @@ const loadProduct = async () => {
     danhSachAnh.value = images;
     anhHienTai.value = data.hinhAnhChinh || images[0] || '';
 
+    // Reset trạng thái
     selectedUnitIndex.value = 0;
     activeTab.value = 'dacdiem';
+    soLuong.value = 1;
 
     if (data.maDanhMuc) {
       loadRelatedProducts(data.maDanhMuc, productId);
     }
-
     loadFrequentlyBoughtProducts(productId);
 
   } catch (error) {
-    console.error('Không thể tải dữ liệu thuốc từ API:', error);
+    console.error('Không thể tải dữ liệu thuốc:', error);
   }
 };
 
 const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
-  if (!maDanhMuc) return;
   try {
-    const response = await axios.get(
-      `https://localhost:7070/api/ThuocKhachHang/Related`, 
-      {
-        params: {
-          maDanhMuc: Number(maDanhMuc),
-          currentProductId: Number(currentProductId)
-        }
+    const data = await axiosClient.get(`/ThuocKhachHang/Related`, {
+      params: {
+        maDanhMuc: Number(maDanhMuc),
+        currentProductId: Number(currentProductId)
       }
-    );
-    dsSanPhamTuongTu.value = response.data;
+    });
+    dsSanPhamTuongTu.value = data;
   } catch (error) {
     console.error('Lỗi khi tải thuốc tương tự:', error);
   }
@@ -258,20 +286,16 @@ const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
 
 const loadFrequentlyBoughtProducts = async (currentProductId) => {
   try {
-    const response = await axios.get(
-      `https://localhost:7070/api/ThuocKhachHang/FrequentlyBoughtWith`, 
-      {
-        params: { 
-          currentProductId: Number(currentProductId) 
-        }
-      }
-    );
-    dsThuongMuaCung.value = response.data;
+    const data = await axiosClient.get(`/ThuocKhachHang/FrequentlyBoughtWith`, {
+      params: { currentProductId: Number(currentProductId) }
+    });
+    dsThuongMuaCung.value = data;
   } catch (error) {
     console.error('Lỗi khi tải thuốc thường mua cùng:', error);
   }
 };
 
+// HÀM DUY NHẤT ĐỂ THÊM VÀO GIỎ HÀNG
 const themGioHang = async () => {
   const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
   
@@ -281,21 +305,22 @@ const themGioHang = async () => {
   }
 
   const payload = {
-    maKhachHang: 1, 
+    maKhachHang: 1, // Bạn có thể lấy từ User Store/localStorage nếu có
     maThuoc: thuoc.value.maThuoc,
     maDvt: activeUnit.maDvt,
-    soLuong: 1
+    soLuong: soLuong.value 
   };
 
   try {
-    await axios.post('https://localhost:7070/api/ThuocKhachHang/AddToCart', payload);
+    await axiosClient.post('/ThuocKhachHang/AddToCart', payload);
     alert('Thêm vào giỏ hàng thành công!');
   } catch (error) {
     console.error('Lỗi khi thêm giỏ hàng:', error);
-    alert('Không thể thêm vào giỏ hàng.');
+    // Nếu lỗi 401, axiosClient sẽ tự chuyển hướng người dùng đi đăng nhập
   }
 };
 
+// --- LIFECYCLE ---
 onMounted(loadProduct);
 
 watch(() => route.params.id, (newId) => {
@@ -361,5 +386,43 @@ watch(() => route.params.id, (newId) => {
 .tab-btn.active { 
   background-color: #0062cc; 
   color: #fff; 
+}
+
+.quantity-controls {
+  border: 1px solid #ced4da;
+  border-radius: 20px; /* Bo tròn giống hình mẫu */
+  overflow: hidden;
+  display: flex;
+  width: fit-content;
+}
+
+.qty-btn {
+  background: #fff;
+  border: none;
+  padding: 5px 15px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+}
+
+.qty-input {
+  width: 50px;
+  text-align: center;
+  border: none;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+  font-weight: 600;
+  outline: none;
+}
+
+/* Ẩn mũi tên mặc định của input number */
+.qty-input::-webkit-inner-spin-button,
+.qty-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 </style>
