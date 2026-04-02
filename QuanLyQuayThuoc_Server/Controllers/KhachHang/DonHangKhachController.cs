@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.Dtos;
+using QuanLyQuayThuoc.DTOs.NguoiDung;
 using System.Security.Claims;
 
 namespace QuanLyQuayThuoc.Controllers.KhachHang
@@ -103,6 +104,27 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
 
             if (order == null) return NotFound(new { message = "Không tìm thấy đơn hàng" });
             return Ok(order);
+        }
+
+        [HttpPut("huy/{id}")]
+        public async Task<IActionResult> HuyDonHang(int id, [FromBody] HuyDonHangDto dto)
+        {
+            var donHang = await _context.DonHangs.FindAsync(id);
+
+            if (donHang == null) return NotFound(new { message = "Không tìm thấy đơn hàng" });
+
+            // Chỉ cho phép hủy khi đơn hàng đang ở trạng thái 'Chờ xử lý'
+            if (donHang.TrangThai != "Chờ xử lý")
+            {
+                return BadRequest(new { message = "Không thể hủy đơn hàng ở trạng thái này." });
+            }
+
+            donHang.TrangThai = "Đã hủy";
+            donHang.GhiChu = $"Lý do hủy: {dto.LyDo}"; // Lưu lý do vào cột GhiChu hoặc cột mới nếu bạn có
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Hủy đơn hàng thành công" });
         }
     }
 }
