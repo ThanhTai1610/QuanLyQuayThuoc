@@ -48,9 +48,22 @@
               </select>
             </div>
 
-            <div class="price-row">
-              <div class="gia-ban">{{ formatTien(thuoc.donViTinhs[selectedUnitIndex]?.giaBan || 0) }}</div>
-              <div class="gia-note">/ {{ thuoc.donViTinhs[selectedUnitIndex]?.tenDonVi }}</div>
+            <div class="price-row custom-price-layout">
+              <div class="main-unit-price-wrapper d-flex align-items-end">
+                <div class="gia-ban text-danger font-weight-bold" style="font-size: 28px; line-height: 1;">
+                  {{ formatTien(thuoc.donViTinhs[selectedUnitIndex]?.giaBan || 0) }}
+                </div>
+                
+                <div class="gia-note text-muted small ml-1 pb-1">
+                  / {{ thuoc.donViTinhs[selectedUnitIndex]?.tenDonVi }}
+                </div>
+              </div>
+              
+              <div class="total-price-wrapper mt-2 d-block">
+                <div class="font-weight-bold text-dark" style="font-size: 16px;">
+                  Thành tiền: {{ formatTien((thuoc.donViTinhs[selectedUnitIndex]?.giaBan || 0) * soLuong) }}
+                </div>
+              </div>
             </div>
 
             <div class="stock-row">
@@ -163,13 +176,14 @@
 <script setup>
 import '../../assets/css/product-detail-page.css';
 import { ref, onMounted, watch, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+
 // Import axiosClient đã cấu hình interceptor để dùng token và baseURL
 import axiosClient from '../../api/axiosClient'; 
 import { authState } from '../../api/auth'; // Kiểm tra đúng đường dẫn đến file auth.js của Tài
-
+import Swal from 'sweetalert2';
 const route = useRoute();
-
+const router = useRouter();
 // --- STATE ---
 const thuoc = ref({
   tenThuoc: '',
@@ -296,28 +310,64 @@ const loadFrequentlyBoughtProducts = async (currentProductId) => {
   }
 };
 
+const isLoggedIn = computed(() => !!authState.user);
 // HÀM DUY NHẤT ĐỂ THÊM VÀO GIỎ HÀNG
+// 1. Đảm bảo chỉ có DUY NHẤT một khai báo này
 const themGioHang = async () => {
-  const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
-  
-  if (!activeUnit) {
-    alert('Vui lòng chọn đơn vị tính hợp lệ!');
+  // 1. Kiểm tra đăng nhập (Nới lỏng điều kiện để test)
+  if (!authState.user) {
+    Swal.fire({
+      title: 'Thông báo',
+      text: 'Vui lòng đăng nhập để thực hiện chức năng này!',
+      icon: 'warning',
+      confirmButtonText: 'Đăng nhập ngay',
+      showCancelButton: true,
+      cancelButtonText: 'Để sau'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/dang-nhap'); 
+      }
+    });
     return;
   }
 
+  // 2. Lấy đơn vị tính đã chọn
+  const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
+  if (!activeUnit) {
+    Swal.fire('Lỗi', 'Vui lòng chọn đơn vị tính!', 'error');
+    return;
+  }
+
+  // 3. Payload: PHẢI VIẾT HOA chữ cái đầu để khớp với ThemVaoGioDto ở Backend
   const payload = {
-    maKhachHang: authState.user.id, 
-    maThuoc: thuoc.value.maThuoc,
-    maDvt: activeUnit.maDvt,
-    soLuong: soLuong.value 
+    MaThuoc: thuoc.value.maThuoc,
+    MaDvt: activeUnit.maDvt,
+    SoLuong: soLuong.value 
   };
 
+  console.log("Dữ liệu gửi đi:", payload);
+
   try {
-    await axiosClient.post('/ThuocKhachHang/AddToCart', payload);
-    alert('Thêm vào giỏ hàng thành công!');
+    // 4. Gọi API: Đảm bảo đường dẫn là 'GioHang/them' 
+    // (Bỏ dấu / ở đầu nếu axiosClient đã có /api/ ở cuối baseURL)
+    await axiosClient.post('GioHang/them', payload);
+    
+    Swal.fire({
+      title: 'Thành công!',
+      text: 'Sản phẩm đã được thêm vào giỏ hàng',
+      icon: 'success',
+      confirmButtonText: 'Xem giỏ hàng',
+      showCancelButton: true,
+      cancelButtonText: 'Ở lại'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/gio-hang');
+      }
+    });
   } catch (error) {
     console.error('Lỗi khi thêm giỏ hàng:', error);
-    // Nếu lỗi 401, axiosClient sẽ tự chuyển hướng người dùng đi đăng nhập
+    // Nếu vẫn lỗi 404, hãy kiểm tra lại baseURL trong axiosClient có kết thúc bằng /api/ chưa
+    Swal.fire('Thất bại', 'Không tìm thấy đường dẫn API (404) hoặc lỗi server.', 'error');
   }
 };
 
