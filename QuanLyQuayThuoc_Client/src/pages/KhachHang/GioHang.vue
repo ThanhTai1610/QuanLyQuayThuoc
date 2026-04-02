@@ -79,6 +79,9 @@
                         </option>
                       </select>
                     </div>
+                    <div v-if="item.maLo === 0" class="text-danger">
+                      <small>Sản phẩm này hiện đang hết hàng!</small>
+                    </div>
                   </div>
                   <div class="cart-controls">
                     <div class="cart-qty-group mb-1">
@@ -196,14 +199,14 @@ const loadGioHang = async () => {
   dangTai.value = true;
   try {
     // Vì axiosClient đã return response.data, nên 'res' ở đây chính là mảng dữ liệu
-    const res = await axiosClient.get('/GioHang'); 
-    
-    console.log("Dữ liệu thực tế từ API:", res); 
+    const res = await axiosClient.get('/GioHang');
+
+    console.log("Dữ liệu thực tế từ API:", res);
 
     // Gán trực tiếp res cho gioHang.value
     // Nếu res null/undefined thì gán mảng rỗng để tránh lỗi giao diện
-    gioHang.value = res || []; 
-    
+    gioHang.value = res || [];
+
   } catch (err) {
     console.error('Lỗi API:', err);
     gioHang.value = [];
@@ -214,7 +217,7 @@ const loadGioHang = async () => {
 
 // ── Tính tổng ──
 const tamTinh = computed(() => {
-  if (!Array.isArray(gioHang.value)) return 0;  
+  if (!Array.isArray(gioHang.value)) return 0;
   return gioHang.value.reduce((sum, item) => sum + (item.giaBan || 0) * (item.soLuong || 0), 0);
 });
 const tongTien = computed(() => tamTinh.value - soTienGiam.value);
