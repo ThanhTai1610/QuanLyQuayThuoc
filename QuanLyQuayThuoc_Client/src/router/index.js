@@ -19,6 +19,7 @@ const routes = [
     path: '/',
     component: () => import('../Layouts/LayoutNguoiDung.vue'),
     children: [
+      { path: 'dia-chi', name: 'QuanLySoDiaChi', component: () => import('../pages/KhachHang/QuanLySoDiaChi.vue') },
       { path: '', name: 'TrangChu', component: () => import('../pages/KhachHang/TrangChu.vue') },
       { path: 'san-pham', name: 'DanhSachSanPham', component: () => import('../pages/KhachHang/DanhSachSanPham.vue') },
       { path: 'chi-tiet/:id', name: 'ChiTietSanPham', component: () => import('../pages/KhachHang/ChiTietSanPham.vue') },
