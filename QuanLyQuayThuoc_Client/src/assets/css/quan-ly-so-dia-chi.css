@@ -1,0 +1,590 @@
+/* Trang Quản lý sổ địa chỉ — đồng bộ chữ với account-profile.css */
+
+.ql-breadcrumb {
+  background-color: #f5f7fb;
+  padding: 12px 0;
+  font-size: 14px;
+}
+
+.ql-breadcrumb .breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.ql-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+  content: "/";
+  color: #94a3b8;
+}
+
+.ql-wrapper {
+  background-color: #f1f3f8;
+  padding: 24px 0 40px;
+  min-height: 60vh;
+}
+
+.ql-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ql-profile-card {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.ql-avatar {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.ql-avatar .icon-user {
+  font-size: 26px;
+  color: #ffffff;
+}
+
+.ql-profile-name {
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  line-height: 1.35;
+}
+
+.ql-profile-phone {
+  margin-top: 4px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.ql-menu {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 16px;
+  margin: 0;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  border: none;
+}
+
+.ql-menu li {
+  margin-bottom: 4px;
+}
+
+.ql-menu a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2933;
+  text-decoration: none;
+  border-radius: 8px;
+  border-left: 4px solid transparent;
+  margin-left: -4px;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ql-menu a:hover {
+  background-color: #eef2ff;
+  color: #2563eb;
+}
+
+.ql-menu li.active a {
+  color: #ffffff;
+  background-color: #2563eb;
+  border-left-color: transparent;
+}
+
+.ql-menu a .icon-keyboard_arrow_right {
+  font-size: 16px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.ql-menu li.active a .icon-keyboard_arrow_right {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.ql-toolbar-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  border: none;
+}
+
+.ql-main-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px 24px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  border: none;
+}
+
+.ql-main-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ql-main-header--toolbar {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.ql-main-header h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2933;
+  letter-spacing: normal;
+}
+
+.ql-btn-add {
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 20px;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+}
+
+.ql-add-address-panel {
+  margin-bottom: 24px;
+}
+
+.ql-add-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px 32px 32px;
+  box-shadow: 0 14px 42px rgba(15, 23, 42, 0.1);
+  border: 1px solid #dbe7ff;
+}
+
+.ql-add-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #e8eef2;
+}
+
+.ql-add-card-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2933;
+  letter-spacing: normal;
+}
+
+.ql-add-close {
+  border: none;
+  background: transparent;
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1;
+  color: #94a3b8;
+  padding: 0 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ql-add-close:hover {
+  color: #64748b;
+}
+
+.ql-add-form-grid .form-row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.ql-add-form-grid .form-row > [class*="col-"] {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.ql-input-lg {
+  min-height: 48px;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.ql-field-label--sm {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.ql-form-group-full {
+  margin-bottom: 8px;
+}
+
+.ql-form-row-bottom {
+  margin-top: 12px;
+  padding-top: 24px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.ql-default-row--inline {
+  justify-content: flex-end;
+  padding: 8px 0 0;
+}
+
+@media (max-width: 991.98px) {
+  .ql-default-row--inline {
+    justify-content: space-between;
+  }
+}
+
+.ql-add-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid #e8eef2;
+}
+
+.ql-btn-cancel {
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 28px;
+}
+
+.ql-address-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ql-address-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid #e8eef2;
+}
+
+.ql-address-item:last-child {
+  border-bottom: none;
+}
+
+.ql-address-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.ql-address-line1 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2933;
+  margin-bottom: 8px;
+  line-height: 1.45;
+}
+
+.ql-sep {
+  color: #cbd5e1;
+  font-weight: 400;
+  margin: 0 6px;
+}
+
+.ql-address-line {
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2933;
+  line-height: 1.55;
+  margin-bottom: 6px;
+}
+
+.ql-address-old {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.ql-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid #edf2f7;
+}
+
+.ql-tag .icon-home {
+  font-size: 14px;
+}
+
+.ql-address-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 400;
+  padding-top: 2px;
+}
+
+.ql-address-actions a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.ql-address-actions a:hover {
+  text-decoration: underline;
+}
+
+.ql-action-sep {
+  color: #cbd5e1;
+  user-select: none;
+}
+
+.ql-delete {
+  color: #dc2626 !important;
+}
+
+@media (max-width: 991.98px) {
+  .ql-address-item {
+    flex-direction: column;
+  }
+
+  .ql-address-actions {
+    padding-top: 0;
+  }
+}
+
+.ql-form-section-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.ql-form-section-label--recipient {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.ql-form-section-label--addr {
+  margin-top: 28px;
+  margin-bottom: 14px;
+}
+
+.ql-field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.ql-input:not(.ql-input-lg),
+.ql-select:not(.ql-input-lg) {
+  min-height: 43px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2933;
+}
+
+.ql-input.ql-input-lg,
+.ql-select.ql-input-lg {
+  border: 1px solid #e2e8f0;
+  color: #1f2933;
+}
+
+.ql-input:focus,
+.ql-select:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+select.ql-select.ql-input-lg {
+  height: auto;
+}
+
+.ql-input::placeholder {
+  color: #94a3b8;
+}
+
+.ql-chip-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ql-chip {
+  margin: 0;
+  cursor: pointer;
+}
+
+.ql-chip input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ql-chip span {
+  display: inline-block;
+  padding: 8px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1f2933;
+  background: #ffffff;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.ql-chip input:checked + span {
+  border-color: #2563eb;
+  color: #2563eb;
+  font-weight: 500;
+  background: #eff6ff;
+}
+
+.ql-chip input:focus + span {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.ql-default-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0 8px;
+}
+
+.ql-default-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+}
+
+.ql-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.ql-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ql-switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #cbd5e1;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.ql-switch-slider::before {
+  content: "";
+  position: absolute;
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 8px rgba(15, 23, 42, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.ql-switch input:checked + .ql-switch-slider {
+  background: #2563eb;
+}
+
+.ql-switch input:checked + .ql-switch-slider::before {
+  transform: translateX(24px);
+}
+
+.ql-btn-hoan-tat {
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 32px;
+  min-width: 180px;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+}
+
+/* Ghi đè theme-green (.btn font-weight:700) trên trang này — giống cảm giác chữ profile */
+.ql-toolbar-card .btn,
+.ql-add-actions .btn {
+  font-weight: 500 !important;
+}
+
+.ql-breadcrumb .breadcrumb-item,
+.ql-breadcrumb a {
+  font-weight: 400;
+}
+
+@media (max-width: 767.98px) {
+  .ql-wrapper {
+    padding: 16px 0 24px;
+  }
+
+  .ql-toolbar-card,
+  .ql-main-card {
+    border-radius: 8px;
+  }
+
+  .ql-add-card {
+    padding: 20px 18px 24px;
+    border-radius: 12px;
+  }
+
+  .ql-add-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ql-btn-hoan-tat,
+  .ql-btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -81,5 +81,62 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
 
             return Ok(dto);
         }
+        [HttpGet("BestSellers")]
+        public async Task<IActionResult> GetBestSellers()
+        {
+            try
+            {
+                // Bước 1: Tính toán ID và Số lượng bán ra (Tải về bộ nhớ bằng ToList)
+                var topSellingData = await _context.ChiTietDonHangs
+                    .Join(_context.LoHangs, ct => ct.MaLo, l => l.MaLo, (ct, l) => new { l.MaThuoc, ct.SoLuong })
+                    .GroupBy(x => x.MaThuoc)
+                    .Select(g => new {
+                        MaThuoc = g.Key,
+                        TongDaBan = g.Sum(x => (int?)x.SoLuong) ?? 0 // Dùng int? để tránh lỗi null
+                    })
+                    .OrderByDescending(x => x.TongDaBan)
+                    .Take(6)
+                    .ToListAsync();
+
+                if (!topSellingData.Any()) return Ok(new List<object>());
+
+                var ids = topSellingData.Select(x => x.MaThuoc).ToList();
+
+                // Bước 2: Lấy thông tin chi tiết các thuốc này từ DB
+                var productDetails = await _context.Thuocs
+                    .Where(t => ids.Contains(t.MaThuoc))
+                    .Select(t => new {
+                        Id = t.MaThuoc,
+                        Name = t.TenThuoc,
+                        Image = t.HinhAnhChinh,
+                        Origin = t.NuocSanXuat,
+                        Price = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0,
+                        Unit = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.TenDonVi).FirstOrDefault() ?? ""
+                    })
+                    .ToListAsync();
+
+                // Bước 3: Kết hợp dữ liệu (Thực hiện hoàn toàn trên RAM)
+                var result = productDetails.Select(p => new {
+                    p.Id,
+                    p.Name,
+                    p.Image,
+                    p.Origin,
+                    p.Price,
+                    p.Unit,
+                    // Lấy số lượng bán từ danh sách topSellingData đã tải ở Bước 1
+                    TotalSold = topSellingData.FirstOrDefault(x => x.MaThuoc == p.Id)?.TongDaBan ?? 0
+                })
+                .OrderByDescending(p => p.TotalSold)
+                .ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi ra console để Tài dễ debug
+                Console.WriteLine("Lỗi BestSellers: " + ex.Message);
+                return StatusCode(500, "Lỗi server: " + ex.Message);
+            }
+        }
     }
 }
