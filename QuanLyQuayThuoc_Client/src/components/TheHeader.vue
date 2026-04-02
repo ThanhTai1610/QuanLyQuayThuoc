@@ -46,48 +46,45 @@
               @focus="onFocus"
             />
 
-            <!-- SEARCH DROPDOWN -->
             <div v-if="showDropdown" class="lc-search-dropdown">
-              <!-- Loading -->
-              <div v-if="isLoading" class="lc-search-status">
-                <span class="lc-search-spinner"></span> Đang tìm kiếm...
-              </div>
+  <div v-if="isLoading" class="lc-search-status">
+    <span class="lc-search-spinner"></span> Đang tìm kiếm...
+  </div>
 
-              <!-- Results -->
-              <template v-else-if="searchResults.length > 0">
-                <a
-                  v-for="product in searchResults"
-                  :key="product.id"
-                  :href="`/san-pham/${product.id}`"
-                  class="lc-search-item"
-                  @click="closeDropdown"
-                >
-                  <img
-                    v-if="product.hinhAnhChinh"
-                    :src="product.hinhAnhChinh"
-                    class="lc-search-thumb"
-                    alt=""
-                    @error="(e) => (e.target.style.display = 'none')"
-                  />
-                  <div v-else class="lc-search-thumb-empty">💊</div>
-                  <div class="lc-search-info">
-                    <div class="lc-search-name">{{ product.tenThuoc }}</div>
-                    <div class="lc-search-cat">{{ product.tenDanhMuc }}</div>
-                  </div>
-                  <div class="lc-search-price">
-                    {{ formatPrice(product.giaBan) }}
-                  </div>
-                </a>
-                <div class="lc-search-viewall" @click="goToSearch">
-                  Xem tất cả kết quả cho "{{ searchQuery }}" →
-                </div>
-              </template>
+  <template v-else-if="searchResults.length > 0">
+    <router-link
+      v-for="product in searchResults"
+      :key="product.id"
+      :to="{ name: 'ChiTietSanPham', params: { id: product.id } }"
+      class="lc-search-item"
+      @click="closeDropdown"
+    >
+      <img
+        v-if="product.hinhAnhChinh"
+        :src="getImageUrl(product.hinhAnhChinh)"
+        class="lc-search-thumb"
+        alt="thumb"
+      />
+      <div v-else class="lc-search-thumb-empty">💊</div>
+      
+      <div class="lc-search-info">
+        <div class="lc-search-name">{{ product.tenThuoc }}</div>
+        <div class="lc-search-cat">{{ product.tenDanhMuc }}</div>
+      </div>
+      <div class="lc-search-price">
+        {{ formatPrice(product.giaBan) }}
+      </div>
+    </router-link>
 
-              <!-- No results -->
-              <div v-else class="lc-search-status">
-                Không tìm thấy sản phẩm nào cho "<strong>{{ searchQuery }}</strong>"
-              </div>
-            </div>
+    <div class="lc-search-viewall" @click="goToSearch">
+      Xem tất cả kết quả cho "{{ searchQuery }}" →
+    </div>
+  </template>
+
+  <div v-else class="lc-search-status">
+    Không tìm thấy sản phẩm nào cho "<strong>{{ searchQuery }}</strong>"
+  </div>
+</div>
           </div>
 
           <!-- ACTIONS -->
@@ -208,7 +205,12 @@ let searchTimer = null;
 const formatPrice = (price) => {
   return price.toLocaleString('vi-VN') + 'đ';
 };
-
+const getImageUrl = (path) => {
+  if (!path) return 'https://via.placeholder.com/100x100.png?text=Thuoc';
+  if (path.startsWith('http')) return path;
+  // Đảm bảo khớp với Port Backend của Tài
+  return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
+};
 const onSearchInput = () => {
   clearTimeout(searchTimer);
   const q = searchQuery.value.trim();
@@ -273,174 +275,3 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped>
-/* ===== ACCOUNT DROPDOWN ===== */
-.lc-header-account-wrapper {
-  position: relative;
-  display: inline-block;
-}
-.lc-header-account-wrapper:hover .lc-header-account-menu {
-  display: block;
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-.lc-header-account-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: #fff;
-  min-width: 220px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  padding: 10px 0;
-  z-index: 999;
-  display: none;
-  transition: all 0.3s ease;
-}
-.lc-header-account-menu a {
-  display: block;
-  padding: 10px 20px;
-  color: #333 !important;
-  font-size: 14px;
-  text-decoration: none;
-  transition: background 0.2s;
-}
-.lc-header-account-menu a:hover {
-  background: #f1f8f4;
-  color: #28a745 !important;
-}
-.dropdown-divider {
-  height: 0;
-  margin: 8px 0;
-  overflow: hidden;
-  border-top: 1px solid #e9ecef;
-}
-
-/* ===== SEARCH DROPDOWN ===== */
-.lc-header-search {
-  position: relative;
-}
-
-.lc-search-dropdown {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
-  z-index: 9999;
-  overflow: hidden;
-  min-width: 420px;
-  animation: dropdownFadeIn 0.18s ease;
-}
-
-@keyframes dropdownFadeIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.lc-search-status {
-  padding: 16px;
-  font-size: 13px;
-  color: #888;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-/* Loading spinner */
-.lc-search-spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #e0e0e0;
-  border-top-color: #28a745;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.lc-search-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  border-bottom: 1px solid #f3f3f3;
-  text-decoration: none;
-  transition: background 0.15s;
-  cursor: pointer;
-}
-.lc-search-item:last-of-type {
-  border-bottom: none;
-}
-.lc-search-item:hover {
-  background: #f6fbf8;
-}
-
-.lc-search-thumb {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid #f0f0f0;
-  flex-shrink: 0;
-}
-.lc-search-thumb-empty {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  background: #e9f5ee;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
-}
-
-.lc-search-info {
-  flex: 1;
-  min-width: 0;
-}
-.lc-search-name {
-  font-size: 14px;
-  color: #222;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.lc-search-cat {
-  font-size: 12px;
-  color: blue;
-  margin-top: 2px;
-}
-.lc-search-price {
-  font-size: 14px;
-  font-weight: 600;
-  color: red;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.lc-search-viewall {
-  display: block;
-  text-align: center;
-  padding: 12px 16px;
-  background: #f6fbf8;
-  color: black;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border-top: 1px solid #e9f5ee;
-  transition: background 0.15s;
-}
-.lc-search-viewall:hover {
-  background: #e4f5ec;
-}
-</style>

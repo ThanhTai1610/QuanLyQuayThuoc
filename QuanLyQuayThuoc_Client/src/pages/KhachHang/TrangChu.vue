@@ -36,34 +36,7 @@
 
     <SanPhamNhaThuoc />
 
-    <!-- Sản phẩm bán chạy -->
-    <div class="home-section home-best-seller">
-      <div class="container">
-        <div class="best-seller-wrapper">
-          <div class="best-seller-title-badge">Sản phẩm bán chạy</div>
-          <div class="row no-gutters align-items-stretch best-seller-row">
-            <div class="col-md-2 col-6 mb-3" v-for="item in bestSellers" :key="item.id">
-              <div class="best-seller-card">
-                <div class="best-seller-header">
-                  <span class="best-seller-dot"></span>
-                  <span class="best-seller-origin">{{ item.origin }}</span>
-                  <span v-if="item.discount" :class="['best-seller-discount', item.discountClass]">{{ item.discount }}</span>
-                </div>
-                <img :src="item.image" :alt="item.name" class="best-seller-image">
-                <div class="best-seller-name">{{ item.name }}</div>
-                <div class="best-seller-price">
-                  <span class="current">{{ item.price }}</span>
-                  <span class="unit">/ {{ item.unit }}</span>
-                </div>
-                <div v-if="item.oldPrice" class="best-seller-old-price">{{ item.oldPrice }}</div>
-                <div class="best-seller-pack" :class="{ 'best-seller-pack-tag': item.packTag }">{{ item.pack }}</div>
-                <button class="btn best-seller-btn btn-block">Chọn mua</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <SanPhamBanChay />
 
     <!-- Danh mục nổi bật -->
     <div class="home-section home-featured-categories">
@@ -164,51 +137,10 @@ import { onMounted } from 'vue';
 import HomeBanner from './HomeBanner.vue';
 import SanPhamNhaThuoc from './SanPhamNhaThuoc.vue';
 import ChatbotTuVan from './ChatbotTuVan.vue';
-
-import product01 from '../../assets/images/product_01.png';
-import product02 from '../../assets/images/product_02.png';
-import product03 from '../../assets/images/product_03.png';
-import product04 from '../../assets/images/product_04.png';
-import product05 from '../../assets/images/product_05.png';
-import product06 from '../../assets/images/product_06.png';
+import BenhTheoMua from './BenhTheoMua.vue';
+import SanPhamBanChay from './SanPhamBanChay.vue';
 import person1 from '../../assets/images/person_1.jpg';
 import person2 from '../../assets/images/person_2.jpg';
-import person3 from '../../assets/images/person_3.jpg';
-import person4 from '../../assets/images/person_4.jpg';
-import BenhTheoMua from './BenhTheoMua.vue';
-
-const bestSellers = [
-  {
-    id: 1, origin: 'Nhật Bản', discount: '-20%', discountClass: '',
-    image: product01, name: 'Viên uống bổ sung Omega 3 hỗ trợ não, thị lực và tim mạch',
-    price: '736.000đ', unit: 'Hộp', oldPrice: '920.000đ', pack: 'Hộp 120 viên', packTag: false,
-  },
-  {
-    id: 2, origin: 'Nhật Bản', discount: '-20%', discountClass: '',
-    image: product02, name: 'Viên uống giúp giảm đau khớp, bổ sung chất nhờn khớp',
-    price: '768.000đ', unit: 'Hộp', oldPrice: '960.000đ', pack: 'Hộp 120 viên', packTag: false,
-  },
-  {
-    id: 3, origin: 'Nhật Bản', discount: '-20%', discountClass: '',
-    image: product03, name: 'Viên uống bổ sung lợi khuẩn đường ruột giảm rối loạn tiêu hóa cho lọ...',
-    price: '792.000đ', unit: 'Hộp', oldPrice: '990.000đ', pack: 'Hộp 30 viên', packTag: false,
-  },
-  {
-    id: 4, origin: 'Nhật Bản', discount: '-15%', discountClass: 'best-seller-discount--orange',
-    image: product04, name: 'Viên uống hỗ trợ cho mắt và bổ não Orihiro Fish Oil (180 viên)',
-    price: '461.550đ', unit: 'Hộp', oldPrice: '543.000đ', pack: 'Hộp 180 viên', packTag: false,
-  },
-  {
-    id: 5, origin: 'Hàn Quốc', discount: null, discountClass: '',
-    image: product05, name: 'Nước Hồng Sâm cô đặc hỗ trợ tăng cường sức khỏe',
-    price: '1.200.000đ', unit: 'Hộp', oldPrice: null, pack: 'Hộp 3 Hộp lẻ x 10 Gói', packTag: true,
-  },
-  {
-    id: 6, origin: 'Anh', discount: null, discountClass: '',
-    image: product06, name: 'Chai xịt nhiệt miệng, tay chân miệng Aloclair Plus',
-    price: '229.000đ', unit: 'Chai', oldPrice: null, pack: 'Hộp x 15ml', packTag: true,
-  },
-];
 
 const categories = [
   { id: 1, name: 'Thần kinh não', count: 59, icon: 'icon-flask' },
