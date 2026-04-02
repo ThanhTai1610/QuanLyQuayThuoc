@@ -59,29 +59,30 @@
           </div>
         </div>
         <div class="mb-3">
-          <label class="small text-muted mb-1">Phương thức</label>
+          <label class="small text-muted mb-1">Phương thức thanh toán</label>
           <div class="btn-group btn-group-toggle d-flex" role="group">
             <button type="button" class="btn btn-sm"
               :class="thongTinThanhToan.phuongThuc === 'tien-mat' ? 'btn-primary' : 'btn-outline-primary'"
               @click="thongTinThanhToan.phuongThuc = 'tien-mat'">
-              <i class="fas fa-money-bill-wave mr-1"></i> Tiền mặt
+              Tiền mặt
             </button>
+
             <button type="button" class="btn btn-sm"
-              :class="thongTinThanhToan.phuongThuc === 'chuyen-khoan' ? 'btn-primary' : 'btn-outline-primary'"
-              @click="thongTinThanhToan.phuongThuc = 'chuyen-khoan'">
-              <i class="fas fa-qrcode mr-1"></i> Chuyển khoản
+              :class="thongTinThanhToan.phuongThuc === 'momo' ? 'btn-primary' : 'btn-outline-primary'"
+              @click="thongTinThanhToan.phuongThuc = 'momo'">
+              Ví MoMo
             </button>
           </div>
         </div>
 
-        <div v-if="thongTinThanhToan.phuongThuc === 'chuyen-khoan'"
-          class="mb-3 border rounded p-2 text-center bg-white">
-          <div class="small text-muted mb-2">QR thanh toán (demo)</div>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=DemoPayment" alt="QR"
-            style="width: 120px; height: 120px;">
-          <div class="small text-muted mt-2">Quét QR để thanh toán</div>
+        <div v-if="thongTinThanhToan.phuongThuc === 'tien-mat'" class="mb-3">
         </div>
 
+        <div v-if="thongTinThanhToan.phuongThuc === 'momo'" class="mb-3 border rounded p-3 text-center bg-white">
+          <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="50" class="mb-2">
+          <div class="small font-weight-bold text-primary">Thanh toán qua Ví MoMo</div>
+          <div class="small text-muted">Hệ thống sẽ tạo mã QR sau khi nhấn "Thanh toán"</div>
+        </div>
         <div class="d-flex flex-wrap align-items-center justify-content-between">
           <button type="button" class="btn btn-success flex-grow-1 mr-2" @click="xuLyThanhToan"
             :disabled="tongTienHang <= 0">
@@ -147,12 +148,17 @@ const dinhDangTien = (giaTri) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(giaTri);
 };
 
-// Gửi lệnh thanh toán ra trang chính
+// Gửi lệnh thanh toán ra trang chính 
 const xuLyThanhToan = () => {
+  // Nếu là MoMo, tự động coi như khách đưa đủ tiền để tránh lỗi logic tiền thừa
+  if (thongTinThanhToan.phuongThuc === 'momo') {
+    thongTinThanhToan.tienKhachDua = khachCanTra.value;
+  }
+
   emit('checkout', {
     ...thongTinThanhToan,
     khachCanTra: khachCanTra.value,
-    tienThua: tienThua.value
+    tienThua: thongTinThanhToan.phuongThuc === 'momo' ? 0 : tienThua.value
   });
 };
 </script>

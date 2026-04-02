@@ -330,23 +330,24 @@ onMounted(loadData); */
 import '../../assets/css/checkout-page.css';
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useMomo } from '../../services/useMomo';
 import axiosClient from '../../api/axiosClient';
 import Swal from 'sweetalert2';
 
 const router = useRouter();
+const { createPayment } = useMomo();
 
+// STATE
 const gioHang = ref([]);
-const danhSachDiaChi = ref([]);   // Để trống vì chưa có API
-const diaChiChon = ref('');
+const danhSachDiaChi = ref([]); 
 const dangTai = ref(false);
 const dangDat = ref(false);
 const loi = ref('');
-const anhDonThuocFile = ref(null);
-const anhDonThuocPreview = ref('');
 
+// Cấu hình các phương thức
 const phuongThucThanhToan = [
   { value: 'COD', label: 'Thanh toán khi nhận hàng (COD)', moTa: 'Thanh toán tiền mặt khi nhận hàng.' },
-  { value: 'ChuyenKhoan', label: 'Chuyển khoản ngân hàng', moTa: 'Chuyển khoản qua số tài khoản của nhà thuốc.' },
+  { value: 'Momo', label: 'Thanh toán qua ví MoMo', moTa: 'Thanh toán nhanh chóng qua ứng dụng MoMo.' },
 ];
 
 const form = reactive({
@@ -360,18 +361,22 @@ const form = reactive({
   phuongThucThanhToan: 'COD',
 });
 
+// COMPUTED: Tính tổng tiền (Đảm bảo trả về số nguyên)
 const tamTinh = computed(() =>
-  gioHang.value.reduce((sum, item) => sum + (item.giaBan * item.soLuong), 0)
+  Math.round(gioHang.value.reduce((sum, item) => sum + (item.giaBan * item.soLuong), 0))
 );
 
+// Tải dữ liệu giỏ hàng khi vào trang
 const loadData = async () => {
   dangTai.value = true;
   try {
-    // Chỉ lấy Giỏ hàng, bỏ qua SoDiaChi vì chưa có API
     const resGio = await axiosClient.get('/GioHang');
-    gioHang.value = resGio.data || resGio; // Tùy vào axiosClient của bạn trả về cái nào
+    // Kiểm tra cấu trúc trả về của axiosClient
+    const data = resGio.data || resGio;
+    gioHang.value = Array.isArray(data) ? data : [];
 
     if (gioHang.value.length === 0) {
+      Swal.fire('Giỏ hàng trống', 'Vui lòng chọn sản phẩm trước khi thanh toán', 'warning');
       router.push('/');
     }
   } catch (err) {
@@ -381,70 +386,74 @@ const loadData = async () => {
   }
 };
 
-const chonAnhDonThuoc = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  anhDonThuocFile.value = file;
-  anhDonThuocPreview.value = URL.createObjectURL(file);
-};
-
 const xacNhanDatHang = async () => {
   loi.value = '';
 
-  // Kiểm tra validate cơ bản
-  if (!form.hoTenNguoiNhan || !form.soDienThoaiNhan || !form.diaChiChiTiet) {
-    loi.value = 'Vui lòng nhập đầy đủ Họ tên, SĐT và Địa chỉ.';
+  // 1. Validate đơn giản
+  if (!form.hoTenNguoiNhan.trim() || !form.soDienThoaiNhan.trim() || !form.diaChiChiTiet.trim()) {
+    loi.value = 'Vui lòng nhập đầy đủ thông tin giao hàng.';
     return;
   }
 
   dangDat.value = true;
 
   try {
-    // 1. Gom địa chỉ thành chuỗi để lưu vào DB
+    // 2. Chuẩn bị địa chỉ và dữ liệu gửi đi
     const fullAddress = `${form.diaChiChiTiet}, ${form.phuongXa}, ${form.quanHuyen}, ${form.tinhThanh}`;
 
-    // 2. Body khớp với TaoDonHangDto.cs 
     const body = {
-      MaKhachHang: 1, // Nên lấy từ auth store nếu có
+      MaKhachHang: 1, // Tạm thời để 1, nếu có Login hãy lấy từ Store
       PhuongThucThanhToan: form.phuongThucThanhToan,
       GiamGia: 0,
       ChiTiet: gioHang.value.map(item => ({
-        MaLo: item.maLo, // Đã lấy từ BE thông qua GioHangService mới sửa
+        MaLo: item.maLo || 0,
         MaDVT: item.maDVT,
         SoLuong: item.soLuong,
         GiaBan: item.giaBan
       })),
-      GhiChu: `Người nhận: ${form.hoTenNguoiNhan} - ĐC: ${fullAddress}. Ghi chú: ${form.ghiChu}`
+      GhiChu: `Người nhận: ${form.hoTenNguoiNhan} - SĐT: ${form.soDienThoaiNhan}. Ghi chú: ${form.ghiChu}. ĐC: ${fullAddress}`
     };
 
-    // 3. Gọi API thanh toán
+    // 3. Gọi API lưu đơn hàng vào Database
     const res = await axiosClient.post('/BanHang/thanh-toan', body);
+    
+    // Kiểm tra kết quả trả về từ Backend
+    const success = res.data?.success || res.success;
+    const maDH = res.data?.maDonHang || res.maDonHang;
 
-    // Kiểm tra kết quả trả về
-    if (res.data?.success || res.success) {
-      // 2. Thay alert bằng Swal.fire
-      Swal.fire({
-        title: 'Thành công!',
-        text: 'Đơn hàng của bạn đã được đặt thành công.',
-        icon: 'success',
-        confirmButtonText: 'Xem đơn hàng',
-        confirmButtonColor: '#28a745',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.push({ name: 'LichSuDonHang' });
-        }
-      });
+    if (success) {
+      if (form.phuongThucThanhToan === 'Momo') {
+        // TRƯỜNG HỢP: MOMO -> Chuyển hướng sang cổng thanh toán
+        await createPayment(
+          tamTinh.value,
+          `Thanh toán đơn hàng Pharmative - ĐH: ${maDH}`, 
+          "KhachHang"
+        );
+      } else {
+        // TRƯỜNG HỢP: COD -> Báo thành công và về trang lịch sử
+        await Swal.fire({
+          title: 'Đặt hàng thành công!',
+          text: `Mã đơn hàng của bạn là: ${maDH}`,
+          icon: 'success',
+          confirmButtonText: 'Xem đơn hàng',
+          confirmButtonColor: '#28a745',
+        });
+        router.push({ name: 'LichSuDonHang' }); // Đảm bảo route này có tồn tại
+      }
+    } else {
+      throw new Error(res.data?.message || 'Lưu đơn hàng thất bại');
     }
 
   } catch (err) {
     console.error('Lỗi đặt hàng:', err);
-    loi.value = err.response?.data?.message || 'Lỗi khi gửi đơn hàng. Vui lòng kiểm tra API.';
+    const message = err.response?.data?.message || err.message || 'Lỗi khi kết nối đến máy chủ.';
+    Swal.fire("Thất bại", message, "error");
   } finally {
     dangDat.value = false;
   }
-}; 
-// Đóng hàm xacNhanDatHang
-  const formatGia = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0);
+};
 
-  onMounted(loadData);
+const formatGia = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0);
+
+onMounted(loadData);
 </script>
