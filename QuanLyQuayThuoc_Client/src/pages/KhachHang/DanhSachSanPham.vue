@@ -149,6 +149,7 @@ import '../../assets/css/products-page.css';
 import { ref, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
+import Swal from 'sweetalert2';
 
 const route  = useRoute();
 const router = useRouter();
@@ -185,11 +186,17 @@ const danhSachGia = [
 const getFlagUrl = (countryName) => {
   if (!countryName) return 'https://flagcdn.com/w40/vn.png';
   const name = countryName.toLowerCase();
+
   if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
   if (name.includes('hoa kỳ') || name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
+  
+  // Thêm điều kiện cho Vương quốc Anh ở đây
+  if (name.includes('anh') || name.includes('vương quốc anh') || name.includes('uk')) return 'https://flagcdn.com/w40/gb.png';
+
   if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
   if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
   if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
+
   return 'https://flagcdn.com/w40/un.png';
 };
 
@@ -251,16 +258,51 @@ const doiTrang = (trang) => {
 };
 
 const themVaoGio = async (sp) => {
+  const maDVTSelected = sp.maDVT || 1; 
+
   try {
-    await axiosClient.post('/GioHang', {
-      maThuoc: sp.maThuoc,
-      maDVT:   sp.maDVT,
-      soLuong: 1,
+    const response = await axiosClient.post('/GioHang/them', {
+      MaThuoc: sp.maThuoc,
+      MaDvt: maDVTSelected,
+      SoLuong: 1,
     });
-    router.push('/gio-hang');
+
+    // Thông báo bằng SweetAlert2
+    Swal.fire({
+      icon: 'success',
+      title: 'Đã thêm vào giỏ!',
+      text: `Sản phẩm ${sp.tenThuoc} đã có trong giỏ hàng của bạn.`,
+      showConfirmButton: true,
+      confirmButtonText: 'Xem giỏ hàng',
+      showCancelButton: true,
+      cancelButtonText: 'Tiếp tục mua sắm',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#aaa',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.push('/gio-hang'); // Chuyển trang nếu khách muốn xem giỏ ngay
+      }
+    });
+
   } catch (err) {
     console.error('Lỗi thêm giỏ hàng:', err);
-    alert('Vui lòng đăng nhập để mua hàng!');
+    
+    if (err.response?.status === 401) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Yêu cầu đăng nhập',
+        text: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!',
+        confirmButtonText: 'Đăng nhập ngay'
+      }).then(() => {
+        router.push('/dang-nhap'); 
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Lỗi hệ thống',
+        text: 'Không thể thêm vào giỏ hàng lúc này.'
+      });
+    }
   }
 };
 

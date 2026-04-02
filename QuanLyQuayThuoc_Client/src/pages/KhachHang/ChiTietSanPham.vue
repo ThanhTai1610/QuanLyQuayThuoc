@@ -39,14 +39,22 @@
               <span><strong>Số đăng ký:</strong> {{ thuoc.soDangKy }}</span>
             </div>
 
-            <div class="unit-row">
-              <label><strong>Chọn đơn vị tính:</strong></label>
-              <select v-model="selectedUnitIndex" class="form-control form-control-sm w-50">
-                <option v-for="(dv, index) in thuoc.donViTinhs" :key="index" :value="index">
-                  {{ dv.tenDonVi }}
-                </option>
-              </select>
+            <div class="unit-row mt-3">
+            <label class="d-block mb-2"><strong>Chọn đơn vị tính:</strong></label>
+            <div class="unit-options d-flex flex-wrap">
+              <div 
+                v-for="(dv, index) in thuoc.donViTinhs" 
+                :key="index"
+                class="unit-item"
+                :class="{ active: selectedUnitIndex === index }"
+                @click="selectedUnitIndex = index"
+              >
+                {{ dv.tenDonVi }}
+                <span class="check-icon" v-if="selectedUnitIndex === index">
+                  <i class="fa fa-check"></i> </span>
+              </div>
             </div>
+          </div>
 
             <div class="price-row custom-price-layout">
               <div class="main-unit-price-wrapper d-flex align-items-end">
@@ -378,3 +386,61 @@ watch(() => route.params.id, (newId) => {
   if (newId) loadProduct();
 });
 </script>
+<style>
+  .unit-options {
+  gap: 10px;
+}
+
+.unit-item {
+  position: relative;
+  padding: 8px 25px;
+  border: 1px solid #dee2e6;
+  border-radius: 20px; /* Bo tròn giống hình mẫu */
+  cursor: pointer;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-size: 14px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.unit-item:hover {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+/* Khi đơn vị được chọn */
+.unit-item.active {
+  border-color: #007bff;
+  color: #007bff;
+  background-color: #f0f7ff;
+  font-weight: 500;
+  overflow: hidden; /* Để cắt phần vát góc của dấu check */
+}
+
+/* Tạo hình tam giác xanh và dấu tích ở góc trên bên phải */
+.unit-item.active::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 18px 18px 0;
+  border-color: transparent #007bff transparent transparent;
+}
+
+/* Dấu check trắng đè lên tam giác xanh */
+.unit-item.active::before {
+  content: "✓";
+  position: absolute;
+  top: -1px;
+  right: 2px;
+  color: white;
+  font-size: 10px;
+  z-index: 1;
+  font-weight: bold;
+}
+</style>

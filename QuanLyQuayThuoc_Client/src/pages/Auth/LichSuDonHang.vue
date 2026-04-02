@@ -79,10 +79,37 @@
                       <div class="mt-2">
                         Thành tiền: <span class="text-primary fw-bold">{{ formatGia(don.tongTien) }}</span>
                       </div>
-                      <button type="button" class="btn btn-outline-primary btn-sm mt-2 rounded-pill px-4"
-                        @click="muaLai(don)">
-                        Mua lại
-                      </button>
+
+                      <div class="mt-2">
+                        <button v-if="don.trangThai === 'Chờ xử lý'" 
+                                type="button" 
+                                class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                @click="huyDonHang(don.maDonHang)">
+                          Hủy đơn hàng
+                        </button>
+
+                        <button v-else-if="don.trangThai === 'Đang giao'" 
+                                type="button" 
+                                class="btn btn-secondary btn-sm rounded-pill px-3" 
+                                disabled 
+                                title="Đơn hàng đang trên đường giao, không thể hủy">
+                          Đang giao...
+                        </button>
+
+                        <button v-else-if="don.trangThai === 'Đã giao'" 
+                                type="button" 
+                                class="btn btn-outline-primary btn-sm rounded-pill px-4"
+                                @click="muaLai(don)">
+                          Mua lại
+                        </button>
+                        
+                        <button v-else-if="don.trangThai === 'Đã hủy'" 
+                                type="button" 
+                                class="btn btn-light btn-sm rounded-pill px-4"
+                                @click="muaLai(don)">
+                          Đặt lại đơn
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -207,6 +234,70 @@ const loadData = async () => {
   }
 };
 
+// const loadData = async () => {
+//   dangTai.value = true;
+//   try {
+//     // Tạm thời comment API thật
+//     // const [resUser, resDon] = await Promise.all([...]);
+
+//     // Dữ liệu giả lập 4 trạng thái đơn hàng
+//     const mockDonHang = [
+//       {
+//         MaDonHang: 1001,
+//         NgayDat: "2026-04-01T10:00:00",
+//         TrangThai: "Chờ xử lý", // Sẽ hiện nút [Hủy đơn hàng]
+//         TenSanPham: "Thuốc Panadol Extra Đỏ",
+//         SoLuong: 2,
+//         DonVi: "Hộp",
+//         TongTien: 150000,
+//         HinhAnh: "/images/panadol.jpg",
+//         SoSanPhamKhac: 1
+//       },
+//       {
+//         MaDonHang: 1002,
+//         NgayDat: "2026-03-30T14:30:00",
+//         TrangThai: "Đang giao", // Sẽ hiện nút [Đang giao...] bị mờ (disabled)
+//         TenSanPham: "Vitamin C Berocca",
+//         SoLuong: 1,
+//         DonVi: "Tuýp",
+//         TongTien: 85000,
+//         HinhAnh: "/images/berocca.jpg",
+//         SoSanPhamKhac: 0
+//       },
+//       {
+//         MaDonHang: 1003,
+//         NgayDat: "2026-03-25T08:15:00",
+//         TrangThai: "Đã giao", // Sẽ hiện nút [Mua lại] màu xanh dương
+//         TenSanPham: "Khẩu trang N95",
+//         SoLuong: 5,
+//         DonVi: "Cái",
+//         TongTien: 125000,
+//         HinhAnh: "/images/mask.jpg",
+//         SoSanPhamKhac: 2
+//       },
+//       {
+//         MaDonHang: 1004,
+//         NgayDat: "2026-03-20T16:00:00",
+//         TrangThai: "Đã hủy", // Sẽ hiện nút [Đặt lại đơn] màu nhạt
+//         TenSanPham: "Nước rửa tay Lifebuoy",
+//         SoLuong: 1,
+//         DonVi: "Chai",
+//         TongTien: 45000,
+//         HinhAnh: "/images/lifebuoy.jpg",
+//         SoSanPhamKhac: 0
+//       }
+//     ];
+
+//     nguoiDungSidebar.value = { hoTen: 'Long IT', soDienThoai: '090xxxxxxx' };
+//     donHang.value = toCamel(mockDonHang); // Chuyển sang camelCase để khớp logic template
+
+//   } catch (err) {
+//     console.error('Lỗi test:', err);
+//   } finally {
+//     dangTai.value = false;
+//   }
+// };
+
 const moXemChiTiet = async (id) => {
   chiTiet.value = null; // hiện spinner trong modal
   if (!modalInstance) {
@@ -274,6 +365,36 @@ const muaLai = async (don) => {
   }).then((result) => {
     if (result.isConfirmed) router.push('/gio-hang');
   });
+};
+
+// Thêm hàm này vào phần script setup
+const huyDonHang = async (id) => {
+  const result = await Swal.fire({
+    title: 'Xác nhận hủy đơn?',
+    text: `Bạn có chắc chắn muốn hủy đơn hàng #${id} không?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Đồng ý hủy',
+    cancelButtonText: 'Quay lại'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      // Gọi API cập nhật trạng thái đơn hàng thành 'Đã hủy'
+      // Long hãy kiểm tra lại endpoint chính xác trên Swagger của mình nhé
+      await axiosClient.put(`/DonHangKhach/huy/${id}`); 
+      
+      Swal.fire('Đã hủy!', 'Đơn hàng của bạn đã được hủy thành công.', 'success');
+      
+      // Tải lại danh sách để cập nhật giao diện
+      loadData(); 
+    } catch (err) {
+      console.error('Lỗi khi hủy đơn:', err);
+      Swal.fire('Thất bại', 'Không thể hủy đơn hàng lúc này. Vui lòng thử lại sau.', 'error');
+    }
+  }
 };
 
 const dangXuat = () => {
