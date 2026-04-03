@@ -176,11 +176,11 @@
 </template>
 
 <script setup>
-import '../assets/css/quan-ly-so-dia-chi.css';
+import '../../assets/css/quan-ly-so-dia-chi.css';
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
-import AccountSidebar from '/components/AccountSidebar.vue';
+import AccountSidebar from '../../components/AccountSidebar.vue';
 
 const router = useRouter();
 
