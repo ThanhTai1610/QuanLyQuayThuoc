@@ -9,7 +9,10 @@ using Microsoft.IdentityModel.Tokens;
 using QuanLyQuayThuoc.Helpers;
 using System.Text;
 using QuanLyQuayThuoc.Repository.Interfaces;
-using QuanLyQuayThuoc.Repository.Implementation;                                  // Giải quyết lỗi Encoding
+using QuanLyQuayThuoc.Repository.Implementation;
+using QuanLyQuayThuoc.Models.Momo;
+using QuanLyQuayThuoc.Services.Momo;
+// Giải quyết lỗi Encoding
 
 // ... các phần Using giữ nguyên ...
 
@@ -41,6 +44,9 @@ builder.Services.AddScoped<ISanPhamRepository, SanPhamRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoOption"));
+builder.Services.AddScoped<IMomoService, MomoService>();
 
 // --- 3. CẤU HÌNH SWAGGER (DI CHUYỂN LÊN ĐÂY) ---
 builder.Services.AddSwaggerGen(options =>

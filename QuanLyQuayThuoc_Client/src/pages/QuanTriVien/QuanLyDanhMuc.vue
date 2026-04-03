@@ -188,6 +188,7 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import axiosClient from '../../api/axiosClient';
 import DanhMucNode from './DanhMucNode.vue';
+import '../../assets/css_admin/quan-ly-danh-muc.css';
 
 // ── State ──
 const cayDanhMuc  = ref([]);   // Dữ liệu dạng cây từ API
@@ -222,27 +223,51 @@ const xacNhanXoaText  = ref('');
 const pendingXoaId    = ref(null);
 
 // ── Danh sách phẳng để chọn cha trong modal ──
+// Tìm đến đoạn này trong file QuanLyDanhMuc.vue của bạn
+// ── Danh sách phẳng để chọn cha trong modal ──
 const danhSachPhang = computed(() => {
   const result = [];
+  
+  // Kiểm tra an toàn: Nếu không có dữ liệu hoặc không phải mảng thì thoát sớm
+  if (!cayDanhMuc.value || !Array.isArray(cayDanhMuc.value)) {
+    return result;
+  }
+
   const flatten = (nodes) => {
+    // Kiểm tra nodes bên trong hàm đệ quy
+    if (!nodes || !Array.isArray(nodes)) return;
+
     nodes.forEach(n => {
-      result.push({ maDanhMuc: n.maDanhMuc, tenDanhMuc: n.tenDanhMuc });
-      if (n.children?.length) flatten(n.children);
+      // Đẩy item hiện tại vào danh sách phẳng
+      result.push({ 
+        maDanhMuc: n.maDanhMuc, 
+        tenDanhMuc: n.tenDanhMuc 
+      });
+      
+      // Nếu có con, tiếp tục đệ quy
+      if (n.children && Array.isArray(n.children) && n.children.length > 0) {
+        flatten(n.children);
+      }
     });
   };
+
   flatten(cayDanhMuc.value);
   return result;
-});
-
+}); 
 // ── Load dữ liệu ──
-// GET /DanhMuc/cay — trả về mảng dạng cây với children[]
 const loadData = async () => {
   dangTai.value = true;
   try {
-    const res = await axiosClient.get('/DanhMuc/cay');
-    cayDanhMuc.value = res.data;
+    // Vì interceptor đã return response.data, nên 'res' ở đây chính là JSON từ server
+    const res = await axiosClient.get('/DanhMuc/cay'); 
+    
+    // Kiểm tra xem res là mảng trực tiếp hay có bọc trong field .data không
+    cayDanhMuc.value = Array.isArray(res) ? res : (res.data || []); 
+    
+    console.log("Dữ liệu cây đã nhận:", cayDanhMuc.value);
   } catch (err) {
     showToast('Lỗi tải danh mục.', 'danger');
+    console.error(err);
   } finally {
     dangTai.value = false;
   }

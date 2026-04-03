@@ -6,6 +6,7 @@ namespace QuanLyQuayThuoc.DTOs.DonHang
     {
         public int MaGioHang { get; set; }
         public int MaThuoc { get; set; }
+        public int MaLo { get; set; }
         public string TenThuoc { get; set; } = "";
         public string HinhAnhChinh { get; set; } = "";
         public string MoTaNgan { get; set; } = "";

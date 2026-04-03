@@ -2,8 +2,9 @@
 using QuanLyQuayThuoc.Models;
 using QuanLyQuayThuoc.Repositories.Interfaces;
 using QuanLyQuayThuoc.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Repositories;
+using Microsoft.EntityFrameworkCore;
+using QuanLyQuayThuoc.Data; // Đảm bảo có namespace của ApplicationDbContext
 
 namespace QuanLyQuayThuoc.Services.Implementation
 {
@@ -11,11 +12,16 @@ namespace QuanLyQuayThuoc.Services.Implementation
     {
         private readonly IGioHangRepository _gioHangRepo;
         private readonly IThuocRepository _thuocRepo;
+        private readonly ApplicationDbContext _context; // 1. Khai báo context
 
-        public GioHangService(IGioHangRepository gioHangRepo, IThuocRepository thuocRepo)
+        public GioHangService(
+            IGioHangRepository gioHangRepo,
+            IThuocRepository thuocRepo,
+            ApplicationDbContext context) // 2. Inject context qua constructor
         {
             _gioHangRepo = gioHangRepo;
             _thuocRepo = thuocRepo;
+            _context = context;
         }
 
         public async Task<IEnumerable<GioHangItemDto>> LayDanhSachGioHangAsync(int maKhachHang)
@@ -25,8 +31,14 @@ namespace QuanLyQuayThuoc.Services.Implementation
 
             foreach (var item in danhSachEntity)
             {
-                // Lấy thông tin thuốc để lấy danh sách đơn vị tính quy đổi (Vỉ, Hộp...)
+                // Lấy thông tin thuốc để lấy danh sách đơn vị tính quy đổi
                 var thuoc = await _thuocRepo.GetByIdAsync(item.MaThuoc ?? 0);
+
+                // 3. Logic chọn lô hàng tự động (FEFO - Hết hạn trước xuất trước)
+                var loHangGoiY = await _context.LoHangs
+                    .Where(l => l.MaThuoc == item.MaThuoc && l.SoLuongTon > 0)
+                    .OrderBy(l => l.HanSuDung)
+                    .FirstOrDefaultAsync();
 
                 var dsDonViTinh = thuoc?.DonViTinhs.Select(d => new DonViTinhTrongGioHangDto
                 {
@@ -39,6 +51,10 @@ namespace QuanLyQuayThuoc.Services.Implementation
                 {
                     MaGioHang = item.MaGioHang,
                     MaThuoc = item.MaThuoc ?? 0,
+
+                    // 4. Gán MaLo gợi ý vào DTO (Quan trọng)
+                    MaLo = loHangGoiY?.MaLo ?? 0,
+
                     TenThuoc = item.MaThuocNavigation?.TenThuoc ?? "Không xác định",
                     HinhAnhChinh = item.MaThuocNavigation?.HinhAnhChinh ?? "",
                     MoTaNgan = item.MaThuocNavigation?.MoTaNgan ?? "",
@@ -54,7 +70,6 @@ namespace QuanLyQuayThuoc.Services.Implementation
 
         public async Task<bool> ThemVaoGioHangAsync(int maKhachHang, int maThuoc, int maDvt, int soLuong)
         {
-            // Kiểm tra trùng lặp thuốc và đơn vị tính trong giỏ
             var itemHienTai = await _gioHangRepo.GetCartItemAsync(maKhachHang, maThuoc, maDvt);
 
             if (itemHienTai != null)
