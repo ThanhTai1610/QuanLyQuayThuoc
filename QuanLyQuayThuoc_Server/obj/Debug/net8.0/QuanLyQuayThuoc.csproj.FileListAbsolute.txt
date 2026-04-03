@@ -445,3 +445,5 @@ D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0
 D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.pdb
 D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.genruntimeconfig.cache
 D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\ref\QuanLyQuayThuoc.dll
+D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\Newtonsoft.Json.dll
+D:\Program Files\Nox\API\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\bin\Debug\net8.0\RestSharp.dll
