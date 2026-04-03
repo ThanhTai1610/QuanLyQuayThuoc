@@ -12,6 +12,7 @@ using QuanLyQuayThuoc.Repository.Interfaces;
 using QuanLyQuayThuoc.Repository.Implementation;
 using QuanLyQuayThuoc.Models.Momo;
 using QuanLyQuayThuoc.Services.Momo;
+using QuanLyQuayThuoc.Services;
 // Giải quyết lỗi Encoding
 
 // ... các phần Using giữ nguyên ...
@@ -22,13 +23,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options =>
+{
     options.AddPolicy("AllowVueApp", policy =>
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());
 });
+
 
 // --- 2. ĐĂNG KÝ REPOSITORY & SERVICES ---
 builder.Services.AddScoped<INguoiDungRepository, NguoiDungRepository>();
@@ -41,6 +44,8 @@ builder.Services.AddScoped<IGioHangService, GioHangService>();
 builder.Services.AddScoped<IThuocRepository, ThuocRepository>();
 builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<ISanPhamRepository, SanPhamRepository>();
+builder.Services.AddScoped<IKhoRepository, KhoRepository>();
+builder.Services.AddScoped<IKhoService, KhoService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -103,9 +108,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 app.UseCors("AllowVueApp");
+app.UseHttpsRedirection();
+
 
 app.UseAuthentication();
 app.UseAuthorization();
