@@ -132,7 +132,9 @@
             <router-link to="/gio-hang" class="btn btn-light lc-header-cart-btn">
               <span class="icon-shopping-bag mr-1"></span>
               Giỏ hàng
-              <span class="lc-header-cart-count">2</span>
+              <span class="lc-header-cart-count" v-if="cartState.totalQuantity > 0">
+      {{ cartState.totalQuantity }}
+    </span>
             </router-link>
 
             <!-- Mobile menu toggle -->
@@ -171,7 +173,7 @@ import { useRouter } from 'vue-router';
 import axiosClient from '../api/axiosClient';
 import Swal from 'sweetalert2';
 import { authState } from '../api/auth';
-
+import { cartState } from '../api/cart';
 const router = useRouter();
 
 // ==================== LOGOUT ====================

@@ -173,7 +173,7 @@
     </div>
 
   </div>
-</template>
+</template>ư
 
 <script setup>
 import '../../assets/css/cart-page.css';
