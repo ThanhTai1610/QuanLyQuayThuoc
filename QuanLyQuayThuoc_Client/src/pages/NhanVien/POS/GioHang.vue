@@ -8,10 +8,10 @@
         </div>
       </div>
       <div class="p-3">
-        <div class="scanner-wrapper mb-3 text-center">
+        <!-- <div class="scanner-wrapper mb-3 text-center">
            <div id="reader" style="width: 100%; max-width: 400px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;"></div>
            <p v-if="scannedResult" class="mt-2 badge badge-success">Mã vừa quét: {{ scannedResult }}</p>
-        </div>
+        </div> -->
 
         <div class="table-responsive">
           <table class="table table-bordered mb-0 pos-cart-table">
@@ -127,7 +127,7 @@ const capNhatGiaTheoDonVi = (sanPham) => {
 };
 
 // --- Xử lý Quét Mã Vạch ---
-const onScanSuccess = async (decodedText) => {
+/* const onScanSuccess = async (decodedText) => {
   scannedResult.value = decodedText;
   console.log("Mã vạch quét được:", decodedText);
   
@@ -138,14 +138,14 @@ const onScanSuccess = async (decodedText) => {
     });
     
     if (response.ok) {
-       console.log("Đã gửi mã vạch lên Backend");
+      console.log("Đã gửi mã vạch lên Backend");
     }
   } catch (error) {
     console.error("Lỗi khi gửi mã vạch:", error);
   }
 };
 
-onMounted(() => {
+  onMounted(() => {
   // Khởi tạo máy quét
   html5QrcodeScanner = new Html5QrcodeScanner("reader", {
     fps: 10,
@@ -162,7 +162,7 @@ onBeforeUnmount(() => {
       console.error("Failed to clear html5QrcodeScanner. ", error);
     });
   }
-});
+}); */
 </script>
 
 <style scoped>
