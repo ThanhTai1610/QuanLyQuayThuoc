@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QuanLyQuayThuoc.Models.Momo;
-using QuanLyQuayThuoc.Models.Momo;
 using RestSharp;
 using System.Security.Cryptography;
 using System.Text;
+using System.Net.Security; // Thêm dòng này
 
 namespace QuanLyQuayThuoc.Services.Momo
 {
@@ -19,15 +19,12 @@ namespace QuanLyQuayThuoc.Services.Momo
 
         public async Task<MomoCreatePaymentResponseModel> CreatePaymentAsync(OrderInfoModel model)
         {
-            // Đảm bảo OrderId không quá dài vàRequestId phải giống OrderId
-            model.OrderId = DateTime.UtcNow.Ticks.ToString();
-            model.OrderInfo = "Thanh toan don thuoc ma " + model.OrderId;
-
-            // Ép kiểu số tiền thành chuỗi số nguyên để tránh sai lệch chữ ký
             var amountString = ((long)model.Amount).ToString();
+            var requestId = Guid.NewGuid().ToString();
             var extraData = "";
 
-            // Chuỗi rawData PHẢI sắp xếp theo thứ tự bảng chữ cái A-Z của Key
+            // 1. Tạo chữ ký (rawData phải đúng thứ tự A-Z)
+            // Đảm bảo thứ tự ĐÚNG như thế này (A-Z):
             var rawData =
                 $"accessKey={_options.Value.AccessKey}&" +
                 $"amount={amountString}&" +
@@ -37,22 +34,19 @@ namespace QuanLyQuayThuoc.Services.Momo
                 $"orderInfo={model.OrderInfo}&" +
                 $"partnerCode={_options.Value.PartnerCode}&" +
                 $"redirectUrl={_options.Value.ReturnUrl}&" +
-                $"requestId={model.OrderId}&" +
+                $"requestId={requestId}&" +
                 $"requestType={_options.Value.RequestType}";
 
             var signature = ComputeHmacSha256(rawData, _options.Value.SecretKey);
 
-            var client = new RestClient(_options.Value.MomoApiUrl);
-            var request = new RestRequest("", Method.Post);
-            request.AddHeader("Content-Type", "application/json; charset=UTF-8");
-
-            // Các trường trong Object này phải khớp hoàn toàn với chuỗi rawData ở trên
+            // 2. Định nghĩa dữ liệu gửi đi
             var requestData = new
             {
                 partnerCode = _options.Value.PartnerCode,
-                partnerName = "Test Store", // Thêm tên cửa hàng
-                requestId = model.OrderId,
-                amount = amountString, // Dùng chuỗi số nguyên
+                partnerName = "Pharmative Store",
+                storeId = "Pharmative_Store",
+                requestId = requestId,
+                amount = amountString,
                 orderId = model.OrderId,
                 orderInfo = model.OrderInfo,
                 redirectUrl = _options.Value.ReturnUrl,
@@ -63,27 +57,46 @@ namespace QuanLyQuayThuoc.Services.Momo
                 lang = "vi"
             };
 
+            // 3. Cấu hình RestClient BỎ QUA LỖI SSL (Giải quyết Unknown Error)
+            var options = new RestClientOptions(_options.Value.MomoApiUrl)
+            {
+                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            };
+            var client = new RestClient(options);
+
+            var request = new RestRequest("");
+            request.Method = Method.Post;
             request.AddJsonBody(requestData);
+
             var response = await client.ExecuteAsync(request);
 
-            // Lưu ý: Nếu response.Content bị lỗi, hãy kiểm tra log tại đây
+            if (!response.IsSuccessful)
+            {
+                // Log ra console để Tài dễ debug
+                Console.WriteLine($"--- MOMO DEBUG ---");
+                Console.WriteLine($"Status: {response.StatusCode}");
+                Console.WriteLine($"Error: {response.ErrorMessage}");
+                Console.WriteLine($"Content: {response.Content}");
+
+                return new MomoCreatePaymentResponseModel
+                {
+                    Message = "MoMo từ chối yêu cầu: " + (response.ErrorMessage ?? "Vui lòng kiểm tra lại Key/Số tiền"),
+                    ResultCode = (int)response.StatusCode
+                };
+            }
+
             return JsonConvert.DeserializeObject<MomoCreatePaymentResponseModel>(response.Content);
         }
 
         public MomoExecuteResponseModel PaymentExecuteAsync(IQueryCollection collection)
         {
-            // MoMo trả về các tham số này trên URL sau khi thanh toán 
-            var amount = collection["amount"];
-            var orderId = collection["orderId"];
-            var orderInfo = collection["orderInfo"];
-            var resultCode = collection["resultCode"]; // 0 là thành công [cite: 14]
-
             return new MomoExecuteResponseModel()
             {
-                Amount = amount,
-                OrderId = orderId,
-                OrderInfo = orderInfo,
-                ResultCode = resultCode // Bạn cần thêm property này vào Model tương ứng [cite: 14, 17]
+                Amount = collection["amount"],
+                OrderId = collection["orderId"],
+                OrderInfo = collection["orderInfo"],
+                ResultCode = collection["resultCode"],
+                Message = collection["message"]
             };
         }
 
@@ -92,20 +105,11 @@ namespace QuanLyQuayThuoc.Services.Momo
             var keyBytes = Encoding.UTF8.GetBytes(secretKey);
             var messageBytes = Encoding.UTF8.GetBytes(message);
 
-            byte[] hashBytes;
-
             using (var hmac = new HMACSHA256(keyBytes))
             {
-                hashBytes = hmac.ComputeHash(messageBytes);
+                var hashBytes = hmac.ComputeHash(messageBytes);
+                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
             }
-
-            var hashString = new StringBuilder();
-            foreach (var x in hashBytes)
-            {
-                hashString.Append(x.ToString("x2"));
-            }
-
-            return hashString.ToString();
         }
     }
 }

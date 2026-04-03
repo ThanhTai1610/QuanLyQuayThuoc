@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using QuanLyQuayThuoc.Models.Momo;
 using QuanLyQuayThuoc.Services.Momo;
 
@@ -11,7 +10,6 @@ namespace QuanLyQuayThuoc.Controllers
     {
         private readonly IMomoService _momoService;
 
-        // Tiêm (Inject) Service vào để sử dụng
         public ThanhToanController(IMomoService momoService)
         {
             _momoService = momoService;
@@ -30,38 +28,48 @@ namespace QuanLyQuayThuoc.Controllers
                 // Gọi đến Service để tạo link thanh toán MoMo
                 var result = await _momoService.CreatePaymentAsync(request);
 
-                if (result == null || string.IsNullOrEmpty(result.PayUrl))
+                // --- ĐOẠN DEBUG QUAN TRỌNG ---
+                if (result == null || (result.ResultCode != 0 && string.IsNullOrEmpty(result.PayUrl)))
                 {
-                    return BadRequest(new { message = "Không thể tạo liên kết thanh toán MoMo." });
+                    // Nếu MoMo trả về lỗi (ResultCode khác 0), in ra để Tài thấy
+                    var errorMsg = result?.Message ?? "Lỗi không xác định từ MoMo";
+                    Console.WriteLine($"[MoMo Error] ResultCode: {result?.ResultCode}, Message: {errorMsg}");
+
+                    return BadRequest(new
+                    {
+                        message = "MoMo từ chối tạo thanh toán.",
+                        detail = errorMsg,
+                        momoCode = result?.ResultCode
+                    });
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = ex.Message });
+                Console.WriteLine($"[System Error] {ex.Message}");
+                return StatusCode(500, new { message = "Lỗi hệ thống khi gọi MoMo: " + ex.Message });
             }
         }
 
         [HttpGet("ket-qua-momo")]
-        public async Task<IActionResult> PaymentCallback()
+        public IActionResult PaymentCallback()
         {
-            // 1. Lấy dữ liệu MoMo trả về 
+            // Lấy dữ liệu MoMo trả về từ URL
             var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
 
-            // 2. Kiểm tra nếu ResultCode == "0" (Thành công) [cite: 14]
+            // Kiểm tra trạng thái thanh toán (ResultCode "0" là thành công)
             if (response.ResultCode == "0")
-            { // TẠI ĐÂY: Gọi Repository của bạn để cập nhật DB [cite: 26, 27]
-                            // Ví dụ: _donHangRepository.UpdateStatus(response.OrderId, "DaThanhToan");
+            {
+                // Sau này Tài thêm code cập nhật database ở đây nhé
+                // Ví dụ: _donHangRepository.CapNhatTrangThai(response.OrderId, "DaThanhToan");
 
-                return Ok(new
-                {
-                    Message = "Thanh toán thành công!",
-                    OrderId = response.OrderId
-                });
+                // Thay vì return Ok, Tài nên Redirect về trang thành công của Vue
+                return Redirect($"http://localhost:5173/hoan-tat?orderId={response.OrderId}&status=success");
             }
 
-            return BadRequest(new { Message = "Thanh toán thất bại hoặc bị hủy." });
+            // Nếu thất bại, redirect về trang lỗi
+            return Redirect($"http://localhost:5173/hoan-tat?orderId={response.OrderId}&status=error");
         }
     }
 }
