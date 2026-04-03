@@ -413,11 +413,14 @@ const huyDonHang = async (id) => {
       const textarea = container.querySelector('#otherReasonText');
       radios.forEach(r => r.addEventListener('change', (e) => {
         textarea.style.display = (e.target.value === 'khac') ? 'block' : 'none';
+        if (e.target.value === 'khac') textarea.focus();
       }));
     },
     preConfirm: () => {
-      const selected = Swal.getHtmlContainer().querySelector('input[name="cancelReason"]:checked').value;
-      const other = Swal.querySelector('#otherReasonText').value;
+      const container = Swal.getHtmlContainer();
+      const selected = container.querySelector('input[name="cancelReason"]:checked').value;
+      const other = container.querySelector('#otherReasonText').value;
+      
       if (selected === 'khac' && !other.trim()) {
         Swal.showValidationMessage('Vui lòng nhập lý do cụ thể');
         return false;
@@ -428,11 +431,22 @@ const huyDonHang = async (id) => {
 
   if (formValues) {
     try {
+      // Gọi API hủy đơn hàng với lý do đã chọn
       await axiosClient.put(`/DonHangKhach/huy/${id}`, { lyDo: formValues.reason });
-      Swal.fire({ icon: 'success', title: 'Đã hủy đơn hàng', timer: 1500, showConfirmButton: false });
+      
+      Swal.fire({ 
+        icon: 'success', 
+        title: 'Đã hủy đơn hàng', 
+        text: 'Đơn hàng của bạn đã được hủy thành công.',
+        timer: 2000, 
+        showConfirmButton: false 
+      });
+      
+      // Tải lại danh sách đơn hàng để cập nhật trạng thái UI
       loadData(); 
     } catch (err) {
-      Swal.fire('Lỗi', 'Không thể hủy đơn hàng.', 'error');
+      console.error('Lỗi khi hủy đơn:', err);
+      Swal.fire('Lỗi', err.response?.data?.message || 'Không thể kết nối đến máy chủ để hủy đơn hàng.', 'error');
     }
   }
 };
