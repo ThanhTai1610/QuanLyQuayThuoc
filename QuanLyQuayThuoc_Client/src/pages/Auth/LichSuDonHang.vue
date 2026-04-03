@@ -44,12 +44,12 @@
               </div>
 
               <div v-else class="orders-list mt-3">
-                <div v-if="donHangDaLoc.length === 0" class="text-center py-5 text-muted">
+                <div v-if="donHangHienThi.length === 0" class="text-center py-5 text-muted">
                   <span class="icon-list" style="font-size: 3rem;"></span>
                   <p class="mt-3">Không tìm thấy đơn hàng nào phù hợp.</p>
                 </div>
 
-                <div class="order-item mb-4 p-3 border rounded shadow-sm" v-for="don in donHangDaLoc" :key="don.maDonHang">
+                <div class="order-item mb-4 p-3 border rounded shadow-sm" v-for="don in donHangHienThi" :key="don.maDonHang">
                   <div class="order-item-header d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <div class="order-meta">
                       <span class="fw-bold">Mã đơn: #{{ don.maDonHang }}</span>
@@ -113,6 +113,21 @@
                     </div>
                   </div>
                 </div>
+
+                <nav v-if="tongSoTrang > 1" class="mt-5 d-flex justify-content-center">
+                  <ul class="pagination pagination-rounded">
+                    <li class="page-item" :class="{ disabled: trangHienTai === 1 }">
+                      <a class="page-link" href="#" @click.prevent="chuyenTrang(trangHienTai - 1)">&laquo;</a>
+                    </li>
+                    <li v-for="p in tongSoTrang" :key="p" class="page-item" :class="{ active: trangHienTai === p }">
+                      <a class="page-link" href="#" @click.prevent="chuyenTrang(p)">{{ p }}</a>
+                    </li>
+                    <li class="page-item" :class="{ disabled: trangHienTai === tongSoTrang }">
+                      <a class="page-link" href="#" @click.prevent="chuyenTrang(trangHienTai + 1)">&raquo;</a>
+                    </li>
+                  </ul>
+                </nav>
+
               </div>
 
             </div>
@@ -176,7 +191,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
 import Swal from 'sweetalert2';
@@ -185,7 +200,7 @@ import { Modal } from 'bootstrap';
 
 const router = useRouter();
 
-// State
+// State dữ liệu
 const nguoiDungSidebar = ref({ hoTen: '', soDienThoai: '', anhDaiDien: '' });
 const donHang = ref([]);
 const chiTiet = ref(null);
@@ -193,6 +208,10 @@ const dangTai = ref(false);
 const tuKhoa = ref('');
 const tabHienTai = ref('');
 let modalInstance = null;
+
+// State phân trang
+const trangHienTai = ref(1);
+const soDonMoiTrang = 5;
 
 const tabs = [
   { label: 'Tất cả',    value: '' },
@@ -202,7 +221,42 @@ const tabs = [
   { label: 'Đã hủy',    value: 'Đã hủy' },
 ];
 
-// Chuyển PascalCase → camelCase đệ quy
+// Logic lọc dữ liệu
+const tatCaDonDaLoc = computed(() =>
+  donHang.value.filter(don => {
+    const khopTab = !tabHienTai.value || don.trangThai === tabHienTai.value;
+    const searchVal = tuKhoa.value.toLowerCase();
+    const khopTuKhoa = !tuKhoa.value
+      || String(don.maDonHang).includes(searchVal)
+      || don.tenSanPham?.toLowerCase().includes(searchVal);
+    return khopTab && khopTuKhoa;
+  })
+);
+
+// Tính toán phân trang
+const tongSoTrang = computed(() => 
+  Math.ceil(tatCaDonDaLoc.value.length / soDonMoiTrang)
+);
+
+const donHangHienThi = computed(() => {
+  const batDau = (trangHienTai.value - 1) * soDonMoiTrang;
+  const ketThuc = batDau + soDonMoiTrang;
+  return tatCaDonDaLoc.value.slice(batDau, ketThuc);
+});
+
+const chuyenTrang = (trang) => {
+  if (trang >= 1 && trang <= tongSoTrang.value) {
+    trangHienTai.value = trang;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+// Reset trang khi lọc
+watch([tabHienTai, tuKhoa], () => {
+  trangHienTai.value = 1;
+});
+
+// Utils
 const toCamel = (obj) => {
   if (Array.isArray(obj)) return obj.map(toCamel);
   if (obj !== null && typeof obj === 'object') {
@@ -223,7 +277,6 @@ const loadData = async () => {
       axiosClient.get('/HoSo/thong-tin'),
       axiosClient.get('/DonHangKhach/cua-toi')
     ]);
-    // interceptor đã unwrap response.data, nên res chính là data
     nguoiDungSidebar.value = toCamel(resUser);
     donHang.value = toCamel(resDon);
   } catch (err) {
@@ -234,98 +287,20 @@ const loadData = async () => {
   }
 };
 
-// const loadData = async () => {
-//   dangTai.value = true;
-//   try {
-//     // Tạm thời comment API thật
-//     // const [resUser, resDon] = await Promise.all([...]);
-
-//     // Dữ liệu giả lập 4 trạng thái đơn hàng
-//     const mockDonHang = [
-//       {
-//         MaDonHang: 1001,
-//         NgayDat: "2026-04-01T10:00:00",
-//         TrangThai: "Chờ xử lý", // Sẽ hiện nút [Hủy đơn hàng]
-//         TenSanPham: "Thuốc Panadol Extra Đỏ",
-//         SoLuong: 2,
-//         DonVi: "Hộp",
-//         TongTien: 150000,
-//         HinhAnh: "/images/panadol.jpg",
-//         SoSanPhamKhac: 1
-//       },
-//       {
-//         MaDonHang: 1002,
-//         NgayDat: "2026-03-30T14:30:00",
-//         TrangThai: "Đang giao", // Sẽ hiện nút [Đang giao...] bị mờ (disabled)
-//         TenSanPham: "Vitamin C Berocca",
-//         SoLuong: 1,
-//         DonVi: "Tuýp",
-//         TongTien: 85000,
-//         HinhAnh: "/images/berocca.jpg",
-//         SoSanPhamKhac: 0
-//       },
-//       {
-//         MaDonHang: 1003,
-//         NgayDat: "2026-03-25T08:15:00",
-//         TrangThai: "Đã giao", // Sẽ hiện nút [Mua lại] màu xanh dương
-//         TenSanPham: "Khẩu trang N95",
-//         SoLuong: 5,
-//         DonVi: "Cái",
-//         TongTien: 125000,
-//         HinhAnh: "/images/mask.jpg",
-//         SoSanPhamKhac: 2
-//       },
-//       {
-//         MaDonHang: 1004,
-//         NgayDat: "2026-03-20T16:00:00",
-//         TrangThai: "Đã hủy", // Sẽ hiện nút [Đặt lại đơn] màu nhạt
-//         TenSanPham: "Nước rửa tay Lifebuoy",
-//         SoLuong: 1,
-//         DonVi: "Chai",
-//         TongTien: 45000,
-//         HinhAnh: "/images/lifebuoy.jpg",
-//         SoSanPhamKhac: 0
-//       }
-//     ];
-
-//     nguoiDungSidebar.value = { hoTen: 'Long IT', soDienThoai: '090xxxxxxx' };
-//     donHang.value = toCamel(mockDonHang); // Chuyển sang camelCase để khớp logic template
-
-//   } catch (err) {
-//     console.error('Lỗi test:', err);
-//   } finally {
-//     dangTai.value = false;
-//   }
-// };
-
 const moXemChiTiet = async (id) => {
-  chiTiet.value = null; // hiện spinner trong modal
+  chiTiet.value = null;
   if (!modalInstance) {
     modalInstance = new Modal(document.getElementById('modalChiTiet'));
   }
   modalInstance.show();
-
   try {
     const res = await axiosClient.get(`/DonHangKhach/${id}`);
-    // interceptor đã unwrap, res chính là data — không cần res.data
     chiTiet.value = toCamel(res);
   } catch (err) {
-    console.error('Lỗi gọi API chi tiết:', err);
     modalInstance.hide();
     Swal.fire('Lỗi', 'Không thể lấy thông tin đơn hàng', 'error');
   }
 };
-
-const donHangDaLoc = computed(() =>
-  donHang.value.filter(don => {
-    const khopTab = !tabHienTai.value || don.trangThai === tabHienTai.value;
-    const searchVal = tuKhoa.value.toLowerCase();
-    const khopTuKhoa = !tuKhoa.value
-      || String(don.maDonHang).includes(searchVal)
-      || don.tenSanPham?.toLowerCase().includes(searchVal);
-    return khopTab && khopTuKhoa;
-  })
-);
 
 const getFullUrl = (path) => {
   if (!path) return '/img/default-product.png';
@@ -356,59 +331,115 @@ const bgTrangThai = (trangThai) => {
 };
 
 const muaLai = async (don) => {
-  Swal.fire({
-    icon: 'success',
-    title: 'Đã thêm vào giỏ hàng',
-    text: `Đơn hàng #${don.maDonHang} đã được thêm lại.`,
-    showConfirmButton: true,
-    confirmButtonText: 'Xem giỏ hàng'
-  }).then((result) => {
-    if (result.isConfirmed) router.push('/gio-hang');
-  });
+  // Log để kiểm tra dữ liệu 'don' có chứa đủ maThuoc và maDVT không
+  console.log("Dữ liệu đơn hàng chọn mua lại:", don);
+
+  // Kiểm tra điều kiện trước khi gọi API để tránh lỗi 500 do thiếu dữ liệu
+  if (!don.maThuoc || !don.maDVT) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Thiếu thông tin',
+      text: 'Không tìm thấy mã sản phẩm hoặc đơn vị tính để thực hiện mua lại.',
+    });
+    return;
+  }
+
+  try {
+    // 1. Gọi API để thêm sản phẩm vào giỏ hàng thực tế
+    // Lưu ý: Đảm bảo tên thuộc tính (maThuoc, maDVT) khớp chính xác với DTO ở Backend C#
+    await axiosClient.post('/GioHang/them', {
+      maThuoc: don.maThuoc, 
+      maDVT: don.maDVT,     
+      soLuong: don.soLuong || 1
+    });
+
+    // 2. Thông báo thành công và điều hướng bằng SweetAlert2
+    Swal.fire({
+      icon: 'success',
+      title: 'Thành công!',
+      text: `Sản phẩm từ đơn hàng #${don.maDonHang || don.id} đã được thêm vào giỏ hàng.`,
+      showConfirmButton: true,
+      confirmButtonText: 'Đến giỏ hàng',
+      showCancelButton: true,
+      cancelButtonText: 'Ở lại đây',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#aaa',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Điều hướng sang trang giỏ hàng
+        router.push('/gio-hang');
+      }
+    });
+
+  } catch (err) {
+    // Log chi tiết lỗi từ server trả về để dễ debug
+    console.error('Lỗi khi thực hiện mua lại:', err.response?.data || err.message);
+    
+    Swal.fire({
+      icon: 'error',
+      title: 'Thất bại',
+      text: err.response?.data?.message || 'Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại sau.',
+    });
+  }
 };
 
-// Thêm hàm này vào phần script setup
 const huyDonHang = async (id) => {
-  const result = await Swal.fire({
-    title: 'Xác nhận hủy đơn?',
-    text: `Bạn có chắc chắn muốn hủy đơn hàng #${id} không?`,
-    icon: 'warning',
+  const { value: formValues } = await Swal.fire({
+    title: '<span style="font-size: 20px; font-weight: bold; color: #333;">Xác nhận hủy đơn hàng</span>',
+    html: `
+      <div style="text-align: left; margin-top: 15px; font-family: sans-serif;">
+        <p style="font-size: 14px; color: #666; margin-bottom: 15px;">Vui lòng chọn lý do để Pharmative cải thiện dịch vụ tốt hơn:</p>
+        <style>
+          .cancel-option { display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; }
+          .cancel-option input { margin-right: 10px; width: 18px; height: 18px; cursor: pointer; }
+          .cancel-option label { cursor: pointer; font-size: 15px; color: #444; margin: 0; }
+          .reason-text { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-top: 10px; display: none; }
+        </style>
+        <div class="cancel-option"><input type="radio" name="cancelReason" value="Thay đổi ý định" id="r1" checked><label for="r1">Thay đổi ý định mua hàng</label></div>
+        <div class="cancel-option"><input type="radio" name="cancelReason" value="Giá rẻ hơn" id="r2"><label for="r2">Tìm thấy giá rẻ hơn ở nơi khác</label></div>
+        <div class="cancel-option"><input type="radio" name="cancelReason" value="Giao lâu" id="r3"><label for="r3">Thời gian giao hàng quá lâu</label></div>
+        <div class="cancel-option"><input type="radio" name="cancelReason" value="Đặt trùng" id="r4"><label for="r4">Đặt trùng đơn hàng</label></div>
+        <div class="cancel-option"><input type="radio" name="cancelReason" value="khac" id="r5"><label for="r5">Lý do khác...</label></div>
+        <textarea id="otherReasonText" class="reason-text" placeholder="Nhập lý do cụ thể..." rows="3"></textarea>
+      </div>
+    `,
     showCancelButton: true,
+    confirmButtonText: 'Xác nhận hủy',
+    cancelButtonText: 'Quay lại',
     confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Đồng ý hủy',
-    cancelButtonText: 'Quay lại'
+    didOpen: () => {
+      const container = Swal.getHtmlContainer();
+      const radios = container.querySelectorAll('input[name="cancelReason"]');
+      const textarea = container.querySelector('#otherReasonText');
+      radios.forEach(r => r.addEventListener('change', (e) => {
+        textarea.style.display = (e.target.value === 'khac') ? 'block' : 'none';
+      }));
+    },
+    preConfirm: () => {
+      const selected = Swal.getHtmlContainer().querySelector('input[name="cancelReason"]:checked').value;
+      const other = Swal.querySelector('#otherReasonText').value;
+      if (selected === 'khac' && !other.trim()) {
+        Swal.showValidationMessage('Vui lòng nhập lý do cụ thể');
+        return false;
+      }
+      return { reason: selected === 'khac' ? other : selected };
+    }
   });
 
-  if (result.isConfirmed) {
+  if (formValues) {
     try {
-      // Gọi API cập nhật trạng thái đơn hàng thành 'Đã hủy'
-      // Long hãy kiểm tra lại endpoint chính xác trên Swagger của mình nhé
-      await axiosClient.put(`/DonHangKhach/huy/${id}`); 
-      
-      Swal.fire('Đã hủy!', 'Đơn hàng của bạn đã được hủy thành công.', 'success');
-      
-      // Tải lại danh sách để cập nhật giao diện
+      await axiosClient.put(`/DonHangKhach/huy/${id}`, { lyDo: formValues.reason });
+      Swal.fire({ icon: 'success', title: 'Đã hủy đơn hàng', timer: 1500, showConfirmButton: false });
       loadData(); 
     } catch (err) {
-      console.error('Lỗi khi hủy đơn:', err);
-      Swal.fire('Thất bại', 'Không thể hủy đơn hàng lúc này. Vui lòng thử lại sau.', 'error');
+      Swal.fire('Lỗi', 'Không thể hủy đơn hàng.', 'error');
     }
   }
 };
 
 const dangXuat = () => {
-  Swal.fire({
-    title: 'Đăng xuất?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Đồng ý',
-    cancelButtonText: 'Hủy'
-  }).then(r => {
-    if (r.isConfirmed) {
-      localStorage.clear();
-      router.push('/auth/dang-nhap');
-    }
+  Swal.fire({ title: 'Đăng xuất?', icon: 'question', showCancelButton: true, confirmButtonText: 'Đồng ý' }).then(r => {
+    if (r.isConfirmed) { localStorage.clear(); router.push('/auth/dang-nhap'); }
   });
 };
 
@@ -416,29 +447,27 @@ onMounted(loadData);
 </script>
 
 <style scoped>
-.order-item {
-  background: #fff;
-  transition: transform 0.2s;
-}
-.order-item:hover {
-  transform: translateY(-2px);
-}
-.order-tag {
-  font-size: 0.75rem;
-  padding: 5px 12px;
-  border-radius: 50px;
-}
-.nav-tabs .nav-link {
-  color: #666;
+.order-item { background: #fff; transition: transform 0.2s; }
+.order-item:hover { transform: translateY(-2px); }
+.order-tag { font-size: 0.75rem; padding: 5px 12px; border-radius: 50px; }
+.nav-tabs .nav-link { color: #666; border: none; border-bottom: 2px solid transparent; }
+.nav-tabs .nav-link.active { color: #007bff; border-bottom: 2px solid #007bff; font-weight: bold; }
+.border-bottom-dashed { border-bottom: 1px dashed #dee2e6; }
+
+/* CSS Phân trang */
+.pagination-rounded .page-link {
+  border-radius: 50% !important;
+  margin: 0 3px;
   border: none;
-  border-bottom: 2px solid transparent;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
 }
-.nav-tabs .nav-link.active {
-  color: #007bff;
-  border-bottom: 2px solid #007bff;
-  font-weight: bold;
-}
-.border-bottom-dashed {
-  border-bottom: 1px dashed #dee2e6;
+.pagination-rounded .page-item.active .page-link {
+  background-color: #007bff;
+  color: #fff;
 }
 </style>
