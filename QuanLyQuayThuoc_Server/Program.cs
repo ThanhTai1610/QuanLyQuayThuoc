@@ -12,11 +12,10 @@ using QuanLyQuayThuoc.Repository.Interfaces;
 using QuanLyQuayThuoc.Repository.Implementation;
 using QuanLyQuayThuoc.Models.Momo;
 using QuanLyQuayThuoc.Services.Momo;
-using QuanLyQuayThuoc.Services;
 // Giải quyết lỗi Encoding
 
 // ... các phần Using giữ nguyên ...
-
+System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls13;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. KẾT NỐI DATABASE & CORS ---
