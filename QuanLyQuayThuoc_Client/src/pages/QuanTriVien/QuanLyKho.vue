@@ -35,10 +35,13 @@
       </div>
 
       <div class="col-lg-9">
-        <component 
-          :is="currentTabComponent" 
-          :is-admin="vaiTro === 'admin'" 
-        />
+        <keep-alive>
+          <component 
+            :is="currentTabComponent" 
+            :is-admin="vaiTro === 'admin'"
+            @refresh-data="handleRefresh"
+          />
+        </keep-alive>
       </div>
     </div>
 
@@ -47,9 +50,10 @@
 
 <script setup>
 import '../../assets/css_admin/quan-ly-kho.css';
-import { ref, computed } from 'vue';
+import { ref, computed, markRaw } from 'vue';
 
 // Import các sub-components
+// Sử dụng markRaw để tối ưu hiệu suất khi render Component động
 import KhoTongQuan from './KhoTongQuan.vue';
 import KhoLoHang   from './KhoLoHang.vue';
 import KhoNhapKho  from './KhoNhapKho.vue';
@@ -66,13 +70,31 @@ const tabs = [
 ];
 
 // Map tab value với Component tương ứng
+// Sử dụng markRaw để tránh Vue cảnh báo về việc wrap Component trong Proxy
 const componentMap = {
-  'tong-quan': KhoTongQuan,
-  'lo-hang': KhoLoHang,
-  'nhap-kho': KhoNhapKho,
-  'canh-bao': KhoCanhBao
+  'tong-quan': markRaw(KhoTongQuan),
+  'lo-hang': markRaw(KhoLoHang),
+  'nhap-kho': markRaw(KhoNhapKho),
+  'canh-bao': markRaw(KhoCanhBao)
 };
 
 // Tự động trả về component theo tab đang chọn
 const currentTabComponent = computed(() => componentMap[tabHienTai.value]);
+
+// Hàm xử lý khi component con yêu cầu làm mới dữ liệu (sau khi nhập kho thành công)
+const handleRefresh = () => {
+  console.log("Yêu cầu làm mới dữ liệu từ component con");
+  // Logic refresh chung nếu cần
+};
 </script>
+
+<style scoped>
+/* Giữ nguyên giao diện của bạn, chỉ thêm hiệu ứng chuyển tab nhẹ */
+.nav-link {
+  transition: all 0.2s ease-in-out;
+}
+.nav-link.active {
+  background-color: #4e73df !important;
+  color: #fff !important;
+}
+</style>

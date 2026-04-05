@@ -1,26 +1,33 @@
 <template>
   <section>
-    <!-- Bộ lọc -->
     <div class="qlk-filters-card card mb-3">
       <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">4. Cảnh báo hết hạn</h6>
       </div>
       <div class="card-body">
         <div class="row">
-          <div class="col-md-5 mb-3">
-            <label class="small text-muted">Xem theo tháng HSD</label>
-            <input type="month" class="form-control" v-model="locThang" @change="loadData" />
-          </div>
           <div class="col-md-4 mb-3">
+            <label class="small text-muted">Xem theo tháng HSD</label>
+            <input type="month" class="form-control" v-model="locThang" @change="onFilter" />
+          </div>
+          <div class="col-md-3 mb-3">
             <label class="small text-muted">Loại cảnh báo</label>
-            <select class="form-control" v-model="locLoai" @change="loadData">
+            <select class="form-control" v-model="locLoai" @change="onFilter">
               <option value="all">Cả đã hết + sắp hết</option>
               <option value="expired">Chỉ đã hết hạn</option>
               <option value="soon">Chỉ sắp hết hạn (&lt; 6 tháng)</option>
             </select>
           </div>
+          <div class="col-md-2 mb-3">
+            <label class="small text-muted">Số dòng / trang</label>
+            <select class="form-control" v-model="soDongMoiTrang" @change="trangHienTai = 1">
+              <option :value="10">10</option>
+              <option :value="20">20</option>
+              <option :value="50">50</option>
+            </select>
+          </div>
           <div class="col-md-3 mb-3 d-flex align-items-end">
-            <button type="button" class="btn btn-outline-secondary btn-block" @click="loadData">
+            <button type="button" class="btn btn-outline-secondary btn-block" @click="onFilter">
               <i class="fas fa-sync-alt mr-1"></i> Làm mới
             </button>
           </div>
@@ -33,7 +40,6 @@
     </div>
 
     <div class="row">
-      <!-- Bảng cảnh báo -->
       <div class="col-lg-8 mb-3">
         <div class="card">
           <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -58,7 +64,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="lo in danhSach" :key="lo.maLo" :class="rowClass(lo)">
+                  <tr v-for="lo in danhSachHienThi" :key="lo.maLo" :class="rowClass(lo)">
                     <td>{{ lo.soLo }}</td>
                     <td>
                       {{ lo.hanSuDung }}
@@ -68,17 +74,50 @@
                     <td>{{ lo.soLuongTon }}</td>
                     <td>{{ lo.tenThuoc }}</td>
                   </tr>
-                  <tr v-if="danhSach.length === 0">
+                  <tr v-if="danhSachHienThi.length === 0">
                     <td colspan="4" class="text-center text-muted py-3">Không có cảnh báo.</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+
+            <!-- PHÂN TRANG -->
+            <div v-if="tongSoTrang > 1" class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+              <div class="small text-muted">
+                Hiển thị {{ batDau + 1 }}–{{ ketThuc }} / {{ danhSach.length }} dòng
+              </div>
+              <ul class="pagination pagination-sm mb-0">
+                <li class="page-item" :class="{ disabled: trangHienTai === 1 }">
+                  <a class="page-link" href="#" @click.prevent="trangHienTai = 1">
+                    <i class="fas fa-angle-double-left"></i>
+                  </a>
+                </li>
+                <li class="page-item" :class="{ disabled: trangHienTai === 1 }">
+                  <a class="page-link" href="#" @click.prevent="trangHienTai--">
+                    <i class="fas fa-angle-left"></i>
+                  </a>
+                </li>
+                <li v-for="trang in danhSachTrang" :key="trang"
+                  class="page-item" :class="{ active: trang === trangHienTai }">
+                  <a class="page-link" href="#" @click.prevent="trangHienTai = trang">{{ trang }}</a>
+                </li>
+                <li class="page-item" :class="{ disabled: trangHienTai === tongSoTrang }">
+                  <a class="page-link" href="#" @click.prevent="trangHienTai++">
+                    <i class="fas fa-angle-right"></i>
+                  </a>
+                </li>
+                <li class="page-item" :class="{ disabled: trangHienTai === tongSoTrang }">
+                  <a class="page-link" href="#" @click.prevent="trangHienTai = tongSoTrang">
+                    <i class="fas fa-angle-double-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
           </div>
         </div>
       </div>
 
-      <!-- Thống kê nhanh -->
       <div class="col-lg-4">
         <div class="qlk-stat-card">
           <div class="font-weight-bold text-primary mb-2">Thống kê nhanh</div>
@@ -92,7 +131,7 @@
           </div>
           <div class="mb-0">
             <span class="qlk-muted">Lô sắp hết</span>
-            <div class="qlk-stat-value">{{ thongKe.soLoSapHet }}</div>
+            <div class="qlk-stat-value">{{ thongKe.soLoSapHetHan || 0 }}</div>
           </div>
         </div>
       </div>
@@ -101,36 +140,66 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axiosClient from '../../api/axiosClient';
 
 const danhSach = ref([]);
 const dangTai  = ref(false);
 const locThang = ref('');
-const locLoai  = ref('all');
-const thongKe  = ref({ tongGiaTri: 0, soLoHetHan: 0, soLoSapHet: 0 });
+const locLoai  = ref('soon');
+const thongKe  = ref({ tongGiaTri: 0, soLoHetHan: 0, soLoSapHetHan: 0, soMatHangSapHetTon: 0 });
 
-// GET /Kho/canh-bao?thang=&loai=
+// ── PHÂN TRANG ──────────────────────────────────
+const trangHienTai   = ref(1);
+const soDongMoiTrang = ref(10);
+
+const tongSoTrang = computed(() =>
+  Math.ceil(danhSach.value.length / soDongMoiTrang.value)
+);
+const batDau = computed(() => (trangHienTai.value - 1) * soDongMoiTrang.value);
+const ketThuc = computed(() =>
+  Math.min(batDau.value + soDongMoiTrang.value, danhSach.value.length)
+);
+const danhSachHienThi = computed(() =>
+  danhSach.value.slice(batDau.value, ketThuc.value)
+);
+const danhSachTrang = computed(() => {
+  const total   = tongSoTrang.value;
+  const current = trangHienTai.value;
+  const start   = Math.max(1, current - 2);
+  const end     = Math.min(total, current + 2);
+  const range   = [];
+  for (let i = start; i <= end; i++) range.push(i);
+  return range;
+});
+// ────────────────────────────────────────────────
+
 const loadData = async () => {
   dangTai.value = true;
   try {
-    const res = await axiosClient.get('/Kho/canh-bao', {
+    const data = await axiosClient.get('/Kho/danh-sach-lo', {
       params: {
         thang: locThang.value || undefined,
-        loai:  locLoai.value !== 'all' ? locLoai.value : undefined,
+        loai:  locLoai.value !== 'all' ? locLoai.value : 'soon',
       },
     });
-    danhSach.value = res.data.items;
-    thongKe.value  = res.data.thongKe;
+    danhSach.value = data?.items ?? [];
+    thongKe.value  = data?.thongKe ?? { tongGiaTri: 0, soLoHetHan: 0, soLoSapHetHan: 0 };
   } catch (err) {
     console.error('Lỗi tải cảnh báo:', err);
+    danhSach.value = [];
   } finally {
     dangTai.value = false;
   }
 };
 
-const laHetHan    = (lo) => new Date(lo.hanSuDung) < new Date();
-const rowClass    = (lo) => ({
+const onFilter = () => {
+  trangHienTai.value = 1;
+  loadData();
+};
+
+const laHetHan = (lo) => lo.hanSuDung && new Date(lo.hanSuDung) < new Date();
+const rowClass = (lo) => ({
   'qlk-row--expired': laHetHan(lo),
   'qlk-row--warn':    !laHetHan(lo),
 });

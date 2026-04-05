@@ -6,7 +6,6 @@
       </div>
       <div class="card-body">
 
-        <!-- Thông tin phiếu nhập -->
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="small text-muted">Nhà cung cấp</label>
@@ -28,16 +27,13 @@
 
         <hr class="my-4">
 
-        <!-- Chọn thuốc + thông tin lô -->
         <div class="row">
           <div class="col-md-8 mb-3">
             <label class="small text-muted">Chọn thuốc</label>
-            <input class="form-control" v-model="timThuoc"
-              placeholder="Gõ tên hoặc hoạt chất để tìm..." @input="timKiemThuoc" />
-            <!-- Autocomplete -->
+            <input class="form-control" v-model="timThuoc" placeholder="Gõ tên hoặc hoạt chất để tìm..."
+              @input="timKiemThuoc" />
             <div v-if="ketQuaTim.length > 0" class="pos-autocomplete-list">
-              <div v-for="sp in ketQuaTim" :key="sp.maThuoc" class="pos-autocomplete-item"
-                @click="chonThuoc(sp)">
+              <div v-for="sp in ketQuaTim" :key="sp.maThuoc" class="pos-autocomplete-item" @click="chonThuoc(sp)">
                 {{ sp.tenThuoc }}
               </div>
             </div>
@@ -48,8 +44,12 @@
           <div class="col-md-4 mb-3">
             <label class="small text-muted">Đơn vị tính</label>
             <select class="form-control" v-model="dongNhap.tenDonVi">
-              <option>Hộp</option><option>Vỉ</option><option>Viên</option>
-              <option>Gói</option><option>Lọ</option><option>Chai</option>
+              <option>Hộp</option>
+              <option>Vỉ</option>
+              <option>Viên</option>
+              <option>Gói</option>
+              <option>Lọ</option>
+              <option>Chai</option>
             </select>
           </div>
         </div>
@@ -65,11 +65,11 @@
           </div>
           <div class="col-md-4 mb-3">
             <label class="small text-muted">Giá nhập (đ)</label>
-            <input type="number" min="0" class="form-control" v-model="dongNhap.giaNhap" />
+            <input type="number" min="0" class="form-control" v-model.number="dongNhap.giaNhap" />
           </div>
           <div class="col-md-4 mb-3">
             <label class="small text-muted">Số lượng nhập</label>
-            <input type="number" min="1" class="form-control" v-model="dongNhap.soLuong" />
+            <input type="number" min="1" class="form-control" v-model.number="dongNhap.soLuong" />
           </div>
         </div>
 
@@ -86,13 +86,16 @@
           </button>
         </div>
 
-        <!-- Danh sách sẽ nhập -->
         <div class="table-responsive mt-3">
           <table v-if="danhSachNhap.length > 0" class="table table-bordered table-sm mb-0 qlk-table">
             <thead class="thead-light">
               <tr>
-                <th>Số lô</th><th>Hạn dùng</th><th>Số lượng</th>
-                <th>Giá nhập</th><th>Thuốc</th><th>Xóa</th>
+                <th>Số lô</th>
+                <th>Hạn dùng</th>
+                <th>Số lượng</th>
+                <th>Giá nhập</th>
+                <th>Thuốc</th>
+                <th>Xóa</th>
               </tr>
             </thead>
             <tbody>
@@ -125,78 +128,122 @@
 import { ref, reactive } from 'vue';
 import axiosClient from '../../api/axiosClient';
 
-const phieu = reactive({ nhaCungCap: '', nguoiNhap: '', ngayNhap: '', ghiChu: '' });
+// Khởi tạo thông tin phiếu nhập
+const phieu = reactive({
+  nhaCungCap: '',
+  nguoiNhap: '',
+  ngayNhap: new Date().toISOString().split('T')[0],
+  ghiChu: ''
+});
 
-const timThuoc   = ref('');
-const ketQuaTim  = ref([]);
-const thuocChon  = ref(null);
-const loiThem    = ref('');
+const timThuoc = ref('');
+const ketQuaTim = ref([]);
+const thuocChon = ref(null);
+const loiThem = ref('');
 const loiHoanTat = ref('');
-const thanhCong  = ref('');
-const dangLuu    = ref(false);
+const thanhCong = ref('');
+const dangLuu = ref(false);
 const danhSachNhap = ref([]);
 
 const dongNhapRong = () => ({ soLo: '', hanSuDung: '', giaNhap: 0, soLuong: 1, tenDonVi: 'Hộp' });
 const dongNhap = reactive(dongNhapRong());
 
-// GET /Thuoc/tim-kiem?q=
+// Tìm kiếm thuốc
 let timer = null;
 const timKiemThuoc = () => {
   clearTimeout(timer);
   if (!timThuoc.value.trim()) { ketQuaTim.value = []; return; }
   timer = setTimeout(async () => {
     try {
-      const res = await axiosClient.get('/Thuoc/tim-kiem', { params: { q: timThuoc.value } });
-      ketQuaTim.value = res.data.slice(0, 8);
+      // ✅ Đổi route và tên param cho khớp BanHangController
+      const data = await axiosClient.get('/BanHang/tim-kiem', { params: { tenThuoc: timThuoc.value } });
+      ketQuaTim.value = Array.isArray(data) ? data.slice(0, 8) : [];
     } catch (err) { console.error(err); }
   }, 300);
 };
 
 const chonThuoc = (sp) => {
-  thuocChon.value   = sp;
-  timThuoc.value    = sp.tenThuoc;
-  ketQuaTim.value   = [];
+  thuocChon.value = sp;
+  timThuoc.value = sp.tenThuoc;
+  ketQuaTim.value = [];
 };
 
+// Thêm một dòng vào danh sách chờ nhập
 const themDong = () => {
   loiThem.value = '';
   if (!thuocChon.value) { loiThem.value = 'Vui lòng chọn thuốc.'; return; }
   if (!dongNhap.soLo.trim()) { loiThem.value = 'Vui lòng nhập số lô.'; return; }
-  if (!dongNhap.hanSuDung)   { loiThem.value = 'Vui lòng nhập hạn sử dụng.'; return; }
+  if (!dongNhap.hanSuDung) { loiThem.value = 'Vui lòng nhập hạn sử dụng.'; return; }
 
   danhSachNhap.value.push({
-    maThuoc:    thuocChon.value.maThuoc,
-    tenThuoc:   thuocChon.value.tenThuoc,
-    soLo:       dongNhap.soLo,
-    hanSuDung:  dongNhap.hanSuDung,
-    giaNhap:    Number(dongNhap.giaNhap),
-    soLuong:    Number(dongNhap.soLuong),
-    tenDonVi:   dongNhap.tenDonVi,
+    maThuoc: thuocChon.value.maThuoc,
+    tenThuoc: thuocChon.value.tenThuoc,
+    soLo: dongNhap.soLo,
+    hanSuDung: dongNhap.hanSuDung,
+    giaNhap: Number(dongNhap.giaNhap),
+    soLuong: Number(dongNhap.soLuong),
+    tenDonVi: dongNhap.tenDonVi,
   });
 
-  // Reset dòng nhập
+  // Reset dữ liệu dòng nhập sau khi thêm thành công
   Object.assign(dongNhap, dongNhapRong());
   thuocChon.value = null;
-  timThuoc.value  = '';
+  timThuoc.value = '';
 };
 
 const xoaDong = (i) => danhSachNhap.value.splice(i, 1);
 
-// POST /Kho/nhap-kho
+// Gửi toàn bộ phiếu nhập lên Backend
 const hoanTatNhapKho = async () => {
   loiHoanTat.value = '';
-  thanhCong.value  = '';
-  dangLuu.value    = true;
+  thanhCong.value = '';
+
+  if (!phieu.nhaCungCap.trim()) {
+    loiHoanTat.value = 'Vui lòng nhập Nhà cung cấp.';
+    return;
+  }
+
+  dangLuu.value = true;
   try {
-    await axiosClient.post('/Kho/nhap-kho', {
-      ...phieu,
-      chiTiet: danhSachNhap.value,
-    });
+    // Payload khớp chính xác với DTO
+    const payload = {
+      nhaCungCap: phieu.nhaCungCap,
+      nguoiNhap: phieu.nguoiNhap,
+      ngayNhap: phieu.ngayNhap,
+      ghiChu: phieu.ghiChu,
+      chiTiet: danhSachNhap.value.map(item => ({
+        maThuoc: item.maThuoc,
+        soLo: item.soLo,
+        hanSuDung: item.hanSuDung,
+        giaNhap: item.giaNhap,
+        soLuong: item.soLuong,
+        tenDonVi: item.tenDonVi,
+        maVach: "" // Backend tự sinh
+      }))
+    };
+
+    await axiosClient.post('/Kho/nhap-kho', payload);
+    thanhCong.value = 'Nhập kho thành công!';
     danhSachNhap.value = [];
-    thanhCong.value    = 'Nhập kho thành công!';
+    Object.assign(phieu, {
+      nhaCungCap: '', nguoiNhap: '',
+      ngayNhap: new Date().toISOString().split('T')[0],
+      ghiChu: ''
+    });
   } catch (err) {
-    loiHoanTat.value = err.response?.data?.message || 'Có lỗi xảy ra.';
-  } finally {
+  const errData = err.response?.data;
+  console.error('Validation errors:', errData?.errors); // ← xem field nào lỗi
+  
+  // Hiện lỗi chi tiết ra UI
+  if (errData?.errors) {
+    const messages = Object.entries(errData.errors)
+      .map(([field, msgs]) => `${field}: ${msgs.join(', ')}`)
+      .join(' | ');
+    loiHoanTat.value = messages;
+  } else {
+    loiHoanTat.value = errData?.message || err.message || 'Có lỗi xảy ra.';
+  }
+} finally {
     dangLuu.value = false;
   }
 };
