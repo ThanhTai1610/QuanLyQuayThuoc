@@ -87,18 +87,24 @@
             <div class="row" v-if="danhSachSanPham.length > 0">
               <div class="col-md-4 col-sm-6 mb-4" v-for="sp in danhSachSanPham" :key="sp.maThuoc">
                 <article class="product-card">
-                  <div class="product-origin-badge" v-if="sp.tenThuoc"> 
+                  <div class="product-origin-badge"> 
                     <img :src="getFlagUrl(sp.nuocSanXuat || 'việt nam')" class="flag-icon" />
                     <span>{{ sp.nuocSanXuat || 'Việt Nam' }}</span>
                   </div>
                   
-                  <div v-if="sp.laThuocKeDon" class="product-badge-prescription">🔴 Thuốc kê đơn</div>
+                  <div v-if="sp.laThuocKeDon" class="product-badge-prescription">
+                    <i class="fas fa-circle mr-1" style="font-size: 7px;"></i> Thuốc kê đơn
+                  </div>
 
                   <img :src="getImageUrl(sp.hinhAnhChinh)" :alt="sp.tenThuoc" class="product-image" />
 
                   <h3 class="product-name">{{ sp.tenThuoc }}</h3>
 
-                  <p class="product-meta">{{ sp.quyCach }} • {{ sp.nuocSanXuat || 'Chưa rõ' }}</p>
+                  <div class="product-category-label" v-if="sp.tenDanhMuc">
+                    <i class="fas fa-folder-open mr-1"></i> {{ sp.tenDanhMuc }}
+                  </div>
+
+                  <p class="product-meta">{{ sp.quyCach }}</p>
 
                   <div class="product-price">
                     {{ formatGia(sp.giaBan) }}
@@ -106,11 +112,19 @@
                   </div>
 
                   <div class="product-actions">
-                    <button class="btn btn-primary btn-sm" @click="themVaoGio(sp)">Chọn mua</button>
+                    <button 
+                      class="btn btn-primary btn-sm" 
+                      @click="themVaoGio(sp)"
+                      :disabled="sp.laThuocKeDon"
+                      :title="sp.laThuocKeDon ? 'Sản phẩm này cần có đơn thuốc' : ''"
+                    >
+                      {{ sp.laThuocKeDon ? 'Cần kê đơn' : 'Chọn mua' }}
+                    </button>
+                    
                     <router-link
                       :to="{ name: 'ChiTietSanPham', params: { id: sp.maThuoc } }"
                       class="btn btn-outline-primary btn-sm">
-                      Xem chi tiết
+                      Chi tiết
                     </router-link>
                   </div>
                 </article>
@@ -154,7 +168,7 @@ import Swal from 'sweetalert2';
 const route  = useRoute();
 const router = useRouter();
 
-// ── State ──
+// State
 const danhSachSanPham = ref([]);
 const dangTai         = ref(false);
 const tongSanPham     = ref(0);
@@ -171,7 +185,7 @@ const locNSX      = ref([]);
 const locGia      = ref('');
 const locDBC      = ref([]);
 
-// ── Dữ liệu cho sidebar ──
+// Dữ liệu sidebar
 const danhSachDanhMuc = ref([]);
 const danhSachNSX     = ref([]);
 const danhSachDoiTuong = ['Trẻ em', 'Người lớn', 'Phụ nữ mang thai', 'Người già'];
@@ -186,21 +200,16 @@ const danhSachGia = [
 const getFlagUrl = (countryName) => {
   if (!countryName) return 'https://flagcdn.com/w40/vn.png';
   const name = countryName.toLowerCase();
-
   if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
   if (name.includes('hoa kỳ') || name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
-  
-  // Thêm điều kiện cho Vương quốc Anh ở đây
   if (name.includes('anh') || name.includes('vương quốc anh') || name.includes('uk')) return 'https://flagcdn.com/w40/gb.png';
-
   if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
   if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
   if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
-
   return 'https://flagcdn.com/w40/un.png';
 };
 
-// ── Load sản phẩm ──
+// Load sản phẩm
 const loadData = async (resetTrang = false) => {
   if (resetTrang) trangHienTai.value = 1;
   dangTai.value = true;
@@ -219,14 +228,11 @@ const loadData = async (resetTrang = false) => {
     };
     
     const res = await axiosClient.get('/Thuoc', { params });
-    
-    if (res) {
-      danhSachSanPham.value = res.items || [];
-      tongSanPham.value     = res.total || 0;
+    const data = res.data || res;
+    if (data) {
+      danhSachSanPham.value = data.items || [];
+      tongSanPham.value     = data.total || 0;
       tongTrang.value       = Math.ceil(tongSanPham.value / soLuongMoiTrang);
-    } else {
-      danhSachSanPham.value = [];
-      tongSanPham.value = 0;
     }
   } catch (err) {
     console.error('Lỗi tải sản phẩm:', err);
@@ -237,14 +243,15 @@ const loadData = async (resetTrang = false) => {
   }
 };
 
+// Load Sidebar (Fix lỗi nhận diện mảng)
 const loadSidebar = async () => {
   try {
     const [resDM, resNSX] = await Promise.all([
       axiosClient.get('/DanhMuc'),
       axiosClient.get('/Thuoc/nha-san-xuat'),
     ]);
-    danhSachDanhMuc.value = resDM.data;
-    danhSachNSX.value     = resNSX.data;
+    danhSachDanhMuc.value = resDM.data || resDM || [];
+    danhSachNSX.value     = resNSX.data || resNSX || [];
   } catch (err) {
     console.error('Lỗi tải sidebar:', err);
   }
@@ -258,51 +265,25 @@ const doiTrang = (trang) => {
 };
 
 const themVaoGio = async (sp) => {
-  const maDVTSelected = sp.maDVT || 1; 
-
   try {
-    const response = await axiosClient.post('/GioHang/them', {
+    await axiosClient.post('/GioHang/them', {
       MaThuoc: sp.maThuoc,
-      MaDvt: maDVTSelected,
+      MaDvt: sp.maDVT || 1, 
       SoLuong: 1,
     });
-
-    // Thông báo bằng SweetAlert2
     Swal.fire({
       icon: 'success',
-      title: 'Đã thêm vào giỏ!',
-      text: `Sản phẩm ${sp.tenThuoc} đã có trong giỏ hàng của bạn.`,
-      showConfirmButton: true,
+      title: 'Đã thêm!',
+      text: `${sp.tenThuoc} đã vào giỏ hàng.`,
       confirmButtonText: 'Xem giỏ hàng',
       showCancelButton: true,
-      cancelButtonText: 'Tiếp tục mua sắm',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#aaa',
+      cancelButtonText: 'Tiếp tục',
     }).then((result) => {
-      if (result.isConfirmed) {
-        router.push('/gio-hang'); // Chuyển trang nếu khách muốn xem giỏ ngay
-      }
+      if (result.isConfirmed) router.push('/gio-hang');
     });
-
   } catch (err) {
-    console.error('Lỗi thêm giỏ hàng:', err);
-    
-    if (err.response?.status === 401) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Yêu cầu đăng nhập',
-        text: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!',
-        confirmButtonText: 'Đăng nhập ngay'
-      }).then(() => {
-        router.push('/dang-nhap'); 
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Lỗi hệ thống',
-        text: 'Không thể thêm vào giỏ hàng lúc này.'
-      });
-    }
+    if (err.response?.status === 401) router.push('/dang-nhap'); 
+    else Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể thêm vào giỏ.' });
   }
 };
 
@@ -315,9 +296,7 @@ const xoaBoLoc = () => {
   loadData(true);
 };
 
-watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => {
-  loadData(true);
-}, { deep: true });
+watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => loadData(true), { deep: true });
 
 watch(() => route.query.q, (newVal) => {
   tuKhoa.value = newVal || '';
@@ -325,13 +304,8 @@ watch(() => route.query.q, (newVal) => {
 }, { immediate: true });
 
 const getImageUrl = (path) => {
-  // 1. Nếu không có đường dẫn, trả về ảnh mặc định (placeholder)
   if (!path) return 'https://via.placeholder.com/300x300.png?text=No+Image';
-
-  // 2. Nếu đường dẫn bắt đầu bằng http hoặc https (link mạng), dùng luôn link đó
   if (path.startsWith('http')) return path;
-
-  // 3. Nếu là đường dẫn cục bộ (ví dụ: /images/thuoc.jpg), nối với URL của Backend
   return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
@@ -339,65 +313,107 @@ const formatGia = (value) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value ?? 0);
 
 onMounted(() => {
+  loadData();
   loadSidebar();
 });
 </script>
 
-<style>
+<style scoped>
 .product-card {
   position: relative !important;
   background: #fff;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
-  border: 1px solid #eee;
-  padding-top: 15px; /* Tăng padding để cờ không bị sát mép */
+  border: 1px solid #f0f0f0;
+  padding: 15px;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
+.product-card:hover {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* Badge Quốc gia & Thuốc kê đơn nằm gọn ở 2 góc */
 .product-origin-badge {
   position: absolute;
   top: 10px;
   left: 10px;
   z-index: 10;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 3px 10px;
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 2px 8px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
-  font-size: 11px;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 10px;
   border: 1px solid #eee;
 }
 
-.flag-icon {
-  width: 18px !important;
-  height: 12px !important;
-  object-fit: cover;
-  margin-right: 6px;
-  border-radius: 2px;
-}
-
 .product-badge-prescription {
+  /* QUAN TRỌNG: 2 dòng này sẽ làm khung ngắn lại theo chữ */
+  display: inline-block; 
+  width: fit-content; 
+
+  /* Đưa nó lên góc phải để không đẩy ảnh xuống */
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 10;
+
+  /* Giữ nguyên style màu sắc của Long */
   font-size: 10px;
-  background: white;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid #ff4d4f;
-  color: #ff4d4f;
+  background: #fff1f0;
+  padding: 2px 8px;
+  border-radius: 20px; /* Bo tròn giống nhãn quốc gia */
+  border: 1px solid #ffccc7;
+  color: #cf1322;
+  font-weight: 500;
+  white-space: nowrap; /* Tuyệt đối không cho xuống dòng */
+}
+
+.flag-icon {
+  width: 16px !important;
+  height: 10px !important;
+  margin-right: 4px;
 }
 
 .product-image {
   width: 100%;
   height: 160px;
   object-fit: contain;
-  margin-top: 15px;
+  margin: 15px 0;
+}
+
+.product-category-label {
+  font-size: 11px;
+  color: #1890ff;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.product-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.product-actions .btn {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 8px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-primary:disabled {
+  background-color: #f5f5f5 !important;
+  border-color: #d9d9d9 !important;
+  color: #bfbfbf !important;
+  cursor: not-allowed;
 }
 </style>

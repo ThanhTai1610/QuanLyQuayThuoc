@@ -43,6 +43,7 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                 QuyCach = t.QuyCach,
                 NuocSanXuat = t.NuocSanXuat,
                 LaThuocKeDon = t.LaThuocKeDon ?? false,
+                TenDanhMuc = t.MaDanhMucNavigation != null ? t.MaDanhMucNavigation.TenDanhMuc : "Chưa phân loại",
                 GiaBan = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan ?? 0).FirstOrDefault(),
                 TenDonVi = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.TenDonVi).FirstOrDefault(),
                 MaDVT = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.MaDvt).FirstOrDefault()
