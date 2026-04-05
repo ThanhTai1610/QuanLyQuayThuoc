@@ -16,6 +16,7 @@ public partial class DonViTinh
     public decimal? GiaBan { get; set; }
 
     public bool? LaDonViCoBan { get; set; }
+    public string? MaVach { get; set; } // Thêm dòng này vào class DonViTinh
 
     public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
 
