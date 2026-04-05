@@ -1,23 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj": {}
+    "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj": {}
   },
   "projects": {
-    "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj": {
+    "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj",
+        "projectUniqueName": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj",
         "projectName": "QuanLyQuayThuoc",
-        "projectPath": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj",
-        "packagesPath": "C:\\Users\\HAI LONG\\.nuget\\packages\\",
-        "outputPath": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\obj\\",
+        "projectPath": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj",
+        "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
+        "outputPath": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
+          "C:\\Program Files\\DevExpress 24.2\\Components\\Offline Packages",
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\HAI LONG\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 24.2.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +28,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\DevExpress 24.2\\Components\\System\\Components\\Packages": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -42,7 +45,7 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "direct"
+          "auditMode": "all"
         },
         "SdkAnalysisLevel": "9.0.100"
       },
@@ -74,6 +77,14 @@
               "target": "Package",
               "version": "[8.0.10, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.4, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[114.0.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.6.2, )"
@@ -102,7 +113,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

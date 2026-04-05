@@ -16,7 +16,7 @@ public partial class DonViTinh
     public decimal? GiaBan { get; set; }
 
     public bool? LaDonViCoBan { get; set; }
-
+    public string? MaVach { get; set; }
     public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
 
     public virtual ICollection<GioHang> GioHangs { get; set; } = new List<GioHang>();

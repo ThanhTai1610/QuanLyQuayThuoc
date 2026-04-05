@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "wYCOa5jggs7Zn6TKSNIbozw8pFjA1YWC9tp9oafxHPg=",
+  "Hash": "cOtouekQA2PgS4oKKzZml74wAigj5N150I3TR8gtY/A=",
   "Source": "QuanLyQuayThuoc",
   "BasePath": "_content/QuanLyQuayThuoc",
   "Mode": "Default",
@@ -10,17 +10,17 @@
     {
       "Name": "QuanLyQuayThuoc\\wwwroot",
       "Source": "QuanLyQuayThuoc",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "Pattern": "**"
     }
   ],
   "Assets": [
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "images/products/product_01#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -38,10 +38,10 @@
       "OriginalItemSpec": "wwwroot\\images\\products\\product_01.png"
     },
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "uploads/avatars/avatar_4_20260327102538#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -59,10 +59,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png"
     },
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "uploads/avatars/avatar_4_20260327103641#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -80,10 +80,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png"
     },
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "uploads/avatars/avatar_4_20260327104154#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -101,10 +101,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png"
     },
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "uploads/avatars/avatar_4_20260327104659#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -122,10 +122,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png"
     },
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327105110.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327105110.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "uploads/avatars/avatar_4_20260327105110#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -143,10 +143,10 @@
       "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327105110.png"
     },
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222317.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222317.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "uploads/avatars/avatar_4_20260327222317#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -164,10 +164,52 @@
       "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327222317.png"
     },
     {
-      "Identity": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222921.png",
       "SourceId": "QuanLyQuayThuoc",
       "SourceType": "Discovered",
-      "ContentRoot": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "BasePath": "_content/QuanLyQuayThuoc",
+      "RelativePath": "uploads/avatars/avatar_4_20260327222921#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b5zvsh3arc",
+      "Integrity": "r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327222921.png"
+    },
+    {
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327223216.png",
+      "SourceId": "QuanLyQuayThuoc",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
+      "BasePath": "_content/QuanLyQuayThuoc",
+      "RelativePath": "uploads/avatars/avatar_4_20260327223216#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "b5zvsh3arc",
+      "Integrity": "r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\avatars\\avatar_4_20260327223216.png"
+    },
+    {
+      "Identity": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
+      "SourceId": "QuanLyQuayThuoc",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\",
       "BasePath": "_content/QuanLyQuayThuoc",
       "RelativePath": "uploads/products/product_01#[.{fingerprint}]?.png",
       "AssetKind": "All",
@@ -188,7 +230,7 @@
   "Endpoints": [
     {
       "Route": "images/products/product_01.doybj5k14s.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -209,7 +251,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 25 Mar 2026 10:38:02 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -233,7 +275,7 @@
     },
     {
       "Route": "images/products/product_01.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\images\\products\\product_01.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -254,7 +296,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 25 Mar 2026 10:38:02 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -270,7 +312,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327102538.b5zvsh3arc.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -291,7 +333,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:25:38 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -315,7 +357,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327102538.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327102538.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -336,7 +378,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:25:38 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -352,7 +394,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327103641.b5zvsh3arc.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -373,7 +415,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:36:41 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -397,7 +439,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327103641.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327103641.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -418,7 +460,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:36:41 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -434,7 +476,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327104154.b5zvsh3arc.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -455,7 +497,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:41:54 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -479,7 +521,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327104154.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104154.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -500,7 +542,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:41:54 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -516,7 +558,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327104659.b5zvsh3arc.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -537,7 +579,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:46:59 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -561,7 +603,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327104659.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327104659.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -582,7 +624,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:46:59 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -598,7 +640,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327105110.b5zvsh3arc.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327105110.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327105110.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -619,7 +661,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:51:10 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -643,7 +685,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327105110.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327105110.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327105110.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -664,7 +706,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 03:51:10 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -680,7 +722,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327222317.936ok3amik.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222317.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222317.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -701,7 +743,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 15:23:17 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -725,7 +767,7 @@
     },
     {
       "Route": "uploads/avatars/avatar_4_20260327222317.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222317.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222317.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -746,7 +788,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 15:23:17 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -761,8 +803,172 @@
       ]
     },
     {
+      "Route": "uploads/avatars/avatar_4_20260327222921.b5zvsh3arc.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222921.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b5zvsh3arc"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/avatars/avatar_4_20260327222921.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327222921.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327222921.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327223216.b5zvsh3arc.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327223216.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "b5zvsh3arc"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/avatars/avatar_4_20260327223216.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/avatars/avatar_4_20260327223216.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\avatars\\avatar_4_20260327223216.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1092079"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-r/NfIzxisCUEIfbFg6mBXiVGoRTIwoVhaCcv6M/aZnE="
+        }
+      ]
+    },
+    {
       "Route": "uploads/products/product_01.doybj5k14s.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -783,7 +989,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 02:55:07 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -807,7 +1013,7 @@
     },
     {
       "Route": "uploads/products/product_01.png",
-      "AssetFile": "D:\\Program Files\\Nox\\API\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
+      "AssetFile": "E:\\Cao Đẳng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\wwwroot\\uploads\\products\\product_01.png",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -828,7 +1034,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 27 Mar 2026 02:55:07 GMT"
+          "Value": "Tue, 31 Mar 2026 02:29:43 GMT"
         },
         {
           "Name": "Cache-Control",

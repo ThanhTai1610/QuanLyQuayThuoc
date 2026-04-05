@@ -3,7 +3,7 @@ using QuanLyQuayThuoc.DTOs.SanPham;
 using QuanLyQuayThuoc.Repositories.Interfaces;
 using QuanLyQuayThuoc.Services.Interfaces;
 
-namespace QuanLyQuayThuoc.Services
+namespace QuanLyQuayThuoc.Services.Implementation
 {
     public class KhoService : IKhoService
     {

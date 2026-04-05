@@ -68,13 +68,39 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
         }
 
         // 5. Xóa sạch giỏ hàng
-        // DELETE: api/GioHang/xoa-tat ca
+        // DELETE: api/GioHang/xoa-tat-ca
         [HttpDelete("xoa-tat-ca")]
         public async Task<IActionResult> XoaTatCa()
         {
             int maKhachHang = 1;
             var thanhCong = await _gioHangService.XoaToanBoGioHangAsync(maKhachHang);
             return Ok(new { message = "Giỏ hàng đã được làm trống" });
+        }
+
+        // 6. Đặt hàng online (dành cho khách hàng)
+        // POST: api/GioHang/dat-hang
+        [HttpPost("dat-hang")]
+        public async Task<IActionResult> DatHang([FromBody] DatHangKhachHangDto dto)
+        {
+            try
+            {
+                if (dto == null || dto.ChiTiet == null || dto.ChiTiet.Count == 0)
+                    return BadRequest(new { success = false, message = "Giỏ hàng trống." });
+
+                // Validate MaLo - tránh trường hợp sản phẩm hết hàng
+                if (dto.ChiTiet.Any(c => c.MaLo <= 0))
+                    return BadRequest(new { success = false, message = "Một số sản phẩm đã hết hàng, vui lòng xóa khỏi giỏ trước khi đặt." });
+
+                int maKhachHang = 1; // Sau này thay bằng: int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+                var maDonHang = await _gioHangService.DatHangAsync(dto, maKhachHang);
+
+                return Ok(new { success = true, maDonHang = maDonHang });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { success = false, message = ex.Message });
+            }
         }
     }
 

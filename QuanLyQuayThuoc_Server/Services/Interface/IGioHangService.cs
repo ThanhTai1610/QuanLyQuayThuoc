@@ -9,5 +9,6 @@ namespace QuanLyQuayThuoc.Services.Interfaces
         Task<bool> CapNhatGioHangAsync(List<CapNhatGioHangDto> danhSachCapNhat);
         Task<bool> XoaKhoiGioHangAsync(int maGioHang);
         Task<bool> XoaToanBoGioHangAsync(int maKhachHang);
+        Task<int> DatHangAsync(DatHangKhachHangDto dto, int maKhachHang);
     }
 }
