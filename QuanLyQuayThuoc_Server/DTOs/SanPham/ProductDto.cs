@@ -13,7 +13,8 @@
             public decimal GiaBan { get; set; } // Lấy giá từ đơn vị cơ bản
             public string TenDonVi { get; set; }
             public int MaDVT { get; set; }
-        }
+            public string? TenDanhMuc { get; set; }
+    }
     public class PaginatedResult<T>
     {
         public List<T> Items { get; set; }
