@@ -1,4 +1,5 @@
 <template>
+  
   <div class="site-wrap">
     <div class="container py-4">
       <nav class="breadcrumb-wrap" aria-label="breadcrumb">
@@ -243,12 +244,11 @@ const activeTab = ref('dacdiem');
 const dsSanPhamTuongTu = ref([]);
 const dsThuongMuaCung = ref([]); 
 const soLuong = ref(1);
+import bus from '../../api/bus'; // Import cái bus
 
 const diToiTuVan = () => {
-  router.push({ 
-    name: 'ChatbotTuVan', 
-    query: { open: 'true' } 
-  });
+  console.log("Đã bấm nút tư vấn cho thuốc:", thuoc.value.tenThuoc); // Thêm dòng này
+  bus.emit('open-chat', { tenThuoc: thuoc.value.tenThuoc });
 };
 
 // --- COMPUTED ---

@@ -1,7 +1,10 @@
 <template>
   <router-view></router-view>
-</template>
+
+  <ChatbotTuVan />
+  
+  </template>
 
 <script setup>
-// Không cần import HelloWorld ở đây nữa Tài nhé
+import ChatbotTuVan from './components/ChatbotTuVan.vue'; // Tài kiểm tra lại đường dẫn file này nhé
 </script>

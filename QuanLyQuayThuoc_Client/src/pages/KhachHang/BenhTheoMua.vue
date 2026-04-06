@@ -9,7 +9,6 @@
         Gợi ý giải pháp chăm sóc sức khỏe theo từng nhóm bệnh thường gặp khi giao mùa.
       </p>
 
-      <!-- Tabs — ánh xạ với ChuDeSucKhoe -->
       <div class="season-tabs">
         <button
           v-for="tab in danhSachChuDe"
@@ -23,27 +22,26 @@
         </button>
       </div>
 
-      <!-- Loading -->
-      <div v-if="dangTai" class="text-center py-4">
+      <div v-if="dangTai" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Đang tải...</span>
+          <span class="visually-hidden">Đang tải...</span>
         </div>
       </div>
 
-      <div v-else-if="chuDeHienTai" class="season-disease-board">
-
-        <!-- Card giới thiệu — NoiDungGiaiPhap + TieuDePhu từ ChuDeSucKhoe -->
+      <div v-else-if="thongTinChuDe" class="season-disease-board">
+        
         <div class="season-intro-card">
           <img
-            :src="getImageUrl(chuDeHienTai.hinhAnh)"
-            :alt="chuDeHienTai.tenChuDe"
+            :src="getImageUrl(thongTinChuDe.hinhAnh)"
+            :alt="thongTinChuDe.tenChuDe"
             class="season-intro-bg"
           />
           <div class="season-intro-content">
-            <h3>{{ chuDeHienTai.tieuDePhu }}</h3>
-            <p>{{ chuDeHienTai.noiDungGiaiPhap }}</p>
+            <h3>{{ thongTinChuDe.tieuDePhu }}</h3>
+            <p>{{ thongTinChuDe.noiDungGiaiPhap }}</p>
+            
             <router-link
-              :to="{ path: '/san-pham', query: { chuDe: chuDeHienTai.maChuDe } }"
+              :to="{ path: '/san-pham', query: { chuDe: thongTinChuDe.maChuDe } }"
               class="btn season-intro-btn"
             >
               Khám phá ngay giải pháp
@@ -51,28 +49,31 @@
           </div>
         </div>
 
-        <!-- Danh sách sản phẩm theo chủ đề — từ Thuoc_ChuDe JOIN Thuoc + DonViTinh -->
         <div class="season-product-list">
           <article
             class="season-product-card"
             v-for="sp in sanPhamChuDe"
             :key="sp.maThuoc"
           >
-            <div class="season-product-head">
-              <span class="origin">{{ sp.nuocSanXuat }}</span>
-              <span v-if="sp.phanTramGiam" class="discount">-{{ sp.phanTramGiam }}%</span>
+            <div class="product-origin-badge">
+              <img :src="getFlagUrl(sp.nuocSanXuat)" class="flag-icon" alt="flag" />
+              <span class="origin-text">{{ sp.nuocSanXuat || 'Việt Nam' }}</span>
             </div>
+            
             <img
               :src="getImageUrl(sp.hinhAnhChinh)"
               :alt="sp.tenThuoc"
               class="season-product-image"
             />
+            
             <h4>{{ sp.tenThuoc }}</h4>
+            
             <div class="season-price">
               {{ formatGia(sp.giaBan) }} <span>/ {{ sp.tenDonVi }}</span>
             </div>
-            <div v-if="sp.giaCu" class="season-old-price">{{ formatGia(sp.giaCu) }}</div>
+            
             <div class="season-pack">{{ sp.quyCach }}</div>
+            
             <router-link
               :to="{ name: 'ChiTietSanPham', params: { id: sp.maThuoc } }"
               class="btn season-buy-btn"
@@ -88,49 +89,59 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import axiosClient from '../../api/axiosClient';
 
-const danhSachChuDe  = ref([]);  // GET /ChuDeSucKhoe — TrangThai = 1
-const sanPhamChuDe   = ref([]);  // GET /ChuDeSucKhoe/:id/san-pham
+const danhSachChuDe = ref([]);
+const thongTinChuDe  = ref(null);
+const sanPhamChuDe   = ref([]);
 const tabHienTai     = ref(null);
 const dangTai        = ref(false);
 
-const chuDeHienTai = computed(() =>
-  danhSachChuDe.value.find(c => c.maChuDe === tabHienTai.value)
-);
+// Hàm lấy link cờ đồng bộ với trang bán chạy
+const getFlagUrl = (countryName) => {
+  if (!countryName) return 'https://flagcdn.com/w40/vn.png';
+  const name = countryName.toLowerCase();
+  if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
+  if (name.includes('hoa kỳ') || name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
+  if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
+  if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
+  if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
+  if (name.includes('anh')) return 'https://flagcdn.com/w40/gb.png';
+  if (name.includes('hàn quốc')) return 'https://flagcdn.com/w40/kr.png';
+  return 'https://flagcdn.com/w40/un.png';
+};
 
-// ── Load danh sách chủ đề ──
-const loadChuDe = async () => {
+const loadTabs = async () => {
   try {
     const res = await axiosClient.get('/ChuDeSucKhoe');
-    danhSachChuDe.value = res.data;
-    if (res.data.length > 0) {
-      tabHienTai.value = res.data[0].maChuDe;
-      await loadSanPham(res.data[0].maChuDe);
+    danhSachChuDe.value = res; 
+    if (res && res.length > 0) {
+      tabHienTai.value = res[0].maChuDe;
+      await loadNoiDungChuDe(res[0].maChuDe);
     }
   } catch (err) {
-    console.error('Lỗi tải chủ đề sức khỏe:', err);
+    console.error('Lỗi tải danh sách tab:', err);
   }
 };
 
-// ── Load sản phẩm theo chủ đề — Thuoc_ChuDe JOIN Thuoc + DonViTinh ──
-const loadSanPham = async (maChuDe) => {
+const loadNoiDungChuDe = async (id) => {
   dangTai.value = true;
   try {
-    const res = await axiosClient.get(`/ChuDeSucKhoe/${maChuDe}/san-pham`);
-    sanPhamChuDe.value = res.data;
+    const res = await axiosClient.get(`/ChuDeSucKhoe/${id}/san-pham`);
+    thongTinChuDe.value = res.info; 
+    sanPhamChuDe.value = res.products;
   } catch (err) {
-    console.error('Lỗi tải sản phẩm chủ đề:', err);
+    console.error('Lỗi tải dữ liệu chủ đề:', err);
   } finally {
     dangTai.value = false;
   }
 };
 
-const doiTab = async (maChuDe) => {
-  if (tabHienTai.value === maChuDe) return;
-  tabHienTai.value = maChuDe;
-  await loadSanPham(maChuDe);
+const doiTab = async (id) => {
+  if (tabHienTai.value === id) return;
+  tabHienTai.value = id;
+  await loadNoiDungChuDe(id);
 };
 
 const getImageUrl = (path) => {
@@ -142,5 +153,46 @@ const getImageUrl = (path) => {
 const formatGia = (value) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value ?? 0);
 
-onMounted(loadChuDe);
+onMounted(loadTabs);
 </script>
+
+<style scoped>
+/* CSS bổ sung để Badge hiển thị đẹp trong card Bệnh theo mùa */
+.season-product-card {
+  position: relative; /* Quan trọng để badge đè lên */
+}
+
+.product-origin-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+  background: rgba(240, 224, 224, 0.9);
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  color: #666;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.flag-icon {
+  width: 14px !important;
+  height: 10px !important;
+  object-fit: cover;
+  margin-right: 4px;
+}
+
+.origin-text {
+  white-space: nowrap;
+}
+.season-intro-btn {
+  color: #fff !important;
+}
+
+.season-intro-btn:hover {
+  color: #fff !important;
+}
+</style>

@@ -1,35 +1,45 @@
 <template>
-  <div class="home-section home-best-seller">
+  <div class="home-section home-best-seller py-5">
     <div class="container">
-      <div class="best-seller-wrapper">
-        <div class="best-seller-title-badge">Sản phẩm bán chạy nhất</div>
-        <div class="row no-gutters align-items-stretch best-seller-row">
-          
-          <div v-if="loading" class="col-12 text-center p-5">Đang tải sản phẩm...</div>
+      <div class="row align-items-center mb-4">
+        <div class="col-lg-8">
+          <div class="title-section mb-0">
+            <h2 class="mb-1"><strong class="text-primary">Sản phẩm</strong> bán chạy</h2>
+            <p class="pharmacy-products-sub mb-0 text-muted">Giao nhanh 2h, chính hãng 100%, giá tốt mỗi ngày.</p>
+          </div>
+        </div>
+      </div>
 
-          <div v-else class="col-md-2 col-6 mb-3" v-for="item in bestSellers" :key="item.id">
-            <div class="best-seller-card">
-              <div class="best-seller-header">
-                <div class="product-origin-badge">
-                  <img :src="getFlagUrl(item.origin)" class="flag-icon" />
-                  <span>{{ item.origin || 'Việt Nam' }}</span>
-                </div>
+      <div class="best-seller-wrapper mt-4">
+        <div v-if="loading" class="text-center p-5">
+           <div class="spinner-border text-primary" role="status"></div>
+           <p class="mt-2">Đang tải sản phẩm...</p>
+        </div>
+
+        <div v-else class="row no-gutters align-items-stretch best-seller-row">
+          <div class="col-md-2 col-6 mb-4 px-2" v-for="item in bestSellers" :key="item.id">
+            <div class="best-seller-card shadow-sm h-100">
+              <div class="product-origin-badge">
+                <img :src="getFlagUrl(item.origin)" class="flag-icon" />
+                <span>{{ item.origin || 'Việt Nam' }}</span>
               </div>
               
-              <router-link :to="{ name: 'ChiTietSanPham', params: { id: item.id }}">
+              <router-link :to="{ name: 'ChiTietSanPham', params: { id: item.id }}" class="d-block text-center mt-4">
                 <img :src="getImageUrl(item.image)" :alt="item.name" class="best-seller-image">
               </router-link>
 
-              <div class="best-seller-name">{{ item.name }}</div>
-              
-              <div class="best-seller-price">
-                <span class="current">{{ formatPrice(item.price) }}</span>
-                <span class="unit">/ {{ item.unit }}</span>
+              <div class="best-seller-content p-2 pt-0">
+                <div class="best-seller-name mb-1">{{ item.name }}</div>
+                
+                <div class="best-seller-price mb-1">
+                  <span class="current text-danger font-weight-bold">{{ formatPrice(item.price) }}</span>
+                  <span class="unit text-muted small">/ {{ item.unit }}</span>
+                </div>
+
+                <div class="best-seller-sold mb-3">Đã bán: {{ item.totalSold }}</div>
+
+                <button @click="handleBuy(item)" class="btn btn-primary btn-sm btn-block">Chọn mua</button>
               </div>
-
-              <div class="best-seller-sold">Đã bán: {{ item.totalSold }}</div>
-
-              <button @click="handleBuy(item)" class="btn best-seller-btn btn-block">Chọn mua</button>
             </div>
           </div>
         </div>
@@ -148,5 +158,9 @@ onMounted(fetchBestSellers);
     color: #888;
     margin-bottom: 10px;
     font-style: italic;
+}
+span.current.text-danger.font-weight-bold {
+  font-size: 18px;
+  font-weight: 700 !important;
 }
 </style>

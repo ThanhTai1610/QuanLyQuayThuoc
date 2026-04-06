@@ -116,7 +116,7 @@
                     <router-link to="/lich-su-don-hang">
                       <i class="fas fa-history mr-2"></i> Đơn hàng của tôi
                     </router-link>
-                    <router-link to="/auth/addresses">
+                    <router-link to="/dia-chi">
                       <i class="fas fa-map-marker-alt mr-2"></i> Sổ địa chỉ
                     </router-link>
                     <div class="dropdown-divider"></div>
@@ -153,14 +153,14 @@
     <div class="lc-header-bottom d-none d-lg-block">
       <div class="container">
         <ul class="lc-header-nav mb-0">
-          <li class="active"><router-link to="/thuc-pham-chuc-nang">Thực phẩm chức năng</router-link></li>
-          <li><router-link to="/duoc-my-pham">Dược mỹ phẩm</router-link></li>
-          <li><router-link to="/thuoc">Thuốc</router-link></li>
-          <li><router-link to="/cham-soc-ca-nhan">Chăm sóc cá nhân</router-link></li>
-          <li><router-link to="/thiet-bi-y-te">Thiết bị y tế</router-link></li>
-          <li><router-link to="/tiem-chung">Tiêm chủng</router-link></li>
-          <li><router-link to="/suc-khoe">Bệnh &amp; Góc sức khỏe</router-link></li>
-          <li><router-link to="/he-thong-nha-thuoc">Hệ thống nhà thuốc</router-link></li>
+          <li class="active"><router-link to="/">Thực phẩm chức năng</router-link></li>
+          <li><router-link to="/">Dược mỹ phẩm</router-link></li>
+          <li><router-link to="/">Thuốc</router-link></li>
+          <li><router-link to="/">Chăm sóc cá nhân</router-link></li>
+          <li><router-link to="/">Thiết bị y tế</router-link></li>
+          <li><router-link to="/">Tiêm chủng</router-link></li>
+          <li><router-link to="/">Bệnh &amp; Góc sức khỏe</router-link></li>
+          <li><router-link to="/">Hệ thống nhà thuốc</router-link></li>
         </ul>
       </div>
     </div>

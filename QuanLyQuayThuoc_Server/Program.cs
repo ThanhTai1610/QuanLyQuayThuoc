@@ -46,9 +46,9 @@ builder.Services.AddScoped<JwtHelper>();
 builder.Services.AddScoped<ISanPhamRepository, SanPhamRepository>();
 builder.Services.AddScoped<IKhoRepository, KhoRepository>();
 builder.Services.AddScoped<IKhoService, KhoService>();
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpClient<IChatBotService, ChatbotService>();
 
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoOption"));
 builder.Services.AddScoped<IMomoService, MomoService>();
@@ -110,7 +110,6 @@ if (app.Environment.IsDevelopment())
 }
 app.UseCors("AllowVueApp");
 app.UseHttpsRedirection();
-
 
 app.UseAuthentication();
 app.UseAuthorization();
