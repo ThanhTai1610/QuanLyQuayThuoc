@@ -12,6 +12,8 @@
         public string? HinhAnh { get; set; }
         public int SoLuong { get; set; }
         public string? DonVi { get; set; }
+        public int? MaThuoc { get; set; } // Dùng int? nếu có thể null
+        public int? MaDVT { get; set; }
 
         // Số lượng các loại thuốc khác trong cùng đơn hàng
         public int SoSanPhamKhac { get; set; }
