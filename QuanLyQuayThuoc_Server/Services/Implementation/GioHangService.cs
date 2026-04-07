@@ -121,5 +121,57 @@ namespace QuanLyQuayThuoc.Services.Implementation
             await _gioHangRepo.DeleteAllAsync(maKhachHang);
             return await _gioHangRepo.SaveChangesAsync();
         }
+        public async Task<int> DatHangAsync(DatHangKhachHangDto dto, int maKhachHang)
+        {
+            // 1. Tính tổng tiền
+            decimal tongTien = dto.ChiTiet.Sum(c => c.GiaBan * c.SoLuong) - dto.GiamGia;
+
+            // 2. Tạo đơn hàng
+            var donHang = new DonHang
+            {
+                MaKhachHang = maKhachHang,
+                MaNhanVien = null, // Đặt online không có nhân viên
+                NgayDat = DateTime.Now,
+                TongTien = tongTien,
+                PhuongThucThanhToan = dto.PhuongThucThanhToan,
+                TrangThai = "Chờ xử lý",
+                DiaChiGiaoHang = dto.DiaChiGiaoHang,
+                SoDienThoaiNhan = dto.SoDienThoaiNhan,
+                GhiChu = dto.GhiChu
+            };
+
+            _context.DonHangs.Add(donHang);
+            await _context.SaveChangesAsync(); // Lưu để có MaDonHang
+
+            // 3. Tạo chi tiết + trừ tồn kho
+            foreach (var ct in dto.ChiTiet)
+            {
+                // Kiểm tra lô hàng còn đủ hàng không
+                var lo = await _context.LoHangs.FindAsync(ct.MaLo);
+                if (lo == null || lo.SoLuongTon < ct.SoLuong)
+                    throw new Exception($"Lô hàng {ct.MaLo} không đủ số lượng tồn kho.");
+
+                // Thêm chi tiết đơn hàng
+                _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                {
+                    MaDonHang = donHang.MaDonHang,
+                    MaLo = ct.MaLo,
+                    MaDvt = ct.MaDVT,
+                    SoLuong = ct.SoLuong,
+                    GiaBanTaiThoiDiem = ct.GiaBan
+                });
+
+                // Trừ tồn kho
+                lo.SoLuongTon -= ct.SoLuong;
+            }
+
+            await _context.SaveChangesAsync();
+
+            // 4. Xóa giỏ hàng sau khi đặt thành công
+            await _gioHangRepo.DeleteAllAsync(maKhachHang);
+            await _gioHangRepo.SaveChangesAsync();
+
+            return donHang.MaDonHang;
+        }
     }
 }

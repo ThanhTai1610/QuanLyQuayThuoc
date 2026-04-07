@@ -72,13 +72,17 @@
                     </div>
                     <!-- Chọn đơn vị tính (DonViTinh) -->
                     <div class="mt-1" v-if="item.danhSachDVT && item.danhSachDVT.length > 1">
-                      <select class="form-control form-control-sm w-auto d-inline-block" v-model="item.maDVT"
-                        @change="doiDonVi(item)">
+                      <select
+                        class="form-control form-control-sm w-auto d-inline-block"
+                        v-model="item.maDVT"
+                        @change="doiDonVi(item)"
+                      >
                         <option v-for="dvt in item.danhSachDVT" :key="dvt.maDVT" :value="dvt.maDVT">
                           {{ dvt.tenDonVi }} — {{ formatGia(dvt.giaBan) }}
                         </option>
                       </select>
                     </div>
+                    <!-- Cảnh báo hết hàng -->
                     <div v-if="item.maLo === 0" class="text-danger">
                       <small>Sản phẩm này hiện đang hết hàng!</small>
                     </div>
@@ -90,8 +94,12 @@
                           <button class="btn btn-outline-primary" type="button"
                             @click="giamSoLuong(item)">&minus;</button>
                         </div>
-                        <input type="text" class="form-control text-center" :value="item.soLuong"
-                          @change="capNhatSoLuong(item, $event.target.value)" />
+                        <input
+                          type="text"
+                          class="form-control text-center"
+                          :value="item.soLuong"
+                          @change="capNhatSoLuong(item, $event.target.value)"
+                        />
                         <div class="input-group-append">
                           <button class="btn btn-outline-primary" type="button"
                             @click="tangSoLuong(item)">&plus;</button>
@@ -161,7 +169,11 @@
                 Giá đã bao gồm VAT (nếu có). Vui lòng kiểm tra lại sản phẩm trước khi đặt hàng.
               </div>
               <div class="summary-btn">
-                <button class="btn btn-primary btn-block" :disabled="gioHang.length === 0" @click="tiepTucDatHang">
+                <button
+                  class="btn btn-primary btn-block"
+                  :disabled="gioHang.length === 0"
+                  @click="tiepTucDatHang"
+                >
                   Tiếp tục đặt hàng
                 </button>
               </div>
@@ -173,7 +185,7 @@
     </div>
 
   </div>
-</template>ư
+</template>
 
 <script setup>
 import '../../assets/css/cart-page.css';
@@ -183,7 +195,7 @@ import axiosClient from '../../api/axiosClient';
 import Swal from 'sweetalert2';
 
 const router = useRouter();
-const gioHang = ref([]);   // Dữ liệu từ bảng GioHang JOIN Thuoc, DonViTinh
+const gioHang = ref([]);
 const dangTai = ref(false);
 const maGiamGia = ref('');
 const soTienGiam = ref(0);
@@ -191,22 +203,16 @@ const thongBaoMa = ref('');
 const apDungThanhCong = ref(false);
 
 // ── Load giỏ hàng từ API ──
-// API trả về: MaGioHang, MaKhachHang, MaThuoc, MaDVT, SoLuong
-// JOIN thêm: TenThuoc, HinhAnhChinh, MoTaNgan (Thuoc)
-//            TenDonVi, GiaBan (DonViTinh)
-//            DanhSachDVT[] - tất cả đơn vị tính của thuốc đó
+// axiosClient đã tự return response.data nên 'res' chính là mảng dữ liệu
 const loadGioHang = async () => {
   dangTai.value = true;
   try {
-    // Vì axiosClient đã return response.data, nên 'res' ở đây chính là mảng dữ liệu
     const res = await axiosClient.get('/GioHang');
 
+    // DEBUG: Xem tên field thực tế từ API (maDVT hay maDvt?)
     console.log("Dữ liệu thực tế từ API:", res);
 
-    // Gán trực tiếp res cho gioHang.value
-    // Nếu res null/undefined thì gán mảng rỗng để tránh lỗi giao diện
     gioHang.value = res || [];
-
   } catch (err) {
     console.error('Lỗi API:', err);
     gioHang.value = [];
@@ -236,12 +242,10 @@ const capNhatSoLuong = (item, val) => {
   if (so > 0) item.soLuong = so;
 };
 
-// ── Đổi đơn vị tính (DonViTinh) ──
-// Khi đổi MaDVT, cập nhật giá tương ứng
+// ── Đổi đơn vị tính ──
+// Khi đổi MaDVT, cập nhật giá và tên đơn vị tương ứng
 const doiDonVi = (item) => {
   if (!item.danhSachDVT) return;
-  // Kiểm tra kỹ: API trả về maDVT hay maDvt? 
-  // Dựa trên hình ảnh JSON, nó là maDVT
   const dvt = item.danhSachDVT.find(d => d.maDVT === item.maDVT);
   if (dvt) {
     item.giaBan = dvt.giaBan;
@@ -249,8 +253,7 @@ const doiDonVi = (item) => {
   }
 };
 
-// ── Xóa sản phẩm ──
-// DELETE /GioHang/{maGioHang}
+// ── Xóa 1 sản phẩm ──
 const xoaSanPham = async (item) => {
   const result = await Swal.fire({
     title: 'Xóa sản phẩm?',
@@ -278,9 +281,11 @@ const xoaSanPham = async (item) => {
 const xoaTatCa = async () => {
   const result = await Swal.fire({
     title: 'Làm trống giỏ hàng?',
-    text: "Tất cả sản phẩm sẽ bị xóa sạch!",
-    icon: 'danger',
+    text: 'Tất cả sản phẩm sẽ bị xóa sạch!',
+    icon: 'warning',            // ✅ Sửa từ 'danger' → 'warning'
     showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
     confirmButtonText: 'Xóa hết',
     cancelButtonText: 'Giữ lại'
   });
@@ -296,14 +301,14 @@ const xoaTatCa = async () => {
   }
 };
 
-// ── Cập nhật giỏ hàng (đồng bộ SoLuong + MaDVT lên server) ──
+// ── Cập nhật giỏ hàng lên server ──
 // PUT /GioHang/cap-nhat — body: [{ maGioHang, soLuong, maDVT }]
 const capNhatGioHang = async () => {
   try {
     await axiosClient.put('/GioHang/cap-nhat', gioHang.value.map(i => ({
       maGioHang: i.maGioHang,
       soLuong: i.soLuong,
-      maDVT: i.maDVT,
+      maDVT: i.maDVT,   // Xem console.log để xác nhận đúng tên field từ API
     })));
 
     Swal.fire({
@@ -327,7 +332,8 @@ const apDungMa = async () => {
       ma: maGiamGia.value.trim(),
       tongTien: tamTinh.value,
     });
-    soTienGiam.value = res.data.soTienGiam;
+    // axiosClient đã unwrap data nên dùng res trực tiếp
+    soTienGiam.value = res.soTienGiam;
     thongBaoMa.value = `Áp dụng thành công! Giảm ${formatGia(soTienGiam.value)}`;
     apDungThanhCong.value = true;
   } catch {
@@ -338,12 +344,24 @@ const apDungMa = async () => {
 };
 
 // ── Tiếp tục đặt hàng ──
-// Đồng bộ giỏ hàng rồi chuyển sang trang checkout
+// Đồng bộ giỏ hàng trước rồi mới chuyển trang
 const tiepTucDatHang = async () => {
+  // Chặn nếu có sản phẩm hết hàng
+  const coHetHang = gioHang.value.some(item => item.maLo === 0);
+  if (coHetHang) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Có sản phẩm hết hàng',
+      text: 'Vui lòng xóa các sản phẩm hết hàng trước khi tiếp tục đặt hàng.',
+    });
+    return;
+  }
+
   await capNhatGioHang();
   router.push({ name: 'DatHang' });
 };
 
+// ── Helpers ──
 const getImageUrl = (path) => {
   if (!path) return '/images/no-image.png';
   if (path.startsWith('http')) return path;
