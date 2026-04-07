@@ -3,76 +3,64 @@
   "WorkspaceRootPath": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\khachhang\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\khachhang\\giohangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\quantrivien\\khocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\quantrivien\\khocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\implementation\\giohangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\implementation\\giohangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\interface\\ibanhangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\interface\\ibanhangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\implementation\\khoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\implementation\\khoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\repository\\implementation\\khorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\repository\\implementation\\khorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\nhanvien\\donvitinhcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\nhanvien\\donvitinhcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\momo\\momoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\momo\\momoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\implementation\\barcodeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\implementation\\barcodeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\interface\\igiohangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\interface\\igiohangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\dtos\\kho\\mavachdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\dtos\\kho\\mavachdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\interface\\ikhoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\interface\\ikhoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\dtos\\donhang\\dathangkhachhangdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\dtos\\donhang\\dathangkhachhangdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\repository\\implementation\\khorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\repository\\implementation\\khorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\implementation\\khoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\implementation\\khoservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\repository\\interface\\ikhorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\repository\\interface\\ikhorepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\quantrivien\\khocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\quantrivien\\khocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\nhanvien\\banhangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\nhanvien\\banhangcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\dtos\\kho\\kholohangdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\dtos\\kho\\kholohangdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\implementation\\banhangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\implementation\\banhangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\controllers\\momo\\thanhtoancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\controllers\\momo\\thanhtoancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\dtos\\kho\\themthuocmoivanhapkhodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\dtos\\kho\\themthuocmoivanhapkhodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\dtos\\kho\\phieunhapkhodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\dtos\\kho\\phieunhapkhodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\dtos\\kho\\khotongquandto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\dtos\\kho\\khotongquandto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\models\\danhmuc.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\dtos\\kho\\danhmucdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\dtos\\kho\\danhmucdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\models\\lohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\models\\lohang.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|e:\\cao \u0111\u1EB3ng fpt polytechnic\\c_6\\quanlyquaythuoc\\quanlyquaythuoc_server\\services\\implementation\\giohangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\services\\implementation\\giohangservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -82,84 +70,19 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 14,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Program.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Program.cs",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAhwCkAAAA+AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:34:36.586Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DonViTinhController.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\DonViTinhController.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\DonViTinhController.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\DonViTinhController.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\DonViTinhController.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAAwCIAAAADAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:34:20.395Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "BarcodeService.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\BarcodeService.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\BarcodeService.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\BarcodeService.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\BarcodeService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAABiAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:32:05.134Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "GioHangService.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
-              "ViewState": "AgIAAHEAAAAAAAAAAAAAwK4AAAAJAAAAAAAAAA==",
+              "Title": "IBanHangService.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IBanHangService.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Interface\\IBanHangService.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IBanHangService.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Interface\\IBanHangService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:30:50.406Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "IGioHangService.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IGioHangService.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Interface\\IGioHangService.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IGioHangService.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Interface\\IGioHangService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:30:42.4Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "GioHangController.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\GioHangController.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\GioHangController.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\GioHangController.cs*",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\GioHangController.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHEAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:29:39.061Z",
+              "WhenOpened": "2026-04-07T02:50:55.733Z",
               "EditorCaption": ""
             },
             {
@@ -192,115 +115,68 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ThemThuocMoiVaNhapKhoDto.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\ThemThuocMoiVaNhapKhoDto.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\ThemThuocMoiVaNhapKhoDto.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\ThemThuocMoiVaNhapKhoDto.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\ThemThuocMoiVaNhapKhoDto.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAA8wCEAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T23:11:49.055Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MaVachDto.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\MaVachDto.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\MaVachDto.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\MaVachDto.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\MaVachDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T21:53:36.893Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 8,
-              "Title": "DatHangKhachHangDto.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\DonHang\\DatHangKhachHangDto.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\DonHang\\DatHangKhachHangDto.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\DonHang\\DatHangKhachHangDto.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\DonHang\\DatHangKhachHangDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:29:03.865Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "DanhMucDto.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\DanhMucDto.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\DanhMucDto.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\DanhMucDto.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\DanhMucDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T19:37:38.649Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "DanhMuc.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Models\\DanhMuc.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Models\\DanhMuc.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Models\\DanhMuc.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Models\\DanhMuc.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAxwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T17:08:01.725Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "KhoController.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAwwC0AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T17:01:01.308Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "IKhoService.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA+AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:56:36.761Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "KhoService.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:56:25.975Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "LoHang.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Models\\LoHang.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Models\\LoHang.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Models\\LoHang.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Models\\LoHang.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAA3wBAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:48:46.748Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "KhoRepository.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAIAwwC8AAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:43:41.341Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
               "Title": "IKhoRepository.cs",
               "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Interface\\IKhoRepository.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Repository\\Interface\\IKhoRepository.cs",
               "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Interface\\IKhoRepository.cs",
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Repository\\Interface\\IKhoRepository.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAwBoAAAA+AAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAzwB0AAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:40:21.902Z"
+              "WhenOpened": "2026-04-06T21:52:45.395Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "KhoService.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\KhoService.cs",
+              "ViewState": "AgIAABoAAAAAAAAAAAAgwCAAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T21:52:31.536Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "IKhoService.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Interface\\IKhoService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T21:52:08.618Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -310,33 +186,112 @@
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\PhieuNhapKhoDto.cs",
               "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\PhieuNhapKhoDto.cs",
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\PhieuNhapKhoDto.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAA8wBEAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAswAoAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:35:00.635Z"
+              "WhenOpened": "2026-04-06T17:56:08.275Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "KhoLoHangDto.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoLoHangDto.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoLoHangDto.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoLoHangDto.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoLoHangDto.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAywB8AAAAsAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "KhoController.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
+              "ViewState": "AgIAAEsAAAAAAAAAAAAYwDQAAABLAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:34:35.747Z"
+              "WhenOpened": "2026-04-06T17:31:59.138Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "KhoRepository.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
+              "ViewState": "AgIAAEsBAAAAAAAAAAAUwFYBAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T17:19:37.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Program.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T17:05:33.343Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MomoService.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Momo\\MomoService.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Momo\\MomoService.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Momo\\MomoService.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Momo\\MomoService.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAA8wBcAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T12:28:07.911Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ThanhToanController.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\Momo\\ThanhToanController.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\Momo\\ThanhToanController.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\Momo\\ThanhToanController.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\Momo\\ThanhToanController.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAAAEIAAABPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T11:15:02.193Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 14,
-              "Title": "KhoTongQuanDto.cs",
-              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoTongQuanDto.cs",
-              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoTongQuanDto.cs",
-              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoTongQuanDto.cs",
-              "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoTongQuanDto.cs",
-              "ViewState": "AgIAAAIAAAAAAAAAAAA8wBUAAAABAAAAAAAAAA==",
+              "Title": "GioHangService.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAgwDMAAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:33:50.539Z"
+              "WhenOpened": "2026-04-06T11:14:03.781Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "BanHangController.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\BanHangController.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\BanHangController.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\BanHangController.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\NhanVien\\BanHangController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T11:13:51.686Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "BanHangService.cs",
+              "DocumentMoniker": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\BanHangService.cs",
+              "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Services\\Implementation\\BanHangService.cs",
+              "ToolTip": "E:\\Cao \u0110\u1EB3ng FPT Polytechnic\\C_6\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Services\\Implementation\\BanHangService.cs",
+              "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\BanHangService.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAUwF4AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T11:13:35.365Z",
+              "EditorCaption": ""
             }
           ]
         }

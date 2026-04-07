@@ -1,10 +1,11 @@
-﻿using QuanLyQuayThuoc.DTOs.DonHang;
+﻿// GioHangService.cs
+using QuanLyQuayThuoc.DTOs.DonHang;
 using QuanLyQuayThuoc.Models;
 using QuanLyQuayThuoc.Repositories.Interfaces;
 using QuanLyQuayThuoc.Services.Interfaces;
 using QuanLyQuayThuoc.Repositories;
 using Microsoft.EntityFrameworkCore;
-using QuanLyQuayThuoc.Data; // Đảm bảo có namespace của ApplicationDbContext
+using QuanLyQuayThuoc.Data;
 
 namespace QuanLyQuayThuoc.Services.Implementation
 {
@@ -12,12 +13,12 @@ namespace QuanLyQuayThuoc.Services.Implementation
     {
         private readonly IGioHangRepository _gioHangRepo;
         private readonly IThuocRepository _thuocRepo;
-        private readonly ApplicationDbContext _context; // 1. Khai báo context
+        private readonly ApplicationDbContext _context;
 
         public GioHangService(
             IGioHangRepository gioHangRepo,
             IThuocRepository thuocRepo,
-            ApplicationDbContext context) // 2. Inject context qua constructor
+            ApplicationDbContext context)
         {
             _gioHangRepo = gioHangRepo;
             _thuocRepo = thuocRepo;
@@ -31,10 +32,9 @@ namespace QuanLyQuayThuoc.Services.Implementation
 
             foreach (var item in danhSachEntity)
             {
-                // Lấy thông tin thuốc để lấy danh sách đơn vị tính quy đổi
                 var thuoc = await _thuocRepo.GetByIdAsync(item.MaThuoc ?? 0);
 
-                // 3. Logic chọn lô hàng tự động (FEFO - Hết hạn trước xuất trước)
+                // Chọn lô FEFO: hết hạn sớm nhất xuất trước
                 var loHangGoiY = await _context.LoHangs
                     .Where(l => l.MaThuoc == item.MaThuoc && l.SoLuongTon > 0)
                     .OrderBy(l => l.HanSuDung)
@@ -51,10 +51,7 @@ namespace QuanLyQuayThuoc.Services.Implementation
                 {
                     MaGioHang = item.MaGioHang,
                     MaThuoc = item.MaThuoc ?? 0,
-
-                    // 4. Gán MaLo gợi ý vào DTO (Quan trọng)
                     MaLo = loHangGoiY?.MaLo ?? 0,
-
                     TenThuoc = item.MaThuocNavigation?.TenThuoc ?? "Không xác định",
                     HinhAnhChinh = item.MaThuocNavigation?.HinhAnhChinh ?? "",
                     MoTaNgan = item.MaThuocNavigation?.MoTaNgan ?? "",
@@ -121,57 +118,72 @@ namespace QuanLyQuayThuoc.Services.Implementation
             await _gioHangRepo.DeleteAllAsync(maKhachHang);
             return await _gioHangRepo.SaveChangesAsync();
         }
+
+        /// <summary>
+        /// Đặt hàng online. maKhachHang luôn lấy từ JWT token qua Controller.
+        /// Dùng transaction để đảm bảo toàn vẹn dữ liệu:
+        /// nếu bất kỳ bước nào thất bại (kể cả sau khi tạo đơn), toàn bộ rollback.
+        /// </summary>
         public async Task<int> DatHangAsync(DatHangKhachHangDto dto, int maKhachHang)
         {
-            // 1. Tính tổng tiền
-            decimal tongTien = dto.ChiTiet.Sum(c => c.GiaBan * c.SoLuong) - dto.GiamGia;
-
-            // 2. Tạo đơn hàng
-            var donHang = new DonHang
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                MaKhachHang = maKhachHang,
-                MaNhanVien = null, // Đặt online không có nhân viên
-                NgayDat = DateTime.Now,
-                TongTien = tongTien,
-                PhuongThucThanhToan = dto.PhuongThucThanhToan,
-                TrangThai = "Chờ xử lý",
-                DiaChiGiaoHang = dto.DiaChiGiaoHang,
-                SoDienThoaiNhan = dto.SoDienThoaiNhan,
-                GhiChu = dto.GhiChu
-            };
+                // 1. Tính tổng tiền
+                decimal tongTien = dto.ChiTiet.Sum(c => c.GiaBan * c.SoLuong) - dto.GiamGia;
 
-            _context.DonHangs.Add(donHang);
-            await _context.SaveChangesAsync(); // Lưu để có MaDonHang
-
-            // 3. Tạo chi tiết + trừ tồn kho
-            foreach (var ct in dto.ChiTiet)
-            {
-                // Kiểm tra lô hàng còn đủ hàng không
-                var lo = await _context.LoHangs.FindAsync(ct.MaLo);
-                if (lo == null || lo.SoLuongTon < ct.SoLuong)
-                    throw new Exception($"Lô hàng {ct.MaLo} không đủ số lượng tồn kho.");
-
-                // Thêm chi tiết đơn hàng
-                _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                // 2. Tạo đơn hàng
+                var donHang = new DonHang
                 {
-                    MaDonHang = donHang.MaDonHang,
-                    MaLo = ct.MaLo,
-                    MaDvt = ct.MaDVT,
-                    SoLuong = ct.SoLuong,
-                    GiaBanTaiThoiDiem = ct.GiaBan
-                });
+                    MaKhachHang = maKhachHang, // lấy từ JWT, không từ body request
+                    MaNhanVien = null,
+                    NgayDat = DateTime.Now,
+                    TongTien = tongTien,
+                    PhuongThucThanhToan = dto.PhuongThucThanhToan,
+                    TrangThai = "Chờ xử lý",
+                    DiaChiGiaoHang = dto.DiaChiGiaoHang,
+                    SoDienThoaiNhan = dto.SoDienThoaiNhan,
+                    GhiChu = dto.GhiChu
+                };
 
-                // Trừ tồn kho
-                lo.SoLuongTon -= ct.SoLuong;
+                _context.DonHangs.Add(donHang);
+                await _context.SaveChangesAsync();
+
+                // 3. Tạo chi tiết + trừ tồn kho
+                foreach (var ct in dto.ChiTiet)
+                {
+                    var lo = await _context.LoHangs.FindAsync(ct.MaLo);
+                    if (lo == null || lo.SoLuongTon < ct.SoLuong)
+                        throw new Exception($"Lô hàng {ct.MaLo} không đủ số lượng tồn kho.");
+
+                    _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                    {
+                        MaDonHang = donHang.MaDonHang,
+                        MaLo = ct.MaLo,
+                        MaDvt = ct.MaDVT,
+                        SoLuong = ct.SoLuong,
+                        GiaBanTaiThoiDiem = ct.GiaBan
+                    });
+
+                    lo.SoLuongTon -= ct.SoLuong;
+                }
+
+                await _context.SaveChangesAsync();
+
+                // 4. Xóa giỏ hàng sau khi đặt thành công
+                await _gioHangRepo.DeleteAllAsync(maKhachHang);
+                await _gioHangRepo.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return donHang.MaDonHang;
             }
-
-            await _context.SaveChangesAsync();
-
-            // 4. Xóa giỏ hàng sau khi đặt thành công
-            await _gioHangRepo.DeleteAllAsync(maKhachHang);
-            await _gioHangRepo.SaveChangesAsync();
-
-            return donHang.MaDonHang;
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                throw new Exception("Đặt hàng thất bại: " + errorMessage);
+            }
         }
     }
 }

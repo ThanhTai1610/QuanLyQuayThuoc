@@ -26,13 +26,11 @@ namespace QuanLyQuayThuoc.Services.Implementation
 
         public async Task<KhoLoHangResponseDto> GetLoHangAsync(string search, string thang, string loai)
         {
-            // Xử lý tham số 'thang' nếu cần hoặc gọi thẳng Repository
             return await _khoRepository.GetLoHangAsync(search, thang, loai);
         }
 
         public async Task<bool> NhapKhoAsync(PhieuNhapKhoDto phieuNhap)
         {
-            // Logic kiểm tra dữ liệu đầu vào trước khi lưu
             if (phieuNhap == null || phieuNhap.ChiTiet == null || phieuNhap.ChiTiet.Count == 0)
             {
                 return false;
@@ -43,6 +41,14 @@ namespace QuanLyQuayThuoc.Services.Implementation
         public async Task<bool> SuaLoHangAsync(int maLo, SuaLoHangDto dto)
         {
             return await _khoRepository.SuaLoHangAsync(maLo, dto);
+        }
+        public async Task<IEnumerable<MaVachDto>> GetMaVachTheoThuocAsync(int maThuoc)
+        {
+            return await _khoRepository.GetMaVachTheoThuocAsync(maThuoc);
+        }
+        public async Task<bool> ThemThuocMoiVaNhapKhoAsync(ThemThuocMoiVaNhapKhoDto dto)
+        {
+            return await _khoRepository.ThemThuocMoiVaNhapKhoAsync(dto);
         }
     }
 }

@@ -29,4 +29,4 @@ namespace QuanLyQuayThuoc.Repositories
             return await _context.SaveChangesAsync();
         }
     }
-}
+}   

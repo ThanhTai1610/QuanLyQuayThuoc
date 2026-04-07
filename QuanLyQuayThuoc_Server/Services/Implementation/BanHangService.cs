@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// BanHangService.cs
+using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.DTOs.DonHang;
 using QuanLyQuayThuoc.Models;
 using QuanLyQuayThuoc.Repositories.Interfaces;
@@ -12,12 +13,14 @@ namespace QuanLyQuayThuoc.Services.Implementation
         private readonly IDonHangRepository _donHangRepo;
         private readonly IKhoRepository _khoRepo;
         private readonly ApplicationDbContext _context;
+
         public BanHangService(IDonHangRepository donHangRepo, IKhoRepository khoRepo, ApplicationDbContext context)
         {
             _donHangRepo = donHangRepo;
             _khoRepo = khoRepo;
             _context = context;
         }
+
         public async Task<IEnumerable<Object>> TimKiemThuocNhanhAsync(string query)
         {
             return await _khoRepo.TimKiemThuocAsync(query);
@@ -52,7 +55,9 @@ namespace QuanLyQuayThuoc.Services.Implementation
                     var dvt = await _context.DonViTinhs
                         .FirstOrDefaultAsync(d => d.MaDvt == item.MaDVT);
 
-                    if (dvt == null) throw new Exception("Không tìm thấy đơn vị tính mã {item.MaDVT}");
+                    if (dvt == null)
+                        throw new Exception($"Không tìm thấy đơn vị tính mã {item.MaDVT}");
+
                     int heSoQuyDoi = dvt.GiaTriQuyDoi ?? 1;
                     int soLuongQuyDoi = item.SoLuong * heSoQuyDoi;
                     await _khoRepo.UpdateSoLuongAsync(item.MaLo, soLuongQuyDoi);
@@ -68,6 +73,7 @@ namespace QuanLyQuayThuoc.Services.Implementation
                     _context.ChiTietDonHangs.Add(chiTiet);
                     tongTienDonHang += (decimal)item.SoLuong * item.GiaBan;
                 }
+
                 decimal giamGia = dto.GiamGia;
                 donHang.TongTien = tongTienDonHang - giamGia;
 
@@ -82,6 +88,10 @@ namespace QuanLyQuayThuoc.Services.Implementation
                 var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 throw new Exception("Thanh toán thất bại: " + errorMessage);
             }
+        }
+        public async Task<object?> TimThuocTheoBarcodeAsync(string maVach)
+        {
+            return await _khoRepo.TimThuocTheoBarcodeAsync(maVach);
         }
     }
 }

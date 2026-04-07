@@ -1,7 +1,6 @@
 <template>
   <div class="site-wrap">
 
-    <!-- Breadcrumb -->
     <nav class="ql-breadcrumb" aria-label="Đường dẫn">
       <div class="container">
         <ol class="breadcrumb mb-0">
@@ -16,17 +15,14 @@
       <div class="container">
         <div class="row">
 
-          <!-- Sidebar -->
           <AccountSidebar
             :user="nguoiDung"
             activeMenu="addresses"
             @logout="dangXuat"
           />
 
-          <!-- Nội dung chính -->
           <main class="col-lg-9 ql-main-column">
 
-            <!-- Toolbar -->
             <div class="ql-toolbar-card">
               <header class="ql-main-header ql-main-header--toolbar">
                 <h1>Quản lý sổ địa chỉ</h1>
@@ -36,7 +32,6 @@
               </header>
             </div>
 
-            <!-- Form thêm / sửa -->
             <transition name="slide">
               <div v-if="hienForm" class="ql-add-address-panel">
                 <div class="ql-add-card">
@@ -125,7 +120,6 @@
               </div>
             </transition>
 
-            <!-- Danh sách địa chỉ -->
             <div class="ql-main-card ql-main-card--list">
               <div v-if="dangTai" class="text-center py-4">
                 <div class="spinner-border text-primary" role="status">
@@ -181,6 +175,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
 import AccountSidebar from '../../components/AccountSidebar.vue';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 
@@ -188,7 +183,7 @@ const nguoiDung       = ref({ hoTen: '', soDienThoai: '' });
 const danhSachDiaChi  = ref([]);
 const dangTai         = ref(false);
 const dangLuu         = ref(false);
-const hienForm        = ref(false);
+const hienForm         = ref(false);
 const dangSuaId       = ref(null);
 const loiForm         = ref('');
 
@@ -197,14 +192,13 @@ const formRong = () => ({
   soDienThoaiNhan: '',
   tinhThanh:       '',
   quanHuyen:       '',
-  phuongXa:        '',
+  phuongXa:         '',
   diaChiChiTiet:   '',
   loaiDiaChi:      'Nhà riêng',
   laMacDinh:       false,
 });
 const form = reactive(formRong());
 
-// ── Load dữ liệu ──
 const loadData = async () => {
   dangTai.value = true;
   try {
@@ -215,14 +209,12 @@ const loadData = async () => {
     nguoiDung.value      = resUser;
     danhSachDiaChi.value = resDC;
   } catch (err) {
-    console.error('Lỗi tải dữ liệu:', err);
     if (err.response?.status === 401) router.push('/dang-nhap');
   } finally {
     dangTai.value = false;
   }
 };
 
-// ── Form ──
 const moFormThem = () => {
   dangSuaId.value = null;
   loiForm.value   = '';
@@ -248,52 +240,109 @@ const moFormSua = (dc) => {
 
 const dongForm = () => { hienForm.value = false; };
 
-// ── Lưu (thêm / sửa) ──
-// POST /SoDiaChi     → thêm mới
-// PUT  /SoDiaChi/:id → cập nhật
-const luuDiaChi = async () => {
-  loiForm.value = '';
-  if (!form.hoTenNguoiNhan.trim() || !form.soDienThoaiNhan.trim() || !form.diaChiChiTiet.trim()) {
-    loiForm.value = 'Vui lòng điền đầy đủ họ tên, số điện thoại và địa chỉ.';
-    return;
+// ── Validate logic cập nhật ──
+const validateForm = () => {
+  // 1. Chỉ cho phép chữ (Dùng cho Họ tên)
+  const regexNameOnly = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰYỲỴÝỶỸửữựyỳỵýỷỹ\s]+$/;
+  
+  // 2. Cho phép chữ và số, KHÔNG ký tự đặc biệt (Dùng cho Tỉnh/Huyện/Xã)
+  const regexAlphaNumeric = /^[a-zA-Z0-9ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰYỲỴÝỶỸửữựyỳỵýỷỹ\s]+$/;
+  
+  // 3. Số điện thoại 10 số
+ const regexPhone = /^[0-9]{10}$/;
+
+  // Kiểm tra các trường bắt buộc không được để trống
+  if (!form.hoTenNguoiNhan.trim() || !form.soDienThoaiNhan.trim() || 
+      !form.tinhThanh.trim() || !form.quanHuyen.trim() || 
+      !form.phuongXa.trim() || !form.diaChiChiTiet.trim()) {
+    loiForm.value = 'Vui lòng điền đầy đủ các thông tin bắt buộc';
+    return false;
   }
+
+  // Validate Họ tên
+  if (!regexNameOnly.test(form.hoTenNguoiNhan.trim())) {
+    loiForm.value = 'Họ tên chỉ được nhập chữ và không có ký tự đặc biệt';
+    return false;
+  }
+
+  
+
+  /* ĐÃ BỎ VALIDATE REGEX CHO form.diaChiChiTiet Ở ĐÂY 
+     Người dùng có thể nhập "Số 10, ngõ 2/4" thoải mái.
+  */
+
+  // Validate SĐT
+  if (!regexPhone.test(form.soDienThoaiNhan.trim())) {
+    loiForm.value = 'Số điện thoại không đúng định dạng (10 số)';
+    return false;
+  }
+
+  loiForm.value = '';
+  return true;
+};
+
+const luuDiaChi = async () => {
+  if (!validateForm()) return;
 
   dangLuu.value = true;
   try {
+    const payload = {
+      hoTenNguoiNhan: form.hoTenNguoiNhan.trim(),
+      soDienThoaiNhan: form.soDienThoaiNhan.trim(),
+      tinhThanh: form.tinhThanh.trim(),
+      quanHuyen: form.quanHuyen.trim(),
+      phuongXa: form.phuongXa.trim(),
+      diaChiChiTiet: form.diaChiChiTiet.trim(),
+      loaiDiaChi: form.loaiDiaChi,
+      laMacDinh: form.laMacDinh
+    };
+
     if (dangSuaId.value) {
-      await axiosClient.put(`/SoDiaChi/${dangSuaId.value}`, form);
+      await axiosClient.put(`/SoDiaChi/${dangSuaId.value}`, payload);
+      Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã cập nhật địa chỉ!', timer: 1500, showConfirmButton: false });
     } else {
-      await axiosClient.post('/SoDiaChi', form);
+      await axiosClient.post('/SoDiaChi', payload);
+      Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã thêm địa chỉ mới!', timer: 1500, showConfirmButton: false });
     }
+
     dongForm();
     await loadData();
   } catch (err) {
-    loiForm.value = err.response?.data?.message || 'Có lỗi xảy ra. Vui lòng thử lại.';
+    Swal.fire({ icon: 'error', title: 'Lỗi', text: err.response?.data?.message || 'Có lỗi xảy ra.' });
   } finally {
     dangLuu.value = false;
   }
 };
 
-// ── Xóa ──
-// DELETE /SoDiaChi/:id
 const xoaDiaChi = async (dc) => {
-  if (!confirm(`Xóa địa chỉ "${diaChiDayDu(dc)}"?`)) return;
-  try {
-    await axiosClient.delete(`/SoDiaChi/${dc.maDiaChi}`);
-    await loadData();
-  } catch (err) {
-    alert('Không thể xóa địa chỉ này.');
+  const result = await Swal.fire({
+    title: 'Xác nhận xóa?',
+    text: `Bạn muốn xóa địa chỉ này?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy'
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await axiosClient.delete(`/SoDiaChi/${dc.maDiaChi}`);
+      Swal.fire({ icon: 'success', title: 'Đã xóa!', timer: 1500, showConfirmButton: false });
+      await loadData();
+    } catch (err) {
+      Swal.fire('Lỗi', 'Không thể xóa.', 'error');
+    }
   }
 };
 
-// ── Đặt mặc định ──
-// PUT /SoDiaChi/:id/mac-dinh
 const datMacDinh = async (dc) => {
   try {
     await axiosClient.put(`/SoDiaChi/${dc.maDiaChi}/mac-dinh`);
+    Swal.fire({ icon: 'success', title: 'Đã đặt mặc định', timer: 1500, showConfirmButton: false });
     await loadData();
   } catch (err) {
-    alert('Có lỗi xảy ra.');
+    Swal.fire('Lỗi', 'Thao tác thất bại.', 'error');
   }
 };
 
@@ -309,19 +358,7 @@ onMounted(loadData);
 </script>
 
 <style scoped>
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-.slide-enter-from,
-.slide-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-.slide-enter-to,
-.slide-leave-from {
-  max-height: 800px;
-  opacity: 1;
-}
+.slide-enter-active, .slide-leave-active { transition: all 0.3s ease; overflow: hidden; }
+.slide-enter-from, .slide-leave-to { max-height: 0; opacity: 0; }
+.slide-enter-to, .slide-leave-from { max-height: 800px; opacity: 1; }
 </style>

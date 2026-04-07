@@ -8,5 +8,6 @@ namespace QuanLyQuayThuoc.Services.Interfaces
         Task<int> ThanhToanTaiQuayAsync(TaoDonHangDto dto, int maNhanVien);
         Task<IEnumerable<Object>> TimKiemThuocNhanhAsync(string query);
         Task<IEnumerable<LoHang>> LayDanhSachLoCuaThuocAsync(int maThuoc);
+        Task<object?> TimThuocTheoBarcodeAsync(string maVach);
     }
 }

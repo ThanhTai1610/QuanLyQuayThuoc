@@ -4,6 +4,8 @@ using QuanLyQuayThuoc.Models;
 using QuanLyQuayThuoc.Repositories.Interfaces;
 using QuanLyQuayThuoc.DTOs.Kho;
 using QuanLyQuayThuoc.DTOs.SanPham;
+using BarcodeStandard;
+using SkiaSharp;
 
 namespace QuanLyQuayThuoc.Repositories
 {
@@ -15,10 +17,6 @@ namespace QuanLyQuayThuoc.Repositories
         {
             _context = context;
         }
-
-        // ==========================================
-        // 1. CÁC HÀM PHỤC VỤ BÁN HÀNG (GIỮ NGUYÊN)
-        // ==========================================
         public async Task<IEnumerable<object>> TimKiemThuocAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query)) return new List<object>();
@@ -37,8 +35,14 @@ namespace QuanLyQuayThuoc.Repositories
                         d.GiaTriQuyDoi,
                         d.LaDonViCoBan
                     }).ToList(),
-                    GiaBanHienTai = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => (decimal?)d.GiaBan).FirstOrDefault() ?? 0,
-                    TenDonVi = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.TenDonVi).FirstOrDefault() ?? "Đơn vị"
+                    GiaBanHienTai = t.DonViTinhs
+                        .Where(d => d.LaDonViCoBan == true)
+                        .Select(d => (decimal?)d.GiaBan)
+                        .FirstOrDefault() ?? 0,
+                    TenDonVi = t.DonViTinhs
+                        .Where(d => d.LaDonViCoBan == true)
+                        .Select(d => d.TenDonVi)
+                        .FirstOrDefault() ?? "Đơn vị"
                 })
                 .OrderByDescending(t => t.TenThuoc.StartsWith(query))
                 .ThenBy(t => t.TenThuoc)
@@ -64,32 +68,21 @@ namespace QuanLyQuayThuoc.Repositories
                 .OrderBy(l => l.HanSuDung).ToListAsync();
         }
 
-        // ==========================================
-        // 2. CÁC HÀM QUẢN LÝ KHO (MỚI)
-        // ==========================================
-
         public async Task<KhoTongQuanResponseDto> GetTongQuanAsync(int? maDanhMuc, string search)
         {
-            // 1. Tạo query từ bảng Thuocs nhưng CHƯA thực thi (lazy loading)
             var query = _context.Thuocs.AsQueryable();
 
-            // 2. Lọc dữ liệu như bình thường
             if (maDanhMuc.HasValue) query = query.Where(t => t.MaDanhMuc == maDanhMuc);
             if (!string.IsNullOrEmpty(search)) query = query.Where(t => t.TenThuoc.Contains(search));
 
-            // 3. ĐÂY LÀ CHỖ QUAN TRỌNG: 
-            // Chúng ta dùng Select để "ép" EF chỉ lấy những cột tồn tại. 
-            // EF sẽ không bao giờ nhìn tới các cột Slug, TrangThai... nữa.
             var items = await query.Select(t => new KhoTongQuanItemDto
             {
                 MaThuoc = t.MaThuoc,
                 TenThuoc = t.TenThuoc,
-                // Chỉ lấy TenDanhMuc từ bảng liên kết, bỏ qua toàn bộ object DanhMuc
                 TenDanhMuc = t.MaDanhMucNavigation != null ? t.MaDanhMucNavigation.TenDanhMuc : "Không có",
                 TongTon = t.LoHangs.Sum(l => l.SoLuongTon)
             }).ToListAsync();
 
-            // 4. Gán trạng thái sau khi đã có dữ liệu trong RAM
             foreach (var item in items)
             {
                 item.TrangThai = item.TongTon < 50 ? "Sắp hết hàng" : "Còn hàng";
@@ -113,14 +106,16 @@ namespace QuanLyQuayThuoc.Repositories
         }
         public async Task<KhoLoHangResponseDto> GetLoHangAsync(string search, string thang, string loai)
         {
-            // Chuyển mốc thời gian về DateOnly để so sánh với Database
             var today = DateOnly.FromDateTime(DateTime.Now);
             var sixMonthsLater = today.AddMonths(6);
 
             var query = _context.LoHangs.Include(l => l.MaThuocNavigation).AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
+            {
                 query = query.Where(l => l.MaThuocNavigation.TenThuoc.Contains(search) || l.SoLo.Contains(search));
+            }
+                
             if (!string.IsNullOrEmpty(thang) && DateTime.TryParse(thang + "-01", out var parsedDate))
             {
                 var thangDateOnly = DateOnly.FromDateTime(parsedDate);
@@ -136,7 +131,6 @@ namespace QuanLyQuayThuoc.Repositories
                 SoLuongTon = l.SoLuongTon,
                 GiaNhap = l.GiaNhap ?? 0,
                 TenThuoc = l.MaThuocNavigation?.TenThuoc,
-                // So sánh DateOnly với DateOnly (Fix lỗi Operator <)
                 MucDoCanhBao = l.HanSuDung < today ? 2 : (l.HanSuDung <= sixMonthsLater ? 1 : 0)
             }).ToList();
 
@@ -160,42 +154,82 @@ namespace QuanLyQuayThuoc.Repositories
         }
         public async Task<bool> NhapKhoAsync(PhieuNhapKhoDto phieuNhap)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            using var giaoDich = await _context.Database.BeginTransactionAsync();
             try
             {
-                int index = 0;
+                int viTri = 0;
                 var now = DateTime.Now;
-                var todayDateOnly = DateOnly.FromDateTime(now);
+                var today = DateOnly.FromDateTime(now);
 
                 foreach (var item in phieuNhap.ChiTiet)
                 {
-                    // TỰ ĐỘNG SINH MÃ VẠCH: yyMMddHHmmss + index
-                    string barcode = now.ToString("yyMMddHHmmss") + index.ToString("D2");
-                    index++;
+                    var donViTinh = await _context.DonViTinhs
+                         .Include(d => d.MaThuocNavigation)
+                         .FirstOrDefaultAsync(d => d.MaThuoc == item.MaThuoc
+                          && d.TenDonVi.ToLower().Trim() == item.TenDonVi.ToLower().Trim());
 
-                    // Thêm Lô
-                    _context.LoHangs.Add(new LoHang
+                    if (donViTinh == null) continue;
+
+                    string maVach;
+                    if (!string.IsNullOrEmpty(donViTinh.MaVach))
+                    {
+                        maVach = donViTinh.MaVach;
+                    }
+                    else
+                    {
+                        maVach = now.ToString("yyMMdd") + item.MaThuoc.ToString("D4") + viTri.ToString("D2");
+                        donViTinh.MaVach = maVach;
+                        _context.DonViTinhs.Update(donViTinh);
+                    }
+
+                    var loHangMoi = new LoHang
                     {
                         MaThuoc = item.MaThuoc,
                         SoLo = item.SoLo,
-                        // Chuyển DateTime từ DTO sang DateOnly của Model (Fix lỗi Convert)
                         HanSuDung = DateOnly.FromDateTime(item.HanSuDung),
                         GiaNhap = item.GiaNhap,
                         SoLuongTon = item.SoLuong,
-                        NgaySanXuat = todayDateOnly
-                    });
+                        NgaySanXuat = today
+                    };
 
-                    // Cập nhật Mã vạch vào DonViTinh
-                    var dvt = await _context.DonViTinhs.FirstOrDefaultAsync(d => d.MaThuoc == item.MaThuoc && d.TenDonVi == item.TenDonVi);
-                    if (dvt != null) dvt.MaVach = barcode;
+                    _context.LoHangs.Add(loHangMoi);
 
-                    item.MaVach = barcode;
-                }   
+                    item.MaVach = maVach;
+                    item.TenThuoc = donViTinh.MaThuocNavigation?.TenThuoc;
+                    item.HinhAnhMaVach = TaoHinhAnhMaVachBase64(maVach);
+                    viTri++;
+                }
+
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await giaoDich.CommitAsync();
                 return true;
             }
-            catch { await transaction.RollbackAsync(); return false; }
+            catch (Exception)
+            {
+                await giaoDich.RollbackAsync();
+                return false;
+            }
+        }
+
+        private string TaoHinhAnhMaVachBase64(string noiDungMa)
+        {
+            try
+            {
+                var congCuVe = new BarcodeStandard.Barcode();
+
+                var img = congCuVe.Encode(BarcodeStandard.Type.Code128, noiDungMa, SKColors.Black, SKColors.White, 250, 80);
+
+                using (var data = img.Encode(SKEncodedImageFormat.Png, 100))
+                using (var boNhoTam = new MemoryStream())
+                {
+                    data.SaveTo(boNhoTam);
+                    return "data:image/png;base64," + Convert.ToBase64String(boNhoTam.ToArray());
+                }
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         private async Task<ThongKeKhoDto> GetThongKeChung()
@@ -203,14 +237,145 @@ namespace QuanLyQuayThuoc.Repositories
             var today = DateOnly.FromDateTime(DateTime.Now);
             var soon = today.AddMonths(6);
 
-            // Tính toán thống kê với DateOnly
             return new ThongKeKhoDto
             {
-                TongGiaTri = await _context.LoHangs.SumAsync(l => l.SoLuongTon * (l.GiaNhap ?? 0)),
-                SoLoHetHan = await _context.LoHangs.CountAsync(l => l.HanSuDung < today),
-                SoLoSapHetHan = await _context.LoHangs.CountAsync(l => l.HanSuDung >= today && l.HanSuDung <= soon),
+                TongGiaTri = await _context.LoHangs
+                    .SumAsync(l => l.SoLuongTon * (l.GiaNhap ?? 0)),
+
+                SoLoHetHan = await _context.LoHangs
+                    .CountAsync(l => l.HanSuDung < today),
+
+                SoLoSapHetHan = await _context.LoHangs
+                    .CountAsync(l => l.HanSuDung >= today && l.HanSuDung <= soon),
+
                 SoMatHangSapHetTon = (await _context.Thuocs.ToListAsync())
                     .Count(t => _context.LoHangs.Where(l => l.MaThuoc == t.MaThuoc).Sum(l => l.SoLuongTon) < 50)
+            };
+        }
+        public async Task<IEnumerable<MaVachDto>> GetMaVachTheoThuocAsync(int maThuoc)
+        {
+            var danhSach = await _context.DonViTinhs
+                .Where(d => d.MaThuoc == maThuoc && !string.IsNullOrEmpty(d.MaVach))
+                .Include(d => d.MaThuocNavigation)
+                .ToListAsync();
+
+            return danhSach.Select(d => new MaVachDto
+            {
+                MaVach = d.MaVach,
+                TenThuoc = d.MaThuocNavigation?.TenThuoc ?? "",
+                TenDonVi = d.TenDonVi,
+                HinhAnhMaVach = TaoHinhAnhMaVachBase64(d.MaVach)
+            });
+        }
+        public async Task<bool> ThemThuocMoiVaNhapKhoAsync(ThemThuocMoiVaNhapKhoDto dto)
+        {
+            using var giaoDich = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var now = DateTime.Now;
+                var today = DateOnly.FromDateTime(now);
+
+                var thuocMoi = new Thuoc
+                {
+                    TenThuoc = dto.TenThuoc,
+                    MaDanhMuc = dto.MaDanhMuc,
+                    SoDangKy = dto.SoDangKy,
+                    QuyCach = dto.QuyCach,
+                    DangBaoChe = dto.DangBaoChe,
+                    NhaSanXuat = dto.NhaSanXuat,
+                    NuocSanXuat = dto.NuocSanXuat,
+                    ThanhPhan = dto.ThanhPhan,
+                    MoTaNgan = dto.MoTaNgan,
+                    LaThuocKeDon = dto.LaThuocKeDon ?? false,
+                    NgayTao = now
+                };
+                _context.Thuocs.Add(thuocMoi);
+                await _context.SaveChangesAsync();
+                for (int i = 0; i < dto.ChiTiet.Count; i++)
+                {
+                    var item = dto.ChiTiet[i];
+
+                    var maVach = now.ToString("yyMMdd") + thuocMoi.MaThuoc.ToString("D4") + i.ToString("D2");
+
+                    var donViTinh = new DonViTinh
+                    {
+                        MaThuoc = thuocMoi.MaThuoc,
+                        TenDonVi = item.TenDonVi,
+                        GiaBan = item.GiaBan,
+                        GiaTriQuyDoi = item.GiaTriQuyDoi,
+                        LaDonViCoBan = item.LaDonViCoBan,
+                        MaVach = maVach
+                    };
+                    _context.DonViTinhs.Add(donViTinh);
+
+                    var loHangMoi = new LoHang
+                    {
+                        MaThuoc = thuocMoi.MaThuoc,
+                        SoLo = item.SoLo,
+                        HanSuDung = DateOnly.FromDateTime(item.HanSuDung),
+                        GiaNhap = item.GiaNhap,
+                        SoLuongTon = item.SoLuong,
+                        NgaySanXuat = today
+                    };
+                    _context.LoHangs.Add(loHangMoi);
+
+                    item.MaVach = maVach;
+                    item.HinhAnhMaVach = TaoHinhAnhMaVachBase64(maVach);
+                }
+
+                await _context.SaveChangesAsync();
+                await giaoDich.CommitAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await giaoDich.RollbackAsync();
+                return false;
+            }
+        }
+        public async Task<object?> TimThuocTheoBarcodeAsync(string maVach)
+        {
+            var donVi = await _context.DonViTinhs
+                .Include(d => d.MaThuocNavigation)
+                    .ThenInclude(t => t.LoHangs)
+                .Include(d => d.MaThuocNavigation)
+                    .ThenInclude(t => t.DonViTinhs)
+                .FirstOrDefaultAsync(d => d.MaVach == maVach);
+
+            if (donVi == null || donVi.MaThuocNavigation == null)
+                return null;
+
+            var thuoc = donVi.MaThuocNavigation;
+
+            return new
+            {
+                thuoc.MaThuoc,
+                thuoc.TenThuoc,
+                HamLuong = thuoc.ThanhPhan,
+                GiaBan = donVi.GiaBan,
+                MaDvtMacDinh = donVi.MaDvt,
+                MaDvtSelected = donVi.MaDvt,
+
+                DanhSachDonVi = thuoc.DonViTinhs.Select(d => new
+                {
+                    d.MaDvt,
+                    d.TenDonVi,
+                    d.GiaBan,
+                    d.GiaTriQuyDoi,
+                    d.LaDonViCoBan
+                }).ToList(),
+
+                DanhSachLo = thuoc.LoHangs
+                    .Where(lo => lo.SoLuongTon > 0
+                              && lo.HanSuDung >= DateOnly.FromDateTime(DateTime.Today))
+                    .OrderBy(lo => lo.HanSuDung)
+                    .Select(lo => new
+                    {
+                        lo.MaLo,
+                        lo.SoLo,
+                        HanSuDung = lo.HanSuDung.ToString("yyyy-MM-dd"),
+                        lo.SoLuongTon
+                    }).ToList()
             };
         }
     }

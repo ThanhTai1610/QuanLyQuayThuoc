@@ -44,19 +44,61 @@ namespace QuanLyQuayThuoc.Controllers
             if (!result) return NotFound("Không tìm thấy lô hàng.");
             return Ok(new { message = "Cập nhật thành công" });
         }
-        // Tab 3: Nhập hàng (CHỈ ADMIN hoặc THỦ KHO)
-        // [Authorize(Roles = "Admin")] // Mở comment này nếu bạn đã làm Identity
+
+        //[Authorize(Roles = "Admin")]
         [HttpPost("nhap-kho")]
         public async Task<IActionResult> NhapKho([FromBody] PhieuNhapKhoDto phieuNhap)
         {
-            if (phieuNhap == null) return BadRequest("Dữ liệu không hợp lệ");
+            if (phieuNhap == null || phieuNhap.ChiTiet == null || !phieuNhap.ChiTiet.Any())
+                return BadRequest("Dữ liệu nhập kho không được để trống.");
 
-            var result = await _khoService.NhapKhoAsync(phieuNhap);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (result)
-                return Ok(new { message = "Nhập kho thành công và đã sinh mã vạch", data = phieuNhap });
+            var ketQua = await _khoService.NhapKhoAsync(phieuNhap);
 
-            return StatusCode(500, "Có lỗi xảy ra khi lưu kho");
+            if (ketQua)
+            {
+                return Ok(new
+                {
+                    status = "success",
+                    message = "Nhập kho thành công",
+                    data = phieuNhap
+                });
+            }
+
+            return StatusCode(500, "Có lỗi xảy ra trong quá trình lưu dữ liệu kho.");
+        }
+        [HttpGet("ma-vach/{maThuoc}")]
+        public async Task<IActionResult> GetMaVach(int maThuoc)
+        {
+            var result = await _khoService.GetMaVachTheoThuocAsync(maThuoc);
+            return Ok(result);
+        }
+        [HttpPost("nhap-kho-thuoc-moi")]
+        public async Task<IActionResult> NhapKhoThuocMoi([FromBody] ThemThuocMoiVaNhapKhoDto dto)
+        {
+            if (dto == null || string.IsNullOrWhiteSpace(dto.TenThuoc))
+                return BadRequest("Tên thuốc không được để trống.");
+
+            if (dto.ChiTiet == null || !dto.ChiTiet.Any())
+                return BadRequest("Phải có ít nhất một đơn vị tính và lô nhập.");
+
+            if (!dto.ChiTiet.Any(x => x.LaDonViCoBan))
+                return BadRequest("Phải có ít nhất một đơn vị tính là đơn vị cơ bản.");
+
+            var ketQua = await _khoService.ThemThuocMoiVaNhapKhoAsync(dto);
+
+            if (ketQua)
+            {
+                return Ok(new
+                {
+                    status = "success",
+                    data = new { chiTiet = dto.ChiTiet }
+                });
+            }
+
+            return StatusCode(500, new { status = "error", message = "Có lỗi xảy ra khi lưu." });
         }
     }
 }

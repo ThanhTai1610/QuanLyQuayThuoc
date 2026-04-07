@@ -11,8 +11,12 @@
         <div class="row">
           <div class="col-lg-5 mb-3 mb-lg-0">
             <div class="image-viewer">
+              <div v-if="thuoc.laThuocKeDon" class="prescription-label">
+                🔴 Thuốc kê đơn
+              </div>
               <img :src="getImageUrl(anhHienTai)" alt="Ảnh thuốc chính" class="main-image" />
             </div>
+            
             <div class="thumb-list">
               <button
                 v-for="(img, index) in danhSachAnh"
@@ -40,21 +44,22 @@
             </div>
 
             <div class="unit-row mt-3">
-            <label class="d-block mb-2"><strong>Chọn đơn vị tính:</strong></label>
-            <div class="unit-options d-flex flex-wrap">
-              <div 
-                v-for="(dv, index) in thuoc.donViTinhs" 
-                :key="index"
-                class="unit-item"
-                :class="{ active: selectedUnitIndex === index }"
-                @click="selectedUnitIndex = index"
-              >
-                {{ dv.tenDonVi }}
-                <span class="check-icon" v-if="selectedUnitIndex === index">
-                  <i class="fa fa-check"></i> </span>
+              <label class="d-block mb-2"><strong>Chọn đơn vị tính:</strong></label>
+              <div class="unit-options d-flex flex-wrap">
+                <div 
+                  v-for="(dv, index) in thuoc.donViTinhs" 
+                  :key="index"
+                  class="unit-item"
+                  :class="{ active: selectedUnitIndex === index }"
+                  @click="selectedUnitIndex = index"
+                >
+                  {{ dv.tenDonVi }}
+                  <span class="check-icon" v-if="selectedUnitIndex === index">
+                    <i class="fa fa-check"></i> 
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
             <div class="price-row custom-price-layout">
               <div class="main-unit-price-wrapper d-flex align-items-end">
@@ -74,29 +79,60 @@
               </div>
             </div>
 
-            <div class="stock-row">
+            <div class="stock-row mt-3">
               Trạng thái kho:
               <span :class="['stock-badge', tongTonKho > 0 ? 'stock-available' : 'stock-empty']">
                 {{ tongTonKho > 0 ? 'Còn hàng' : 'Tạm hết hàng' }}
               </span>
+              <span class="stock-count-text ml-3" v-if="tongTonKho > 0">
+                (Số lượng còn lại trong kho: <strong>{{ tongTonKho }}</strong>)
+              </span>
             </div>
 
             <div v-if="thuoc.laThuocKeDon" class="mt-2">
-              <span class="prescription-pill">🔴 Thuốc kê đơn - Vui lòng mang toa của bác sĩ</span>
+              <small class="text-danger"><i>* Vui lòng mang theo toa của bác sĩ khi mua loại thuốc này.</i></small>
             </div>
 
             <div class="quantity-wrapper mt-4 d-flex align-items-center">
-            <label class="mr-3 mb-0"><strong>Chọn số lượng:</strong></label>
-            <div class="quantity-controls d-flex align-items-center">
+              <label class="mr-3 mb-0"><strong>Chọn số lượng:</strong></label>
+              <div class="quantity-controls d-flex align-items-center">
                 <button @click="giamSoLuong" class="qty-btn" :disabled="soLuong <= 1">-</button>
-                <input type="number" v-model.number="soLuong" class="qty-input" min="1" readonly />
-                <button @click="tangSoLuong" class="qty-btn">+</button>
+                
+                <input 
+                  type="number" 
+                  v-model.number="soLuong" 
+                  @input="kiemTraNhapTay"
+                  class="qty-input" 
+                  min="1" 
+                />
+                
+                <button @click="tangSoLuong" class="qty-btn" :disabled="soLuong >= tongTonKho">+</button>
               </div>
             </div>
 
             <div class="action-row mt-4">
-              <button @click="themGioHang" class="btn btn-primary btn-action mr-2">Thêm vào giỏ hàng</button>
-              <button class="btn btn-success btn-action">Mua ngay</button>
+              <template v-if="thuoc.laThuocKeDon">
+                <div class="d-flex gap-3">
+                  <button @click="diToiTuVan" class="btn btn-danger btn-lg flex-grow-1 py-3 font-weight-bold">
+                    Tư vấn ngay
+                  </button>
+                  
+                  <button @click="guiDonThuoc" class="btn btn-light btn-lg flex-grow-1 py-3 font-weight-bold border">
+                    Gửi đơn thuốc
+                  </button>
+                </div>
+              </template>
+
+              <template v-else>
+                <div class="d-flex gap-3">
+                  <button @click="themGioHang" class="btn btn-primary btn-lg flex-grow-1 py-3 font-weight-bold">
+                    THÊM VÀO GIỎ HÀNG
+                  </button>
+                  <button @click="muaNgay" class="btn btn-success btn-lg flex-grow-1 py-3 font-weight-bold">
+                    MUA NGAY
+                  </button>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -185,35 +221,19 @@
 import '../../assets/css/product-detail-page.css';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
-// Import axiosClient đã cấu hình interceptor để dùng token và baseURL
 import axiosClient from '../../api/axiosClient'; 
-import { authState } from '../../api/auth'; // Kiểm tra đúng đường dẫn đến file auth.js của Tài
+import { authState } from '../../api/auth'; 
 import Swal from 'sweetalert2';
+
 const route = useRoute();
 const router = useRouter();
+
 // --- STATE ---
 const thuoc = ref({
-  tenThuoc: '',
-  nhaSanXuat: '',
-  nuocSanXuat: '',
-  maThuoc: '',
-  soDangKy: '',
-  donViTinhs: [], 
-  loHangs: [],
-  laThuocKeDon: false,
-  moTaNgan: '',
-  quyCach: '',
-  dangBaoChe: '',
-  hanSuDungThang: 0,
-  thanhPhan: '',
-  congDung: '',
-  cachDung: '',
-  doiTuongSuDung: '',
-  chongChiDinh: '',
-  tacDungPhu: '',
-  luuY: '',
-  baoQuan: ''
+  tenThuoc: '', nhaSanXuat: '', nuocSanXuat: '', maThuoc: '', soDangKy: '',
+  donViTinhs: [], loHangs: [], laThuocKeDon: false, moTaNgan: '', quyCach: '',
+  dangBaoChe: '', hanSuDungThang: 0, thanhPhan: '', congDung: '', cachDung: '',
+  doiTuongSuDung: '', chongChiDinh: '', tacDungPhu: '', luuY: '', baoQuan: ''
 });
 
 const danhSachAnh = ref([]);
@@ -222,12 +242,20 @@ const selectedUnitIndex = ref(0);
 const activeTab = ref('dacdiem');
 const dsSanPhamTuongTu = ref([]);
 const dsThuongMuaCung = ref([]); 
-const soLuong = ref(1); // Số lượng chọn mua
+const soLuong = ref(1);
+
+const diToiTuVan = () => {
+  router.push({ 
+    name: 'ChatbotTuVan', 
+    query: { open: 'true' } 
+  });
+};
 
 // --- COMPUTED ---
 const tongTonKho = computed(() => {
-  if (!thuoc.value.loHangs) return 0;
-  return thuoc.value.loHangs.reduce((sum, lo) => sum + lo.soLuongTon, 0);
+  const danhSachLo = thuoc.value.loHangs || thuoc.value.loHang; 
+  if (!danhSachLo || !Array.isArray(danhSachLo)) return 0;
+  return danhSachLo.reduce((sum, lo) => sum + (lo.soLuongTon || 0), 0);
 });
 
 // --- HELPERS ---
@@ -247,7 +275,7 @@ const tangSoLuong = () => {
   if (soLuong.value < tongTonKho.value) {
     soLuong.value++;
   } else {
-    alert("Số lượng đạt giới hạn tồn kho!");
+    Swal.fire('Thông báo', 'Số lượng trong kho đã đạt giới hạn!', 'info');
   }
 };
 
@@ -257,16 +285,28 @@ const giamSoLuong = () => {
   }
 };
 
+const kiemTraNhapTay = () => {
+  if (!soLuong.value || soLuong.value < 1) {
+    soLuong.value = 1;
+  }
+  if (soLuong.value > tongTonKho.value) {
+    Swal.fire({
+      title: 'Vượt quá tồn kho',
+      text: `Sản phẩm này chỉ còn ${tongTonKho.value} trong kho`,
+      icon: 'warning',
+      timer: 2000
+    });
+    soLuong.value = tongTonKho.value;
+  }
+};
+
 // --- CALL APIS ---
 const loadProduct = async () => {
   const productId = route.params.id;
   try {
-    // Dùng axiosClient: không cần ghi lại baseURL https://localhost:7070/api
     const data = await axiosClient.get(`/ThuocKhachHang/${productId}`);
-    
     thuoc.value = data;
 
-    // Xử lý ảnh
     const images = [];
     if (data.hinhAnhChinh) images.push(data.hinhAnhChinh);
     if (data.hinhAnhThuocs && data.hinhAnhThuocs.length > 0) {
@@ -278,7 +318,6 @@ const loadProduct = async () => {
     danhSachAnh.value = images;
     anhHienTai.value = data.hinhAnhChinh || images[0] || '';
 
-    // Reset trạng thái
     selectedUnitIndex.value = 0;
     activeTab.value = 'dacdiem';
     soLuong.value = 1;
@@ -296,10 +335,7 @@ const loadProduct = async () => {
 const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
   try {
     const data = await axiosClient.get(`/ThuocKhachHang/Related`, {
-      params: {
-        maDanhMuc: Number(maDanhMuc),
-        currentProductId: Number(currentProductId)
-      }
+      params: { maDanhMuc: Number(maDanhMuc), currentProductId: Number(currentProductId) }
     });
     dsSanPhamTuongTu.value = data;
   } catch (error) {
@@ -318,11 +354,7 @@ const loadFrequentlyBoughtProducts = async (currentProductId) => {
   }
 };
 
-const isLoggedIn = computed(() => !!authState.user);
-// HÀM DUY NHẤT ĐỂ THÊM VÀO GIỎ HÀNG
-// 1. Đảm bảo chỉ có DUY NHẤT một khai báo này
 const themGioHang = async () => {
-  // 1. Kiểm tra đăng nhập (Nới lỏng điều kiện để test)
   if (!authState.user) {
     Swal.fire({
       title: 'Thông báo',
@@ -339,27 +371,20 @@ const themGioHang = async () => {
     return;
   }
 
-  // 2. Lấy đơn vị tính đã chọn
   const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
   if (!activeUnit) {
     Swal.fire('Lỗi', 'Vui lòng chọn đơn vị tính!', 'error');
     return;
   }
 
-  // 3. Payload: PHẢI VIẾT HOA chữ cái đầu để khớp với ThemVaoGioDto ở Backend
   const payload = {
     MaThuoc: thuoc.value.maThuoc,
     MaDvt: activeUnit.maDvt,
     SoLuong: soLuong.value 
   };
 
-  console.log("Dữ liệu gửi đi:", payload);
-
   try {
-    // 4. Gọi API: Đảm bảo đường dẫn là 'GioHang/them' 
-    // (Bỏ dấu / ở đầu nếu axiosClient đã có /api/ ở cuối baseURL)
     await axiosClient.post('GioHang/them', payload);
-    
     Swal.fire({
       title: 'Thành công!',
       text: 'Sản phẩm đã được thêm vào giỏ hàng',
@@ -374,28 +399,57 @@ const themGioHang = async () => {
     });
   } catch (error) {
     console.error('Lỗi khi thêm giỏ hàng:', error);
-    // Nếu vẫn lỗi 404, hãy kiểm tra lại baseURL trong axiosClient có kết thúc bằng /api/ chưa
-    Swal.fire('Thất bại', 'Không tìm thấy đường dẫn API (404) hoặc lỗi server.', 'error');
+    Swal.fire('Thất bại', 'Không thể thêm sản phẩm vào giỏ hàng.', 'error');
   }
 };
 
-// --- LIFECYCLE ---
 onMounted(loadProduct);
 
 watch(() => route.params.id, (newId) => {
   if (newId) loadProduct();
 });
 </script>
-<style>
-  .unit-options {
-  gap: 10px;
+
+<style scoped>
+/* CSS CHO NHÃN TRÊN ẢNH */
+.image-viewer {
+  position: relative; /* Quan trọng để đặt nhãn con absolute */
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eee;
 }
 
+.prescription-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #d9534f;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid #d9534f;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  pointer-events: none;
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Các CSS cũ */
+.unit-options { gap: 10px; }
 .unit-item {
   position: relative;
   padding: 8px 25px;
   border: 1px solid #dee2e6;
-  border-radius: 20px; /* Bo tròn giống hình mẫu */
+  border-radius: 20px;
   cursor: pointer;
   background-color: #fff;
   transition: all 0.2s ease;
@@ -404,43 +458,47 @@ watch(() => route.params.id, (newId) => {
   min-width: 80px;
   text-align: center;
 }
-
-.unit-item:hover {
-  border-color: #007bff;
-  color: #007bff;
-}
-
-/* Khi đơn vị được chọn */
+.unit-item:hover { border-color: #007bff; color: #007bff; }
 .unit-item.active {
   border-color: #007bff;
   color: #007bff;
   background-color: #f0f7ff;
   font-weight: 500;
-  overflow: hidden; /* Để cắt phần vát góc của dấu check */
+  overflow: hidden;
 }
-
-/* Tạo hình tam giác xanh và dấu tích ở góc trên bên phải */
 .unit-item.active::after {
   content: "";
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 0;
-  height: 0;
+  top: 0; right: 0;
+  width: 0; height: 0;
   border-style: solid;
   border-width: 0 18px 18px 0;
   border-color: transparent #007bff transparent transparent;
 }
-
-/* Dấu check trắng đè lên tam giác xanh */
 .unit-item.active::before {
   content: "✓";
   position: absolute;
-  top: -1px;
-  right: 2px;
+  top: -1px; right: 2px;
   color: white;
   font-size: 10px;
   z-index: 1;
   font-weight: bold;
+}
+
+.stock-available { background-color: #e6f9f0; color: #1a7f4e; }
+.stock-empty { background-color: #ffebee; color: #c62828; }
+
+.btn-danger {
+  background-color: #ff0000 !important;
+  border-color: #ff0000 !important;
+  color: white !important;
+}
+
+.btn-danger:hover {
+  background-color: #cc0000 !important;
+}
+
+.gap-3 {
+  gap: 1rem !important;
 }
 </style>

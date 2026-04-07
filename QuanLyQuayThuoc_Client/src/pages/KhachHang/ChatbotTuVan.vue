@@ -23,6 +23,7 @@
 
 <script setup>
 import { ref, reactive, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 
 const isOpen = ref(false);
 const userInput = ref('');

@@ -4,7 +4,7 @@ using QuanLyQuayThuoc.Repositories;
 using QuanLyQuayThuoc.Repositories.Interfaces;
 using QuanLyQuayThuoc.Services.Interfaces;
 using QuanLyQuayThuoc.Services.Implementation;
-using Microsoft.AspNetCore.Authentication.JwtBearer; // Giải quyết lỗi JwtBearerDefaults
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using QuanLyQuayThuoc.Helpers;
 using System.Text;
@@ -12,9 +12,7 @@ using QuanLyQuayThuoc.Repository.Interfaces;
 using QuanLyQuayThuoc.Repository.Implementation;
 using QuanLyQuayThuoc.Models.Momo;
 using QuanLyQuayThuoc.Services.Momo;
-// Giải quyết lỗi Encoding
 
-// ... các phần Using giữ nguyên ...
 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls13;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVueApp", policy =>
-        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());
@@ -107,6 +105,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseRouting();
 app.UseCors("AllowVueApp");
 app.UseHttpsRedirection();
 

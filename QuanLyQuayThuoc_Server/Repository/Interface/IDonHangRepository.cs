@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
-using QuanLyQuayThuoc.Models;
+﻿    using System.Threading.Tasks;
+    using QuanLyQuayThuoc.Models;
 
-namespace QuanLyQuayThuoc.Repositories.Interfaces
-{
-    public interface IDonHangRepository
+    namespace QuanLyQuayThuoc.Repositories.Interfaces
     {
-        Task AddAsync(DonHang donHang);
-        Task<int> SaveChangesAsync();
-        Task<DonHang> CreateOrderAsync(DonHang donHang);
+        public interface IDonHangRepository
+        {
+            Task AddAsync(DonHang donHang);
+            Task<int> SaveChangesAsync();
+            Task<DonHang> CreateOrderAsync(DonHang donHang);
+        }
     }
-}
