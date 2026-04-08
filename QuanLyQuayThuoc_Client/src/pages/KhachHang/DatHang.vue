@@ -24,13 +24,13 @@
 
         <div v-if="dangTai" class="text-center py-5">
           <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Đang tải dữ liệu...</p>
         </div>
 
         <div v-else class="checkout-layout">
           <div class="checkout-main">
             <div class="checkout-card mb-3">
               <div class="checkout-card-title">Thông tin giao hàng</div>
-
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label>Họ và tên <span class="text-danger">*</span></label>
@@ -41,12 +41,10 @@
                   <input type="text" class="form-control" v-model="form.soDienThoaiNhan" placeholder="Nhập số điện thoại" />
                 </div>
               </div>
-
               <div class="form-group">
                 <label>Địa chỉ nhận hàng <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" v-model="form.diaChiChiTiet" placeholder="Số nhà, tên đường" />
               </div>
-
               <div class="form-row">
                 <div class="form-group col-md-4">
                   <label>Phường/Xã</label>
@@ -61,7 +59,6 @@
                   <input type="text" class="form-control" v-model="form.tinhThanh" />
                 </div>
               </div>
-
               <div class="form-group">
                 <label>Ghi chú</label>
                 <textarea class="form-control" v-model="form.ghiChu" rows="2"></textarea>
@@ -125,12 +122,13 @@
 <script setup>
 import '../../assets/css/checkout-page.css';
 import { ref, reactive, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useMomo } from '../../services/useMomo';
 import axiosClient from '../../api/axiosClient';
 import Swal from 'sweetalert2';
 
 const router = useRouter();
+const route = useRoute();
 const { createPayment } = useMomo();
 
 const gioHang = ref([]);
@@ -158,16 +156,12 @@ const tamTinh = computed(() =>
   Math.round(gioHang.value.reduce((sum, item) => sum + (item.giaBan * item.soLuong), 0))
 );
 
-// ── Load giỏ hàng ──
-// axiosClient đã tự unwrap response.data nên dùng res trực tiếp
+// Hàm tải giỏ hàng
 const loadData = async () => {
   dangTai.value = true;
   try {
     const res = await axiosClient.get('/GioHang');
-
-    // ✅ Sửa: bỏ res.data vì axiosClient đã unwrap sẵn
     gioHang.value = res || [];
-
     if (gioHang.value.length === 0) {
       router.push('/gio-hang');
     }
@@ -179,11 +173,10 @@ const loadData = async () => {
   }
 };
 
-// ── Xác nhận đặt hàng ──
+// Xử lý khi bấm nút đặt hàng
 const xacNhanDatHang = async () => {
   loi.value = '';
 
-  // 1. Validate thông tin giao hàng
   if (!form.hoTenNguoiNhan.trim() || !form.soDienThoaiNhan.trim() || !form.diaChiChiTiet.trim()) {
     loi.value = 'Vui lòng điền đủ Họ tên, SĐT và Địa chỉ.';
     return;
@@ -195,22 +188,18 @@ const xacNhanDatHang = async () => {
     return;
   }
 
-  // 2. Chặn nếu có sản phẩm hết hàng (maLo = 0)
   const coHetHang = gioHang.value.some(item => !item.maLo || item.maLo === 0);
   if (coHetHang) {
-    loi.value = 'Một số sản phẩm trong giỏ đã hết hàng. Vui lòng quay lại giỏ hàng để xóa chúng.';
+    loi.value = 'Sản phẩm hết hàng. Vui lòng kiểm tra lại giỏ hàng.';
     return;
   }
 
   dangDat.value = true;
-
   try {
-    // 3. Ghép địa chỉ đầy đủ
     const fullAddress = [form.diaChiChiTiet, form.phuongXa, form.quanHuyen, form.tinhThanh]
       .filter(str => str && str.trim() !== '')
       .join(', ');
 
-    // 4. Chuẩn bị body — gửi lên endpoint mới /GioHang/dat-hang
     const body = {
       PhuongThucThanhToan: form.phuongThucThanhToan,
       DiaChiGiaoHang: fullAddress,
@@ -218,53 +207,69 @@ const xacNhanDatHang = async () => {
       GhiChu: form.ghiChu,
       GiamGia: 0,
       ChiTiet: gioHang.value.map(item => ({
-        MaLo: item.maLo,       // ✅ Không dùng || 0, đã validate ở trên
+        MaLo: item.maLo,
         MaDVT: item.maDVT,
         SoLuong: item.soLuong,
         GiaBan: item.giaBan
       }))
     };
 
-    // 5. Gửi lên endpoint đúng — /GioHang/dat-hang thay vì /BanHang/thanh-toan
     const res = await axiosClient.post('/GioHang/dat-hang', body);
-
-    // ✅ Sửa: axiosClient đã unwrap nên dùng res trực tiếp, không cần res.data
-    const data = res;
-
-    if (data.success) {
-      const maDH = data.maDonHang;
-
+    if (res.success) {
+      const maDH = res.maDonHang;
       if (form.phuongThucThanhToan === 'Momo') {
-        // Thanh toán MoMo
-        await createPayment(
-          tamTinh.value,
-          `Thanh toán đơn hàng Pharmative - #${maDH}`,
-          maDH.toString(),
-          'KhachHang'
-        );
+        // Chuyển hướng sang MoMo
+        await createPayment(tamTinh.value, `Thanh toán Pharmative #${maDH}`, maDH.toString(), 'KhachHang');
       } else {
-        // COD — thông báo thành công và chuyển trang
+        // COD
         await Swal.fire({
           icon: 'success',
           title: 'Đặt hàng thành công!',
-          text: `Mã đơn hàng của bạn: #${maDH}`,
-          confirmButtonText: 'Xem lịch sử đơn hàng'
+          text: `Mã đơn hàng: #${maDH}`,
+          confirmButtonText: 'Xem lịch sử'
         });
         router.push({ name: 'LichSuDonHang' });
       }
-    } else {
-      throw new Error(data.message || 'Không thể tạo đơn hàng.');
     }
   } catch (err) {
-    console.error('Lỗi đặt hàng:', err);
-    Swal.fire('Lỗi', err.response?.data?.message || err.message || 'Đã có lỗi xảy ra.', 'error');
+    Swal.fire('Lỗi', err.response?.data?.message || 'Đã có lỗi xảy ra.', 'error');
   } finally {
     dangDat.value = false;
   }
 };
 
-const formatGia = (v) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0);
+const formatGia = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0);
 
-onMounted(loadData);
+// CHỖ THAY ĐỔI CHÍNH: Xử lý kết quả MoMo quay về
+onMounted(async () => {
+  const { orderId, status } = route.query;
+
+  // Nếu URL có chứa kết quả từ MoMo
+  if (orderId && status) {
+    if (status === 'success') {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Thanh toán thành công!',
+        text: `Đơn hàng #${orderId} của bạn đã được thanh toán qua ví MoMo.`,
+        confirmButtonText: 'Xem đơn hàng',
+        allowOutsideClick: false
+      });
+      // Xóa query trên URL và chuyển trang
+      router.replace({ query: {} });
+      router.push({ name: 'LichSuDonHang' });
+    } else {
+      await Swal.fire({
+        icon: 'error',
+        title: 'Thanh toán thất bại',
+        text: 'Bạn đã hủy thanh toán hoặc giao dịch không thành công.',
+      });
+      // Xóa query lỗi để khách ở lại trang đặt hàng thao tác tiếp
+      router.replace({ query: {} });
+      loadData();
+    }
+  } else {
+    // Nếu load bình thường không phải từ MoMo quay về
+    loadData();
+  }
+});
 </script>

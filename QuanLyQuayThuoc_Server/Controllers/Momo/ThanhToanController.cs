@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.Models.Momo;
 using QuanLyQuayThuoc.Services.Momo;
 
@@ -9,67 +11,83 @@ namespace QuanLyQuayThuoc.Controllers
     public class ThanhToanController : ControllerBase
     {
         private readonly IMomoService _momoService;
+        private readonly ApplicationDbContext _context;
 
-        public ThanhToanController(IMomoService momoService)
+        public ThanhToanController(IMomoService momoService, ApplicationDbContext context)
         {
             _momoService = momoService;
+            _context = context;
         }
 
         [HttpPost("tao-thanh-toan")]
         public async Task<IActionResult> CreatePayment([FromBody] OrderInfoModel request)
         {
             if (request == null)
-            {
                 return BadRequest(new { message = "Dữ liệu yêu cầu không hợp lệ." });
-            }
 
             try
             {
-                // Gọi đến Service để tạo link thanh toán MoMo
                 var result = await _momoService.CreatePaymentAsync(request);
 
-                // --- ĐOẠN DEBUG QUAN TRỌNG ---
                 if (result == null || (result.ResultCode != 0 && string.IsNullOrEmpty(result.PayUrl)))
                 {
-                    // Nếu MoMo trả về lỗi (ResultCode khác 0), in ra để Tài thấy
                     var errorMsg = result?.Message ?? "Lỗi không xác định từ MoMo";
-                    Console.WriteLine($"[MoMo Error] ResultCode: {result?.ResultCode}, Message: {errorMsg}");
-
-                    return BadRequest(new
-                    {
-                        message = "MoMo từ chối tạo thanh toán.",
-                        detail = errorMsg,
-                        momoCode = result?.ResultCode
-                    });
+                    return BadRequest(new { message = "MoMo từ chối tạo thanh toán.", detail = errorMsg });
                 }
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[System Error] {ex.Message}");
                 return StatusCode(500, new { message = "Lỗi hệ thống khi gọi MoMo: " + ex.Message });
             }
         }
 
+        /// <summary>
+        /// SỬA ĐỔI: Điều hướng trực tiếp về trang đặt hàng/bán hàng thay vì trang hoan-tat riêng biệt
+        /// </summary>
         [HttpGet("ket-qua-momo")]
-        public IActionResult PaymentCallback()
+        public async Task<IActionResult> KetQuaMoMo()
         {
-            // Lấy dữ liệu MoMo trả về từ URL
-            var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
+            var query = HttpContext.Request.Query;
 
-            // Kiểm tra trạng thái thanh toán (ResultCode "0" là thành công)
-            if (response.ResultCode == "0")
+            if (query == null || !query.ContainsKey("resultCode"))
+                return Content("Lỗi phản hồi MoMo: Không tìm thấy resultCode");
+
+            string resultCode = query["resultCode"].ToString();
+            string orderId = query["orderId"].ToString();
+            // extraData được gán là "NhanVien" hoặc "KhachHang" từ Frontend gửi lên
+            string userType = query.ContainsKey("extraData") ? query["extraData"].ToString() : "KhachHang";
+
+            // Cập nhật Database nếu thành công
+            if (resultCode == "0")
             {
-                // Sau này Tài thêm code cập nhật database ở đây nhé
-                // Ví dụ: _donHangRepository.CapNhatTrangThai(response.OrderId, "DaThanhToan");
-
-                // Thay vì return Ok, Tài nên Redirect về trang thành công của Vue
-                return Redirect($"http://localhost:5173/hoan-tat?orderId={response.OrderId}&status=success");
+                if (int.TryParse(orderId, out int maDonHang))
+                {
+                    var donHang = await _context.DonHangs.FindAsync(maDonHang);
+                    if (donHang != null)
+                    {
+                        donHang.TrangThai = "Đã thanh toán";
+                        donHang.PhuongThucThanhToan = "Momo";
+                        await _context.SaveChangesAsync();
+                    }
+                }
             }
 
-            // Nếu thất bại, redirect về trang lỗi
-            return Redirect($"http://localhost:5173/hoan-tat?orderId={response.OrderId}&status=error");
+            string status = (resultCode == "0") ? "success" : "error";
+
+            // --- PHẦN SỬA ĐỔI ĐƯỜNG DẪN REDIRECT ---
+
+            // Nếu là Nhân viên: Quay về trang Bán hàng tại quầy
+            if (userType == "NhanVien")
+            {
+                // Giả sử route của trang bán hàng là /ban-hang hoặc /nhan-vien/ban-hang
+                return Redirect($"http://localhost:5173/ban-hang?orderId={orderId}&status={status}");
+            }
+
+            // Nếu là Khách hàng: Quay về chính trang Đặt hàng (để hiện Swal thông báo)
+            // Giả sử route trang đặt hàng của khách là /dat-hang hoặc /checkout
+            return Redirect($"http://localhost:5173/dat-hang?orderId={orderId}&status={status}");
         }
     }
 }

@@ -25,5 +25,9 @@ namespace QuanLyQuayThuoc.Repositories.Interfaces
 
         Task<IEnumerable<DanhMucDto>> GetDanhMucAsync();
         Task<bool> SuaLoHangAsync(int maLo, SuaLoHangDto dto);
+        Task<IEnumerable<MaVachDto>> GetMaVachTheoThuocAsync(int maThuoc);
+        Task<bool> ThemThuocMoiVaNhapKhoAsync(ThemThuocMoiVaNhapKhoDto dto);
+        Task<object?> TimThuocTheoBarcodeAsync(string maVach);
+
     }
 }

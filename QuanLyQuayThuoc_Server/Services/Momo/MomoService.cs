@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QuanLyQuayThuoc.Models.Momo;
-using RestSharp;
 using System.Security.Cryptography;
 using System.Text;
-using System.Net.Security; // Thêm dòng này
 
 namespace QuanLyQuayThuoc.Services.Momo
 {
@@ -19,91 +17,80 @@ namespace QuanLyQuayThuoc.Services.Momo
 
         public async Task<MomoCreatePaymentResponseModel> CreatePaymentAsync(OrderInfoModel model)
         {
-            var amountString = ((long)model.Amount).ToString();
-            var requestId = Guid.NewGuid().ToString();
-            var extraData = "";
+            // 1. Khởi tạo các tham số
+            string requestId = DateTime.UtcNow.Ticks.ToString();
+            string orderId = model.OrderId;
 
-            // 1. Tạo chữ ký (rawData phải đúng thứ tự A-Z)
-            // Đảm bảo thứ tự ĐÚNG như thế này (A-Z):
-            var rawData =
-                $"accessKey={_options.Value.AccessKey}&" +
-                $"amount={amountString}&" +
-                $"extraData={extraData}&" +
-                $"ipnUrl={_options.Value.NotifyUrl}&" +
-                $"orderId={model.OrderId}&" +
-                $"orderInfo={model.OrderInfo}&" +
-                $"partnerCode={_options.Value.PartnerCode}&" +
-                $"redirectUrl={_options.Value.ReturnUrl}&" +
-                $"requestId={requestId}&" +
-                $"requestType={_options.Value.RequestType}";
+            // Vì model.Amount đã là long, lấy trực tiếp luôn:
+            long amountLong = model.Amount;
 
-            var signature = ComputeHmacSha256(rawData, _options.Value.SecretKey);
+            // Sử dụng UserType để làm extraData (để phân biệt loại user khi redirect)
+            // Nếu UserType null thì mặc định là "KhachHang"
+            string extraData = model.UserType ?? "KhachHang";
+            string orderInfo = model.OrderInfo ?? "Thanh toan don hang";
 
-            // 2. Định nghĩa dữ liệu gửi đi
+            // 2. Tạo chuỗi ký (Raw Hash) - Phải đúng thứ tự bảng chữ cái của Key
+            string rawData =
+                $"accessKey={_options.Value.AccessKey}" +
+                $"&amount={amountLong}" +
+                $"&extraData={extraData}" +
+                $"&ipnUrl={_options.Value.NotifyUrl}" +
+                $"&orderId={orderId}" +
+                $"&orderInfo={orderInfo}" +
+                $"&partnerCode={_options.Value.PartnerCode}" +
+                $"&redirectUrl={_options.Value.ReturnUrl}" +
+                $"&requestId={requestId}" +
+                $"&requestType=captureWallet";
+
+            string signature = GenerateSignature(rawData, _options.Value.SecretKey);
+
+            // 3. Tạo Object gửi sang API MoMo
             var requestData = new
             {
                 partnerCode = _options.Value.PartnerCode,
-                partnerName = "Pharmative Store",
-                storeId = "Pharmative_Store",
                 requestId = requestId,
-                amount = amountString,
-                orderId = model.OrderId,
-                orderInfo = model.OrderInfo,
+                amount = amountLong,
+                orderId = orderId,
+                orderInfo = orderInfo,
                 redirectUrl = _options.Value.ReturnUrl,
                 ipnUrl = _options.Value.NotifyUrl,
-                requestType = _options.Value.RequestType,
+                requestType = "captureWallet",
                 extraData = extraData,
                 signature = signature,
                 lang = "vi"
             };
 
-            // 3. Cấu hình RestClient BỎ QUA LỖI SSL (Giải quyết Unknown Error)
-            var options = new RestClientOptions(_options.Value.MomoApiUrl)
+            // 4. Thực thi gửi request
+            using (var client = new HttpClient())
             {
-                RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-            };
-            var client = new RestClient(options);
+                var requestContent = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync(_options.Value.MomoApiUrl, requestContent);
+                var responseContent = await response.Content.ReadAsStringAsync();
 
-            var request = new RestRequest("");
-            request.Method = Method.Post;
-            request.AddJsonBody(requestData);
-
-            var response = await client.ExecuteAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                // Log ra console để Tài dễ debug
-                Console.WriteLine($"--- MOMO DEBUG ---");
-                Console.WriteLine($"Status: {response.StatusCode}");
-                Console.WriteLine($"Error: {response.ErrorMessage}");
-                Console.WriteLine($"Content: {response.Content}");
-
-                return new MomoCreatePaymentResponseModel
-                {
-                    Message = "MoMo từ chối yêu cầu: " + (response.ErrorMessage ?? "Vui lòng kiểm tra lại Key/Số tiền"),
-                    ResultCode = (int)response.StatusCode
-                };
+                return JsonConvert.DeserializeObject<MomoCreatePaymentResponseModel>(responseContent)
+                       ?? new MomoCreatePaymentResponseModel();
             }
-
-            return JsonConvert.DeserializeObject<MomoCreatePaymentResponseModel>(response.Content);
         }
 
         public MomoExecuteResponseModel PaymentExecuteAsync(IQueryCollection collection)
         {
-            return new MomoExecuteResponseModel()
+            // Đọc các tham số MoMo trả về trên URL
+            return new MomoExecuteResponseModel
             {
-                Amount = collection["amount"],
                 OrderId = collection["orderId"],
+                Amount = collection["amount"],
                 OrderInfo = collection["orderInfo"],
                 ResultCode = collection["resultCode"],
-                Message = collection["message"]
+                Message = collection["message"],
+                LocalMessage = collection["localMessage"]
             };
         }
 
-        private string ComputeHmacSha256(string message, string secretKey)
+        // Hàm băm chữ ký SHA256
+        private string GenerateSignature(string rawData, string secretKey)
         {
             var keyBytes = Encoding.UTF8.GetBytes(secretKey);
-            var messageBytes = Encoding.UTF8.GetBytes(message);
+            var messageBytes = Encoding.UTF8.GetBytes(rawData);
 
             using (var hmac = new HMACSHA256(keyBytes))
             {

@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// GioHangController.cs
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QuanLyQuayThuoc.DTOs.DonHang;
-using QuanLyQuayThuoc.Services.Interface;
 using QuanLyQuayThuoc.Services.Interfaces;
 using System.Security.Claims;
 
@@ -8,7 +9,7 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
 {
     [Route("api/GioHang")]
     [ApiController]
-    // [Authorize] // Mở ra nếu bạn đã dùng JWT Token để bảo mật
+    [Authorize] 
     public class GioHangController : ControllerBase
     {
         private readonly IGioHangService _gioHangService;
@@ -18,84 +19,103 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
             _gioHangService = gioHangService;
         }
 
-        // 1. Lấy danh sách giỏ hàng
-        // GET: api/GioHang
+        private int GetMaKhachHangFromToken()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                throw new UnauthorizedAccessException("Không tìm thấy thông tin định danh trong Token.");
+
+            return int.Parse(userIdClaim.Value);
+        }
+
         [HttpGet]
         public async Task<IActionResult> LayGioHang()
         {
-            // Tạm thời lấy MaKhachHang = 1 để test nếu chưa có đăng nhập
-            // Nếu có JWT, dùng: int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            int maKhachHang = 1;
-
-            var ketQua = await _gioHangService.LayDanhSachGioHangAsync(maKhachHang);
-            return Ok(ketQua);
+            try
+            {
+                int maKhachHang = GetMaKhachHangFromToken();
+                var ketQua = await _gioHangService.LayDanhSachGioHangAsync(maKhachHang);
+                return Ok(ketQua);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
-        // 2. Thêm sản phẩm vào giỏ
-        // POST: api/GioHang/them
         [HttpPost("them")]
         public async Task<IActionResult> ThemVaoGio([FromBody] ThemVaoGioDto dto)
         {
-            int maKhachHang = 1; // Giả định khách hàng ID là 1
-            var thanhCong = await _gioHangService.ThemVaoGioHangAsync(
-                maKhachHang, dto.MaThuoc, dto.MaDvt, dto.SoLuong);
+            try
+            {
+                int maKhachHang = GetMaKhachHangFromToken();
+                var thanhCong = await _gioHangService.ThemVaoGioHangAsync(
+                    maKhachHang, dto.MaThuoc, dto.MaDvt, dto.SoLuong);
 
-            if (thanhCong) return Ok(new { message = "Đã thêm vào giỏ hàng" });
-            return BadRequest("Không thể thêm vào giỏ hàng");
+                if (thanhCong) return Ok(new { message = "Đã thêm vào giỏ hàng" });
+                return BadRequest(new { message = "Không thể thêm vào giỏ hàng" });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
         }
 
-        // 3. Cập nhật giỏ hàng (Khớp với nút "Cập nhật giỏ hàng" ở Vue)
-        // PUT: api/GioHang/cap-nhat
         [HttpPut("cap-nhat")]
         public async Task<IActionResult> CapNhatGio([FromBody] List<CapNhatGioHangDto> danhSach)
         {
-            if (danhSach == null || danhSach.Count == 0)
-                return BadRequest("Danh sách cập nhật trống");
+            if (danhSach == null || !danhSach.Any())
+                return BadRequest(new { message = "Danh sách cập nhật trống" });
 
             var thanhCong = await _gioHangService.CapNhatGioHangAsync(danhSach);
             if (thanhCong) return Ok(new { message = "Cập nhật thành công" });
-            return BadRequest("Cập nhật thất bại");
+            return BadRequest(new { message = "Cập nhật thất bại" });
         }
 
-        // 4. Xóa 1 sản phẩm
-        // DELETE: api/GioHang/xoa/{id}
         [HttpDelete("xoa/{id}")]
         public async Task<IActionResult> XoaSanPham(int id)
         {
             var thanhCong = await _gioHangService.XoaKhoiGioHangAsync(id);
             if (thanhCong) return Ok(new { message = "Đã xóa sản phẩm" });
-            return NotFound("Không tìm thấy sản phẩm trong giỏ");
+            return NotFound(new { message = "Không tìm thấy sản phẩm trong giỏ" });
         }
 
-        // 5. Xóa sạch giỏ hàng
-        // DELETE: api/GioHang/xoa-tat-ca
         [HttpDelete("xoa-tat-ca")]
         public async Task<IActionResult> XoaTatCa()
         {
-            int maKhachHang = 1;
-            var thanhCong = await _gioHangService.XoaToanBoGioHangAsync(maKhachHang);
-            return Ok(new { message = "Giỏ hàng đã được làm trống" });
+            try
+            {
+                int maKhachHang = GetMaKhachHangFromToken();
+                await _gioHangService.XoaToanBoGioHangAsync(maKhachHang);
+                return Ok(new { message = "Giỏ hàng đã được làm trống" });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
         }
 
-        // 6. Đặt hàng online (dành cho khách hàng)
-        // POST: api/GioHang/dat-hang
         [HttpPost("dat-hang")]
         public async Task<IActionResult> DatHang([FromBody] DatHangKhachHangDto dto)
         {
             try
             {
-                if (dto == null || dto.ChiTiet == null || dto.ChiTiet.Count == 0)
+                if (dto == null || dto.ChiTiet == null || !dto.ChiTiet.Any())
                     return BadRequest(new { success = false, message = "Giỏ hàng trống." });
 
-                // Validate MaLo - tránh trường hợp sản phẩm hết hàng
-                if (dto.ChiTiet.Any(c => c.MaLo <= 0))
-                    return BadRequest(new { success = false, message = "Một số sản phẩm đã hết hàng, vui lòng xóa khỏi giỏ trước khi đặt." });
-
-                int maKhachHang = 1; // Sau này thay bằng: int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                int maKhachHang = GetMaKhachHangFromToken();
 
                 var maDonHang = await _gioHangService.DatHangAsync(dto, maKhachHang);
 
                 return Ok(new { success = true, maDonHang = maDonHang });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { success = false, message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -104,7 +124,6 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
         }
     }
 
-    // DTO bổ trợ để nhận dữ liệu khi thêm vào giỏ
     public class ThemVaoGioDto
     {
         public int MaThuoc { get; set; }
