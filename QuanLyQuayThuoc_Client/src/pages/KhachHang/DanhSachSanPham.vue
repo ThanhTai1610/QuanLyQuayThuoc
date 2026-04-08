@@ -10,37 +10,45 @@
       <div class="row">
         <div class="col-lg-3 mb-4">
           <aside class="filter-sidebar">
-            <h2 class="filter-title">Bộ lọc thông minh</h2>
+            <h2 class="filter-title"><i class="fas fa-filter mr-2"></i>Bộ lọc thông minh</h2>
 
             <div class="filter-group">
               <div class="filter-label">Danh mục</div>
-              <label class="filter-option" v-for="dm in danhSachDanhMuc" :key="dm.maDanhMuc">
-                <input type="checkbox" :value="dm.maDanhMuc" v-model="locDanhMuc" />
-                {{ dm.tenDanhMuc }}
-              </label>
+              <div class="filter-scroll-container">
+                <label class="filter-option" v-for="dm in danhSachDanhMuc" :key="dm.maDanhMuc">
+                  <input type="checkbox" :value="dm.maDanhMuc" v-model="locDanhMuc" />
+                  <span class="custom-check"></span>
+                  <span class="option-text">{{ dm.tenDanhMuc }}</span>
+                </label>
+              </div>
             </div>
 
             <div class="filter-group">
               <div class="filter-label">Đối tượng</div>
               <label class="filter-option" v-for="dt in danhSachDoiTuong" :key="dt">
                 <input type="checkbox" :value="dt" v-model="locDoiTuong" />
-                {{ dt }}
+                <span class="custom-check"></span>
+                <span class="option-text">{{ dt }}</span>
               </label>
             </div>
 
             <div class="filter-group">
               <div class="filter-label">Nhà sản xuất</div>
-              <label class="filter-option" v-for="nsx in danhSachNSX" :key="nsx">
-                <input type="checkbox" :value="nsx" v-model="locNSX" />
-                {{ nsx }}
-              </label>
+              <div class="filter-scroll-container">
+                <label class="filter-option" v-for="nsx in danhSachNSX" :key="nsx">
+                  <input type="checkbox" :value="nsx" v-model="locNSX" />
+                  <span class="custom-check"></span>
+                  <span class="option-text">{{ nsx }}</span>
+                </label>
+              </div>
             </div>
 
             <div class="filter-group">
               <div class="filter-label">Khoảng giá</div>
               <label class="filter-option" v-for="g in danhSachGia" :key="g.value">
                 <input type="radio" name="gia" :value="g.value" v-model="locGia" />
-                {{ g.label }}
+                <span class="custom-radio"></span>
+                <span class="option-text">{{ g.label }}</span>
               </label>
             </div>
 
@@ -48,12 +56,13 @@
               <div class="filter-label">Dạng bào chế</div>
               <label class="filter-option" v-for="dbc in danhSachDBC" :key="dbc">
                 <input type="checkbox" :value="dbc" v-model="locDBC" />
-                {{ dbc }}
+                <span class="custom-check"></span>
+                <span class="option-text">{{ dbc }}</span>
               </label>
             </div>
 
-            <button class="btn btn-outline-secondary btn-sm btn-block mt-3" @click="xoaBoLoc">
-              Xóa bộ lọc
+            <button class="btn btn-reset-filter btn-sm btn-block mt-4" @click="xoaBoLoc">
+              <i class="fas fa-sync-alt mr-2"></i> Làm mới bộ lọc
             </button>
           </aside>
         </div>
@@ -64,9 +73,9 @@
               Tìm thấy <strong>{{ tongSanPham }} sản phẩm</strong>
               <span v-if="tuKhoa"> cho "<em>{{ tuKhoa }}</em>"</span>
             </div>
-            <div class="products-sort">
+            <div class="products-found">
               <label for="sapXep" class="mb-0 mr-2">Sắp xếp theo:</label>
-              <select id="sapXep" class="form-control" v-model="sapXep" @change="loadData(true)">
+              <select id="sapXep" class="form-control d-inline-block w-auto" v-model="sapXep" @change="loadData(true)">
                 <option value="ban-chay">Bán chạy nhất</option>
                 <option value="gia-tang">Giá thấp đến cao</option>
                 <option value="gia-giam">Giá cao đến thấp</option>
@@ -90,8 +99,8 @@
                     <span>{{ sp.nuocSanXuat || 'Việt Nam' }}</span>
                   </div>
                   
-                  <div v-if="sp.laThuocKeDon" class="product-badge-prescription">
-                    <i class="fas fa-circle mr-1" style="font-size: 7px;"></i> Thuốc kê đơn
+                  <div v-if="sp.laThuocKeDon" class="product-badge-prescription" title="Thuốc kê đơn">
+                     🔴 Thuốc kê đơn
                   </div>
 
                   <img :src="getImageUrl(sp.hinhAnhChinh)" :alt="sp.tenThuoc" class="product-image" />
@@ -103,10 +112,10 @@
                          :src="getImageUrl(sp.iconDanhMuc)" 
                          class="category-img-mini mr-1" />
                     
-                    <i v-else-if="sp.iconDanhMuc && sp.iconDanhMuc.startsWith('fa-')" 
+                    <i v-else-if="sp.iconDanhMuc && (sp.iconDanhMuc.startsWith('fa-') || sp.iconDanhMuc.startsWith('fas'))" 
                        :class="['fas', sp.iconDanhMuc, getIconColorClass(sp.tenDanhMuc), 'mr-1']"></i>
                     
-                    <i v-else :class="[getFallbackIcon(sp.tenDanhMuc), 'mr-1']"></i>
+                    <i v-else :class="[getFallbackIcon(sp.tenDanhMuc), 'text-primary mr-1']"></i>
 
                     {{ sp.tenDanhMuc }}
                   </div>
@@ -202,30 +211,31 @@ const danhSachGia = [
   { label: 'Trên 1.000.000đ',          value: '1000000-99999999' },
 ];
 
-// --- LOGIC XỬ LÝ ICON GIỐNG TRANG CHỦ ---
+// --- LOGIC XỬ LÝ ICON ---
 
 const isImageUrl = (icon) => {
   if (!icon) return false;
-  return icon.match(/\.(jpeg|jpg|gif|png|svg)$/) != null || icon.startsWith('http');
+  return icon.match(/\.(jpeg|jpg|gif|png|svg)$/) != null || icon.startsWith('http') || icon.includes('/');
 };
 
 const getIconColorClass = (categoryName) => {
-  if (!categoryName) return 'text-primary';
-  const name = categoryName.toLowerCase();
-  if (name.includes('miễn dịch') || name.includes('đề kháng')) return 'text-success';
-  if (name.includes('thần kinh') || name.includes('não')) return 'text-info';
-  if (name.includes('tim mạch')) return 'text-danger';
-  if (name.includes('tiêu hóa')) return 'text-warning';
-  return 'text-primary';
+  return 'text-primary'; 
 };
 
 const getFallbackIcon = (categoryName) => {
-  if (!categoryName) return 'fas fa-folder-open text-primary';
+  if (!categoryName) return 'fas fa-pills';
   const name = categoryName.toLowerCase();
-  if (name.includes('miễn dịch')) return 'fas fa-shield-alt text-success';
-  if (name.includes('não')) return 'fas fa-brain text-info';
-  if (name.includes('tim mạch')) return 'fas fa-heartbeat text-danger';
-  return 'fas fa-pills text-primary';
+
+  if (name.includes('thần kinh') || name.includes('não')) return 'fas fa-brain';
+  if (name.includes('vitamin') || name.includes('khoáng chất')) return 'fas fa-capsules';
+  if (name.includes('sinh lý') || name.includes('nội tiết')) return 'fas fa-venetian-mask';
+  if (name.includes('tim mạch') || name.includes('huyết áp')) return 'fas fa-heartbeat';
+  if (name.includes('miễn dịch') || name.includes('đề kháng')) return 'fas fa-shield-virus';
+  if (name.includes('tiêu hóa')) return 'fas fa-lungs'; 
+  if (name.includes('làn da')) return 'fas fa-hand-sparkles';
+  if (name.includes('da mặt')) return 'fas fa-pump-medical';
+  
+  return 'fas fa-pills';
 };
 
 // --- LOGIC DỮ LIỆU ---
@@ -278,7 +288,6 @@ const doiTrang = (trang) => {
   if (trang < 1 || trang > tongTrang.value) return;
   trangHienTai.value = trang;
   loadData();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 const themVaoGio = async (sp) => {
@@ -322,14 +331,20 @@ const getImageUrl = (path) => {
 const getFlagUrl = (countryName) => {
   if (!countryName) return 'https://flagcdn.com/w40/vn.png';
   const name = countryName.toLowerCase();
-  if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
-  if (name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
-  if (name.includes('anh')) return 'https://flagcdn.com/w40/gb.png';
-  if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
-  if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
-  if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
+  // Thêm điều kiện kiểm tra 'vn'
+  if (name.includes('việt nam') || name === 'vn' || name.includes('viet nam')) 
+    return 'https://flagcdn.com/w40/vn.png';
+  
+  if (name.includes('mỹ') || name.includes('usa') || name === 'us') 
+    return 'https://flagcdn.com/w40/us.png';
+  if (name.includes('anh') || name === 'uk') return 'https://flagcdn.com/w40/gb.png';
+  if (name.includes('pháp') || name === 'fr') return 'https://flagcdn.com/w40/fr.png';
+  if (name.includes('đức') || name === 'de') return 'https://flagcdn.com/w40/de.png';
+  if (name.includes('nhật') || name === 'jp') return 'https://flagcdn.com/w40/jp.png';
+  
   return 'https://flagcdn.com/w40/un.png';
 };
+
 
 const formatGia = (value) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value ?? 0);
@@ -343,6 +358,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Giữ nguyên CSS cũ của bạn */
 .product-card {
   position: relative !important;
   background: #fff;
@@ -372,20 +388,37 @@ onMounted(() => {
   align-items: center;
   font-size: 10px;
   border: 1px solid #eee;
+  height: 22px;
 }
 
 .product-badge-prescription {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 10px; /* Đối diện quốc kỳ */
   z-index: 10;
-  font-size: 10px;
-  background: #fff1f0;
+  height: 22px;
+  /* CỰC KỲ QUAN TRỌNG: Giúp khung chỉ dài bằng chữ */
+  width: fit-content; 
+  display: flex;
+  align-items: center;
+
+  /* Style nhãn nhỏ gọn */
+  background: rgba(255, 241, 240, 0.95); /* Màu nền đỏ nhạt */
   padding: 2px 8px;
   border-radius: 20px; 
   border: 1px solid #ffccc7;
+  
+  /* Font chữ */
   color: #cf1322;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  backdrop-filter: blur(2px);
+}
+
+.product-badge-prescription i {
+  font-size: 14px;
+  margin-right: 3px;
 }
 
 .flag-icon {
@@ -401,28 +434,32 @@ onMounted(() => {
   margin: 15px 0;
 }
 
-.product-category-label {
-  font-size: 12px;
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #555;
-  display: flex;
-  align-items: center;
-}
-
 .category-img-mini {
   width: 16px;
   height: 16px;
   object-fit: contain;
+  vertical-align: middle;
 }
 
-/* Các class màu sắc cho icon */
-.text-info { color: #17a2b8 !important; }
-.text-danger { color: #dc3545 !important; }
-.text-warning { color: #ffc107 !important; }
-.text-primary { color: #007bff !important; }
-.text-success { color: #28a745 !important; }
-.text-secondary { color: #6c757d !important; }
+.product-category-label {
+  font-size: 13px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #007bff;
+  display: flex;
+  align-items: center;
+  background: #f0f7ff;
+  padding: 2px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.product-category-label i {
+  font-size: 14px;
+  margin-right: 6px;
+  width: 18px;
+  text-align: center;
+}
 
 .product-actions {
   display: flex;
@@ -442,5 +479,130 @@ onMounted(() => {
   background-color: #f5f5f5 !important;
   border-color: #d9d9d9 !important;
   color: #bfbfbf !important;
+}
+
+/* --- UI BỘ LỌC MỚI --- */
+.filter-sidebar {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #eef2f6;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.filter-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f4f8;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 12px;
+}
+
+/* Khung cuộn cho danh mục dài */
+.filter-scroll-container {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.filter-scroll-container::-webkit-scrollbar { width: 4px; }
+.filter-scroll-container::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 10px; }
+
+/* Custom Checkbox & Radio */
+.filter-option {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 6px 0;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.filter-option input {
+  position: absolute;
+  opacity: 0;
+}
+
+.custom-check, .custom-radio {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #d1d9e6;
+  border-radius: 4px;
+  margin-right: 12px;
+  display: inline-block;
+  position: relative;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.custom-radio { border-radius: 50%; }
+
+/* Khi được chọn */
+.filter-option input:checked ~ .custom-check {
+  background: #007bff;
+  border-color: #007bff;
+}
+
+.filter-option input:checked ~ .custom-check::after {
+  content: '\f00c';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  color: #fff;
+  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.filter-option input:checked ~ .custom-radio {
+  border-color: #007bff;
+}
+
+.filter-option input:checked ~ .custom-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #007bff;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.option-text {
+  font-size: 13.5px;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.filter-option:hover .option-text {
+  color: #007bff;
+}
+
+.btn-reset-filter {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #666;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+.btn-reset-filter:hover {
+  background: #e9ecef;
+  color: #333;
 }
 </style>

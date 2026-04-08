@@ -196,6 +196,26 @@ namespace QuanLyQuayThuoc.Controllers.QuanTriVien
             await _context.SaveChangesAsync();
             return Ok(new { message = "Đã đổi thứ tự thành công" });
         }
+        // Thêm hàm này để xử lý GET api/DanhMuc
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DanhMucDTO>>> GetDanhMucs()
+        {
+            var list = await _context.DanhMucs
+                .OrderBy(d => d.ThuTu)
+                .Select(d => new DanhMucDTO
+                {
+                    MaDanhMuc = d.MaDanhMuc,
+                    TenDanhMuc = d.TenDanhMuc,
+                    MaDanhMucCha = d.MaDanhMucCha,
+                    Icon = d.Icon,
+                    Slug = d.Slug,
+                    TrangThai = d.TrangThai,
+                    SoSanPham = _context.Thuocs.Count(t => t.MaDanhMuc == d.MaDanhMuc)
+                })
+                .ToListAsync();
+
+            return Ok(list);
+        }
 
         // DELETE: api/DanhMuc/{id}
         [HttpDelete("{id}")]
