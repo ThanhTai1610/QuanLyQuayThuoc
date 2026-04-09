@@ -87,3 +87,22 @@ onMounted(() => {
   taiDanhSachSanPham();
 });
 </script>
+
+<style scoped>
+/* Tắt gạch chân mặc định cho router-link (thẻ a) */
+.pharmacy-product-card {
+  text-decoration: none !important; /* Tắt gạch chân ở trạng thái bình thường */
+  color: inherit; /* Giữ màu chữ nguyên bản */
+}
+
+/* Tắt gạch chân khi di chuột vào card */
+.pharmacy-product-card:hover {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+/* Nếu các thẻ con bên trong như tên thuốc vẫn bị gạch chân */
+.pharmacy-product-card:hover .pharmacy-product-name {
+  text-decoration: none !important;
+}
+</style>

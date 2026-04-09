@@ -1,4 +1,5 @@
 <template>
+  <!-- Modal Thêm nhanh -->
   <div class="modal fade" id="modalThemNhanh" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -10,8 +11,7 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="posNhanhTen" class="small text-muted">Tên thuốc / món</label>
-              <input v-model="themNhanh.tenThuoc" id="posNhanhTen" class="form-control"
-                placeholder="Ví dụ: Khẩu trang lẻ" />
+              <input v-model="themNhanh.tenThuoc" id="posNhanhTen" class="form-control" placeholder="Ví dụ: Khẩu trang lẻ" />
             </div>
             <div class="col-md-3 mb-3">
               <label for="posNhanhDvt" class="small text-muted">Đơn vị tính</label>
@@ -35,8 +35,7 @@
             </div>
             <div class="col-md-8 mb-2">
               <label class="small text-muted" for="posNhanhGhiChu">Ghi chú lô</label>
-              <input v-model="themNhanh.ghiChu" id="posNhanhGhiChu" class="form-control"
-                placeholder="Ví dụ: — (không áp dụng)">
+              <input v-model="themNhanh.ghiChu" id="posNhanhGhiChu" class="form-control" placeholder="Ví dụ: — (không áp dụng)">
             </div>
           </div>
         </div>
@@ -50,6 +49,7 @@
     </div>
   </div>
 
+  <!-- Modal Thêm khách -->
   <div class="modal fade" id="modalThemKhach" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -71,14 +71,29 @@
     </div>
   </div>
 
+  <!-- Modal Hóa đơn -->
   <div class="modal fade" id="modalHoaDon" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Hóa đơn thanh toán</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <!-- ✅ Tiêu đề đổi theo phương thức thanh toán -->
+          <h5 class="modal-title d-flex align-items-center">
+            <span v-if="isMoMo" class="badge badge-success mr-2" style="font-size: 0.8rem;">
+              ✓ Đã thanh toán MoMo
+            </span>
+            Hóa đơn thanh toán
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+            @click="$emit('finish-payment')"></button>
         </div>
+
         <div class="modal-body">
+          <!-- ✅ Banner xanh nếu là MoMo đã thanh toán xong -->
+          <div v-if="isMoMo" class="alert alert-success d-flex align-items-center mb-3 py-2">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>Khách đã thanh toán thành công qua <strong>Ví MoMo</strong>. Bấm <strong>In hóa đơn</strong> để in và hoàn tất.</span>
+          </div>
+
           <div id="posHoaDonPrint" class="border rounded p-4 bg-white shadow-sm"
             style="max-width: 650px; margin: 0 auto; color: #333; font-family: 'Courier New', Courier, monospace;">
             <div class="text-center mb-4">
@@ -107,12 +122,8 @@
                 </thead>
                 <tbody>
                   <tr v-for="(sanPham, viTri) in invoiceData.cartItems" :key="viTri">
-                    <td>
-                      {{ sanPham.tenThuoc }}<br>
-                    </td>
-                    <td>
-                      {{sanPham.danhSachDonVi?.find(d => d.maDvt === sanPham.maDvtSelected)?.tenDonVi || 'Lẻ'}}
-                    </td>
+                    <td>{{ sanPham.tenThuoc }}</td>
+                    <td>{{ sanPham.danhSachDonVi?.find(d => d.maDvt === sanPham.maDvtSelected)?.tenDonVi || 'Lẻ' }}</td>
                     <td class="text-right">{{ sanPham.soLuong }}</td>
                     <td class="text-right">{{ dinhDangTien(sanPham.giaBan * sanPham.soLuong) }}</td>
                   </tr>
@@ -140,13 +151,40 @@
             </div>
           </div>
         </div>
+
         <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+          <!-- ✅ Nút Đóng: khi là MoMo thì emit finish-payment luôn để reset trang -->
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            @click="isMoMo ? $emit('finish-payment') : null"
+            :data-bs-dismiss="isMoMo ? undefined : 'modal'"
+          >
+            Đóng
+          </button>
+
           <button type="button" class="btn btn-success" @click="inHoaDon">
             <i class="fas fa-print mr-1"></i> In hóa đơn
           </button>
-          <button type="button" class="btn btn-primary" @click="xacNhanThanhToan">
+
+          <!-- ✅ Ẩn nút "Thanh toán xong" khi là MoMo (đã TT rồi, không cần gọi API nữa) -->
+          <button
+            v-if="!isMoMo"
+            type="button"
+            class="btn btn-primary"
+            @click="xacNhanThanhToan"
+          >
             <i class="fas fa-check mr-1"></i> Thanh toán xong
+          </button>
+
+          <!-- ✅ Thay bằng nút "Hoàn tất" khi MoMo -->
+          <button
+            v-else
+            type="button"
+            class="btn btn-primary"
+            @click="$emit('finish-payment')"
+          >
+            <i class="fas fa-check-double mr-1"></i> Hoàn tất & Đơn mới
           </button>
         </div>
       </div>
@@ -170,50 +208,32 @@ const props = defineProps({
       canTra: 0,
       phuongThuc: 'Tiền mặt'
     })
+  },
+  // ✅ Prop mới: true khi là thanh toán MoMo (đã hoàn tất), ẩn nút "Thanh toán xong"
+  isMoMo: {
+    type: Boolean,
+    default: false
   }
 });
 
 const emit = defineEmits(['add-quick-item', 'save-customer', 'finish-payment']);
 
 const themNhanh = reactive({
-  tenThuoc: '',
-  donVi: 'Lẻ',
-  giaBan: 0,
-  soLuong: 1,
-  ghiChu: '—'
+  tenThuoc: '', donVi: 'Lẻ', giaBan: 0, soLuong: 1, ghiChu: '—'
 });
 
 const sdtKhachHang = ref('');
 
 const xuLyThemNhanh = () => {
-  if (!themNhanh.tenThuoc) {
-    alert("Vui lòng nhập tên món đồ");
-    return;
-  }
-
-  // Gửi một object có cấu trúc tương tự thuốc từ API
+  if (!themNhanh.tenThuoc) { alert('Vui lòng nhập tên món đồ'); return; }
   emit('add-quick-item', {
-    maThuoc: 0,
-    tenThuoc: themNhanh.tenThuoc,
-    tenDonVi: themNhanh.donVi,
-    giaBan: themNhanh.giaBan,
-    soLuong: themNhanh.soLuong,
-    maDvtSelected: 1,
-    loHangSelected: 0,
-    hamLuong: "Hàng thêm nhanh",
-    soLuongTon: 999
+    maThuoc: 0, tenThuoc: themNhanh.tenThuoc, tenDonVi: themNhanh.donVi,
+    giaBan: themNhanh.giaBan, soLuong: themNhanh.soLuong,
+    maDvtSelected: 1, loHangSelected: 0, hamLuong: 'Hàng thêm nhanh', soLuongTon: 999
   });
-
-  // Reset & Đóng modal (Pure JS)
-  themNhanh.tenThuoc = '';
-  themNhanh.giaBan = 0;
-  themNhanh.soLuong = 1;
-
-  const phanTuModal = document.getElementById('modalThemNhanh');
-  if (window.bootstrap) {
-    const modal = window.bootstrap.Modal.getInstance(phanTuModal);
-    if (modal) modal.hide();
-  }
+  themNhanh.tenThuoc = ''; themNhanh.giaBan = 0; themNhanh.soLuong = 1;
+  const el = document.getElementById('modalThemNhanh');
+  if (window.bootstrap) window.bootstrap.Modal.getInstance(el)?.hide();
 };
 
 const luuKhachHang = () => {
@@ -221,13 +241,10 @@ const luuKhachHang = () => {
   sdtKhachHang.value = '';
 };
 
-const xacNhanThanhToan = () => {
-  emit('finish-payment');
-};
+const xacNhanThanhToan = () => { emit('finish-payment'); };
 
 const inHoaDon = () => {
-  // In khu vực hóa đơn
-  const noiDungIn = document.getElementById('posHoaDonPrint').innerHTML;
+  const noiDungIn  = document.getElementById('posHoaDonPrint').innerHTML;
   const noiDungGoc = document.body.innerHTML;
   document.body.innerHTML = noiDungIn;
   window.print();
@@ -235,33 +252,15 @@ const inHoaDon = () => {
   window.location.reload();
 };
 
-const dinhDangTien = (giaTri) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(giaTri);
-};
+const dinhDangTien = (v) =>
+  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v || 0);
 </script>
 
 <style scoped>
-/* CSS cho bản in */
 @media print {
-  body * {
-    visibility: hidden;
-  }
-
-  #posHoaDonPrint,
-  #posHoaDonPrint * {
-    visibility: visible;
-  }
-
-  #posHoaDonPrint {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    border: none !important;
-  }
+  body * { visibility: hidden; }
+  #posHoaDonPrint, #posHoaDonPrint * { visibility: visible; }
+  #posHoaDonPrint { position: absolute; left: 0; top: 0; width: 100%; border: none !important; }
 }
-
-.italic {
-  font-style: italic;
-}
+.italic { font-style: italic; }
 </style>

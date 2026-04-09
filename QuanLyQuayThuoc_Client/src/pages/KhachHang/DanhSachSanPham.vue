@@ -8,7 +8,6 @@
       </div>
 
       <div class="row">
-
         <div class="col-lg-3 mb-4">
           <aside class="filter-sidebar">
             <h2 class="filter-title">Bộ lọc thông minh</h2>
@@ -60,7 +59,6 @@
         </div>
 
         <div class="col-lg-9">
-
           <div class="products-toolbar">
             <div class="products-found">
               Tìm thấy <strong>{{ tongSanPham }} sản phẩm</strong>
@@ -101,7 +99,16 @@
                   <h3 class="product-name">{{ sp.tenThuoc }}</h3>
 
                   <div class="product-category-label" v-if="sp.tenDanhMuc">
-                    <i class="fas fa-folder-open mr-1"></i> {{ sp.tenDanhMuc }}
+                    <img v-if="isImageUrl(sp.iconDanhMuc)" 
+                         :src="getImageUrl(sp.iconDanhMuc)" 
+                         class="category-img-mini mr-1" />
+                    
+                    <i v-else-if="sp.iconDanhMuc && sp.iconDanhMuc.startsWith('fa-')" 
+                       :class="['fas', sp.iconDanhMuc, getIconColorClass(sp.tenDanhMuc), 'mr-1']"></i>
+                    
+                    <i v-else :class="[getFallbackIcon(sp.tenDanhMuc), 'mr-1']"></i>
+
+                    {{ sp.tenDanhMuc }}
                   </div>
 
                   <p class="product-meta">{{ sp.quyCach }}</p>
@@ -128,7 +135,7 @@
                     </router-link>
                   </div>
                 </article>
-                </div>
+              </div>
             </div>
 
             <div v-else class="text-center py-5 text-muted">
@@ -151,7 +158,6 @@
               </ul>
             </nav>
           </div>
-
         </div>
       </div>
     </div>
@@ -185,7 +191,6 @@ const locNSX      = ref([]);
 const locGia      = ref('');
 const locDBC      = ref([]);
 
-// Dữ liệu sidebar
 const danhSachDanhMuc = ref([]);
 const danhSachNSX     = ref([]);
 const danhSachDoiTuong = ['Trẻ em', 'Người lớn', 'Phụ nữ mang thai', 'Người già'];
@@ -197,33 +202,47 @@ const danhSachGia = [
   { label: 'Trên 1.000.000đ',          value: '1000000-99999999' },
 ];
 
-const getFlagUrl = (countryName) => {
-  if (!countryName) return 'https://flagcdn.com/w40/vn.png';
-  const name = countryName.toLowerCase();
-  if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
-  if (name.includes('hoa kỳ') || name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
-  if (name.includes('anh') || name.includes('vương quốc anh') || name.includes('uk')) return 'https://flagcdn.com/w40/gb.png';
-  if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
-  if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
-  if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
-  return 'https://flagcdn.com/w40/un.png';
+// --- LOGIC XỬ LÝ ICON GIỐNG TRANG CHỦ ---
+
+const isImageUrl = (icon) => {
+  if (!icon) return false;
+  return icon.match(/\.(jpeg|jpg|gif|png|svg)$/) != null || icon.startsWith('http');
 };
 
-// Load sản phẩm
+const getIconColorClass = (categoryName) => {
+  if (!categoryName) return 'text-primary';
+  const name = categoryName.toLowerCase();
+  if (name.includes('miễn dịch') || name.includes('đề kháng')) return 'text-success';
+  if (name.includes('thần kinh') || name.includes('não')) return 'text-info';
+  if (name.includes('tim mạch')) return 'text-danger';
+  if (name.includes('tiêu hóa')) return 'text-warning';
+  return 'text-primary';
+};
+
+const getFallbackIcon = (categoryName) => {
+  if (!categoryName) return 'fas fa-folder-open text-primary';
+  const name = categoryName.toLowerCase();
+  if (name.includes('miễn dịch')) return 'fas fa-shield-alt text-success';
+  if (name.includes('não')) return 'fas fa-brain text-info';
+  if (name.includes('tim mạch')) return 'fas fa-heartbeat text-danger';
+  return 'fas fa-pills text-primary';
+};
+
+// --- LOGIC DỮ LIỆU ---
+
 const loadData = async (resetTrang = false) => {
   if (resetTrang) trangHienTai.value = 1;
   dangTai.value = true;
-  
   try {
     const params = {
-      trang:      trangHienTai.value,
-      soLuong:    soLuongMoiTrang,
-      sapXep:     sapXep.value,
-      q:          tuKhoa.value || undefined,
-      danhMuc:    locDanhMuc.value.length > 0 ? locDanhMuc.value.join(',') : undefined,
-      doiTuong:   locDoiTuong.value.length > 0 ? locDoiTuong.value.join(',') : undefined,
-      nsx:        locNSX.value.length > 0 ? locNSX.value.join(',') : undefined,
-      gia:        locGia.value || undefined,
+      trang: trangHienTai.value,
+      soLuong: soLuongMoiTrang,
+      sapXep: sapXep.value,
+      q: tuKhoa.value || undefined,
+      danhMuc: locDanhMuc.value.length > 0 ? locDanhMuc.value.join(',') : undefined,
+      doiTuong: locDoiTuong.value.length > 0 ? locDoiTuong.value.join(',') : undefined,
+      nsx: locNSX.value.length > 0 ? locNSX.value.join(',') : undefined,
+      gia: locGia.value || undefined,
       dangBaoChe: locDBC.value.length > 0 ? locDBC.value.join(',') : undefined,
     };
     
@@ -236,14 +255,12 @@ const loadData = async (resetTrang = false) => {
     }
   } catch (err) {
     console.error('Lỗi tải sản phẩm:', err);
-    danhSachSanPham.value = [];
-    tongSanPham.value = 0;
   } finally {
     dangTai.value = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 };
 
-// Load Sidebar (Fix lỗi nhận diện mảng)
 const loadSidebar = async () => {
   try {
     const [resDM, resNSX] = await Promise.all([
@@ -296,21 +313,28 @@ const xoaBoLoc = () => {
   loadData(true);
 };
 
-watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => loadData(true), { deep: true });
-
-watch(() => route.query.q, (newVal) => {
-  tuKhoa.value = newVal || '';
-  loadData(true);
-}, { immediate: true });
-
 const getImageUrl = (path) => {
   if (!path) return 'https://via.placeholder.com/300x300.png?text=No+Image';
   if (path.startsWith('http')) return path;
   return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
+const getFlagUrl = (countryName) => {
+  if (!countryName) return 'https://flagcdn.com/w40/vn.png';
+  const name = countryName.toLowerCase();
+  if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
+  if (name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
+  if (name.includes('anh')) return 'https://flagcdn.com/w40/gb.png';
+  if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
+  if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
+  if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
+  return 'https://flagcdn.com/w40/un.png';
+};
+
 const formatGia = (value) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value ?? 0);
+
+watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => loadData(true), { deep: true });
 
 onMounted(() => {
   loadData();
@@ -336,7 +360,6 @@ onMounted(() => {
   box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 }
 
-/* Badge Quốc gia & Thuốc kê đơn nằm gọn ở 2 góc */
 .product-origin-badge {
   position: absolute;
   top: 10px;
@@ -352,25 +375,17 @@ onMounted(() => {
 }
 
 .product-badge-prescription {
-  /* QUAN TRỌNG: 2 dòng này sẽ làm khung ngắn lại theo chữ */
-  display: inline-block; 
-  width: fit-content; 
-
-  /* Đưa nó lên góc phải để không đẩy ảnh xuống */
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 10;
-
-  /* Giữ nguyên style màu sắc của Long */
   font-size: 10px;
   background: #fff1f0;
   padding: 2px 8px;
-  border-radius: 20px; /* Bo tròn giống nhãn quốc gia */
+  border-radius: 20px; 
   border: 1px solid #ffccc7;
   color: #cf1322;
   font-weight: 500;
-  white-space: nowrap; /* Tuyệt đối không cho xuống dòng */
 }
 
 .flag-icon {
@@ -387,11 +402,27 @@ onMounted(() => {
 }
 
 .product-category-label {
-  font-size: 11px;
-  color: #1890ff;
-  margin-bottom: 4px;
-  font-weight: 500;
+  font-size: 12px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+  display: flex;
+  align-items: center;
 }
+
+.category-img-mini {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+/* Các class màu sắc cho icon */
+.text-info { color: #17a2b8 !important; }
+.text-danger { color: #dc3545 !important; }
+.text-warning { color: #ffc107 !important; }
+.text-primary { color: #007bff !important; }
+.text-success { color: #28a745 !important; }
+.text-secondary { color: #6c757d !important; }
 
 .product-actions {
   display: flex;
@@ -405,15 +436,11 @@ onMounted(() => {
   font-weight: 600;
   text-transform: uppercase;
   padding: 8px 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .btn-primary:disabled {
   background-color: #f5f5f5 !important;
   border-color: #d9d9d9 !important;
   color: #bfbfbf !important;
-  cursor: not-allowed;
 }
 </style>

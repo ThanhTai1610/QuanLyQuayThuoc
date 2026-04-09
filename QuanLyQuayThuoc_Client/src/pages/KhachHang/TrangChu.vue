@@ -2,32 +2,14 @@
   <div class="site-wrap">
     <HomeBanner />
 
-    <!-- Features Strip -->
     <div class="site-section py-5">
       <div class="container">
         <div class="row">
-          <div class="col-lg-4">
-            <div class="feature">
-              <span class="wrap-icon flaticon-24-hours-drugs-delivery"></span>
-              <h3><a href="#">Giao hàng miễn phí</a></h3>
-              <p>Miễn phí giao hàng cho đơn hàng trong khu vực hỗ trợ, giao nhanh và đúng hẹn.</p>
-              <p><a href="#" class="d-flex align-items-center"><span class="mr-2">Tìm hiểu thêm</span> <span class="icon-keyboard_arrow_right"></span></a></p>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="feature">
-              <span class="wrap-icon flaticon-medicine"></span>
-              <h3><a href="#">Thuốc mới mỗi ngày</a></h3>
-              <p>Cập nhật liên tục các sản phẩm mới, đa dạng lựa chọn theo nhu cầu của bạn.</p>
-              <p><a href="#" class="d-flex align-items-center"><span class="mr-2">Tìm hiểu thêm</span> <span class="icon-keyboard_arrow_right"></span></a></p>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="feature">
-              <span class="wrap-icon flaticon-test-tubes"></span>
-              <h3><a href="#">Thuốc chính hãng đảm bảo</a></h3>
-              <p>Sản phẩm chính hãng, có nguồn gốc rõ ràng, được bảo quản và phân phối theo đúng quy định.</p>
-              <p><a href="#" class="d-flex align-items-center"><span class="mr-2">Tìm hiểu thêm</span> <span class="icon-keyboard_arrow_right"></span></a></p>
+          <div class="col-lg-4" v-for="f in features" :key="f.title">
+            <div class="feature text-center">
+              <span :class="['wrap-icon', f.icon]"></span>
+              <h3>{{ f.title }}</h3>
+              <p>{{ f.desc }}</p>
             </div>
           </div>
         </div>
@@ -35,141 +17,146 @@
     </div>
 
     <SanPhamNhaThuoc />
-
+    
     <SanPhamBanChay />
 
-    <!-- Danh mục nổi bật -->
-    <div class="home-section home-featured-categories">
+    <div class="home-section home-featured-categories bg-light py-5">
       <div class="container">
-        <div class="home-section-header mb-3">
-          <h2 class="home-section-title mb-1">Danh mục <span class="text-primary">nổi bật</span></h2>
-          <p class="home-section-sub">Khám phá nhanh các nhóm sản phẩm được quan tâm nhiều.</p>
+        <div class="home-section-header text-center mb-5">
+          <h2 class="home-section-title mb-1 text-black">Danh mục <span class="text-primary">nổi bật</span></h2>
+          <p class="home-section-sub">Khám phá nhanh các nhóm sản phẩm theo nhu cầu sức khỏe.</p>
         </div>
-        <div class="row">
-          <div class="col-md-3 col-6 mb-3" v-for="cat in categories" :key="cat.id">
-            <div class="category-card">
-              <span :class="[cat.icon, 'category-icon']"></span>
-              <div class="category-name">{{ cat.name }}</div>
-              <div class="category-count">{{ cat.count }} sản phẩm</div>
-            </div>
+        
+        <div v-if="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Đang tải danh mục thuốc...</p>
+        </div>
+
+        <div class="row align-items-stretch" v-else-if="rootCategories.length > 0">
+          <div class="col-md-3 col-6 mb-4" v-for="cat in rootCategories" :key="cat.maDanhMuc">
+            <router-link :to="'/danh-muc/' + cat.slug" class="category-item-link">
+              <div class="category-card text-center h-100 p-4">
+                
+                <div class="category-icon-wrap mb-3">
+  <img v-if="isImageUrl(cat.icon)" 
+       :src="getApiUrl(cat.icon)" 
+       class="img-fluid img-icon" 
+       :alt="cat.tenDanhMuc" />
+  
+  <i v-else-if="cat.icon && cat.icon.startsWith('fa-')" 
+     :class="['fas', cat.icon, 'category-icon']"></i>
+
+  <span v-else :class="[cat.icon || 'icon-flask', 'category-icon']"></span>
+</div>
+
+                <div class="category-name h6 text-black font-weight-bold">{{ cat.tenDanhMuc }}</div>
+                <div class="category-count text-muted small">{{ cat.soSanPham }} sản phẩm</div>
+              </div>
+            </router-link>
           </div>
+        </div>
+
+        <div v-else class="text-center py-5">
+          <p>Không có danh mục nào để hiển thị.</p>
         </div>
       </div>
     </div>
+
     <BenhTheoMua />
-    <!-- Banner đăng ký -->
-    <div class="site-section bg-image overlay" style="background-image: url('/images/hero_bg_2.jpg');">
-      <div class="container">
-        <div class="row justify-content-center text-center">
-          <div class="col-lg-7">
-            <h3 class="text-white">Đăng ký để nhận giảm giá lên đến 55%</h3>
-            <p class="text-white">Nhận thông tin khuyến mãi, ưu đãi độc quyền và cập nhật sản phẩm mới mỗi ngày.</p>
-            <p class="mb-0"><a href="#" class="btn btn-outline-white">Đăng ký</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Testimonials + Tại sao chọn chúng tôi -->
-    <div class="site-section">
-      <div class="container">
-        <div class="row justify-content-between">
-          <div class="col-lg-6">
-            <div class="title-section">
-              <h2><strong class="text-primary">Khách hàng</strong> hài lòng</h2>
-            </div>
-            <div class="block-3 products-wrap">
-              <div class="owl-single no-direction owl-carousel">
-                <div class="testimony" v-for="t in testimonials" :key="t.author">
-                  <blockquote>
-                    <img :src="t.avatar" :alt="t.author" class="img-fluid">
-                    <p>{{ t.content }}</p>
-                  </blockquote>
-                  <p class="author">&mdash; {{ t.author }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-5">
-            <div class="title-section">
-              <h2 class="mb-5">Tại sao chọn <strong class="text-primary">chúng tôi</strong></h2>
-              <div class="step-number d-flex mb-4">
-                <span>1</span>
-                <p>Đội ngũ dược sĩ giàu kinh nghiệm, tư vấn tận tâm và luôn ưu tiên sức khỏe của bạn.</p>
-              </div>
-              <div class="step-number d-flex mb-4">
-                <span>2</span>
-                <p>Sản phẩm đa dạng, chính hãng, được bảo quản theo đúng tiêu chuẩn của ngành dược.</p>
-              </div>
-              <div class="step-number d-flex mb-4">
-                <span>3</span>
-                <p>Hệ thống đặt hàng online đơn giản, giao hàng nhanh chóng và bảo mật thông tin khách hàng.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Dải cam kết -->
-    <div class="home-section home-promise-strip">
-      <div class="container">
-        <div class="row text-center">
-          <div class="col-md-3 col-6 mb-3" v-for="p in promises" :key="p.title">
-            <div class="promise-item">
-              <span :class="[p.icon, 'promise-icon']"></span>
-              <div class="promise-text">
-                <div class="promise-title">{{ p.title }}</div>
-                <div class="promise-sub">{{ p.sub }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <ChatbotTuVan />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue'; // Đã thêm computed
+import axios from 'axios';
 import HomeBanner from './HomeBanner.vue';
 import SanPhamNhaThuoc from './SanPhamNhaThuoc.vue';
-import ChatbotTuVan from './ChatbotTuVan.vue';
+import ChatbotTuVan from '../../components/ChatbotTuVan.vue';
 import BenhTheoMua from './BenhTheoMua.vue';
 import SanPhamBanChay from './SanPhamBanChay.vue';
-import person1 from '../../assets/images/person_1.jpg';
-import person2 from '../../assets/images/person_2.jpg';
 
-const categories = [
-  { id: 1, name: 'Thần kinh não', count: 59, icon: 'icon-flask' },
-  { id: 2, name: 'Vitamin & Khoáng chất', count: 80, icon: 'icon-flask' },
-  { id: 3, name: 'Sinh lý - Nội tiết tố', count: 46, icon: 'icon-female' },
-  { id: 4, name: 'Tim mạch - Huyết áp', count: 23, icon: 'icon-heart' },
-  { id: 5, name: 'Miễn dịch - Đề kháng', count: 53, icon: 'icon-shield' },
-  { id: 6, name: 'Tiêu hóa', count: 81, icon: 'icon-local_hospital' },
-  { id: 7, name: 'Giải pháp làn da', count: 79, icon: 'icon-healing' },
-  { id: 8, name: 'Chăm sóc da mặt', count: 191, icon: 'icon-face' },
+const BASE_URL = 'https://localhost:7070';
+
+// 1. Dùng rawCategories để chứa toàn bộ dữ liệu từ API
+const rawCategories = ref([]); 
+const loading = ref(true);
+
+const features = [
+  { icon: 'flaticon-24-hours-drugs-delivery', title: 'Giao hàng 24/7', desc: 'Giao nhanh thuốc tận cửa.' },
+  { icon: 'flaticon-medicine', title: 'Thuốc mới hằng ngày', desc: 'Cập nhật dược phẩm mới nhất.' },
+  { icon: 'flaticon-test-tubes', title: 'Kiểm định nghiêm ngặt', desc: 'Sản phẩm chính hãng 100%.' }
 ];
 
-const testimonials = [
-  { author: 'Kelly Holmes', avatar: person1, content: '"Tôi luôn tin tưởng đặt mua thuốc tại Pharmative. Dược sĩ tư vấn rất tận tâm và giao hàng nhanh chóng."' },
-  { author: 'Rebecca Morando', avatar: person2, content: '"Giá cả hợp lý, sản phẩm đa dạng và luôn có sẵn. Tôi rất hài lòng với chất lượng dịch vụ."' },
-];
+// 2. Tạo rootCategories bằng computed để tự động lọc theo trangThai
+const rootCategories = computed(() => {
+  return rawCategories.value.filter(cat => cat.trangThai === 'hien').slice(0, 8);;
+});
 
-const promises = [
-  { icon: 'icon-shield', title: 'Thuốc chính hãng', sub: 'Đa dạng và chuyên sâu' },
-  { icon: 'icon-undo2', title: 'Đổi trả trong 30 ngày', sub: 'Kể từ ngày mua hàng' },
-  { icon: 'icon-thumbs-up', title: 'Cam kết 100%', sub: 'Chất lượng sản phẩm' },
-  { icon: 'icon-truck', title: 'Miễn phí vận chuyển', sub: 'Theo chính sách giao hàng' },
-];
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/DanhMuc/cay`);
+    // 3. Gán dữ liệu vào rawCategories thay vì rootCategories
+    rawCategories.value = response.data;
+  } catch (error) {
+    console.error("Lỗi lấy danh mục:", error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const isImageUrl = (iconPath) => {
+  return iconPath && (iconPath.includes('/') || iconPath.includes('.'));
+};
+
+const getApiUrl = (path) => {
+  if (!path) return '';
+  return path.startsWith('http') ? path : `${BASE_URL}${path}`;
+};
 
 onMounted(() => {
-  if (window.$ && window.$.fn.owlCarousel) {
-    window.$('.owl-single').owlCarousel({
-      loop: true, autoplay: true, dots: true, items: 1, nav: false,
-    });
-  }
+  fetchCategories();
 });
 </script>
+
+<style scoped>
+.category-item-link { text-decoration: none !important; display: block; transition: 0.3s; }
+.category-item-link:hover { transform: translateY(-5px); }
+
+.category-card { 
+  background: #fff; 
+  border-radius: 12px; 
+  border: 1px solid #f0f0f0; 
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-icon-wrap { 
+  width: 70px; 
+  height: 70px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto; 
+}
+
+.category-icon { 
+  font-size: 32px;
+  color: #51eaea; 
+}
+
+.img-icon { 
+  max-width: 100%; 
+  max-height: 100%; 
+  object-fit: contain; 
+}
+
+.category-name { 
+  min-height: 40px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+</style>

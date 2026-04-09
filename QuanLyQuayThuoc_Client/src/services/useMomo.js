@@ -4,8 +4,10 @@ import Swal from 'sweetalert2';
 export const useMomo = () => {
   const createPayment = async (amount, orderInfo, orderId, userType = 'KhachHang') => {
     try {
+      const uniqueOrderId = `${orderId}_${Date.now()}`;
+
       const res = await axiosClient.post('/ThanhToan/tao-thanh-toan', {
-        OrderId: String(orderId),
+        OrderId: String(uniqueOrderId),
         OrderInfo: String(orderInfo),
         Amount: Math.round(Number(amount)),
         UserType: String(userType)

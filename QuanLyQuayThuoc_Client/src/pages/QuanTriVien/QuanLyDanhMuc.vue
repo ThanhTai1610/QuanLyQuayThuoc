@@ -1,7 +1,5 @@
 <template>
   <div class="container-fluid">
-
-    <!-- Tiêu đề -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
       <h1 class="h3 mb-0 text-gray-800">Quản lý danh mục</h1>
       <button type="button" class="btn btn-sm btn-primary shadow-sm" @click="moModalThem">
@@ -9,7 +7,6 @@
       </button>
     </div>
 
-    <!-- Cây danh mục -->
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex align-items-center justify-content-between">
         <div>
@@ -48,14 +45,12 @@
       </div>
     </div>
 
-    <!-- Toast thông báo -->
     <div class="dm-toast-wrap" aria-live="polite">
       <div v-for="(t, i) in toasts" :key="i" :class="['alert', 'shadow', 'mb-2', 'alert-' + t.type]">
         {{ t.message }}
       </div>
     </div>
 
-    <!-- ── MODAL: Thêm / Sửa ── -->
     <div class="modal fade" :class="{ show: hienModal }" :style="hienModal ? 'display:block' : ''"
       tabindex="-1" role="dialog" @click.self="dongModal">
       <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
@@ -70,7 +65,6 @@
               <label>Tên danh mục <span class="text-danger">*</span></label>
               <input type="text" class="form-control" v-model="form.tenDanhMuc"
                 placeholder="Ví dụ: Dược mỹ phẩm" @input="autoSlug" />
-              <small class="form-text text-muted">Hiển thị cho Admin và menu khách.</small>
             </div>
 
             <div class="form-group">
@@ -86,18 +80,25 @@
                   {{ dm.tenDanhMuc }}
                 </option>
               </select>
-              <small class="form-text text-muted">Khi sửa, không thể chọn chính danh mục đó làm cha.</small>
             </div>
 
             <div class="form-group">
-              <label>Tải lên biểu tượng (icon)</label>
-              <div class="dm-modal-icon-upload">
-                <input type="file" accept="image/*,.svg" @change="chonIcon" />
-                <small class="d-block text-muted mt-2">PNG, SVG nhỏ — kiểu icon menu.</small>
-                <div class="dm-modal-icon-preview">
-                  <img v-if="iconPreview" :src="iconPreview" alt="Icon" />
-                  <i v-else class="fas fa-image text-muted"></i>
+              <label>Biểu tượng hiển thị <span class="text-danger">*</span></label>
+              <div class="d-flex align-items-center mb-2 p-2 border rounded bg-light">
+                <div class="mr-3 text-primary" style="font-size: 1.5rem; width: 40px; text-align: center;">
+                  <i :class="['fas', form.icon || 'fa-capsules']"></i>
                 </div>
+                <span class="text-muted small">Đang chọn: <b>{{ form.icon || 'fa-capsules' }}</b></span>
+              </div>
+              
+              <div class="icon-grid p-2 border rounded">
+                <button v-for="ico in danhSachIcon" :key="ico" 
+                  type="button" 
+                  class="btn btn-outline-secondary m-1 btn-icon-select"
+                  :class="{ 'active': form.icon === ico }"
+                  @click="form.icon = ico">
+                  <i :class="['fas', ico]"></i>
+                </button>
               </div>
             </div>
 
@@ -111,16 +112,13 @@
               <label>Đường dẫn (Slug) — SEO</label>
               <input type="text" class="form-control dm-slug-input" v-model="form.slug"
                 placeholder="tu-dong-tu-ten" @input="slugTay = true" />
-              <small class="form-text dm-slug-hint text-muted">
-                Tự sinh từ tên. Có thể chỉnh tay trước khi lưu.
-              </small>
             </div>
 
             <div class="form-group mb-0">
               <label>Trạng thái hiển thị</label>
               <select class="form-control" v-model="form.trangThai">
                 <option value="hien">Hiện</option>
-                <option value="an">Ẩn (kèm ẩn cả nhánh con trên trang khách)</option>
+                <option value="an">Ẩn</option>
               </select>
             </div>
 
@@ -138,47 +136,7 @@
     </div>
     <div v-if="hienModal" class="modal-backdrop fade show"></div>
 
-    <!-- ── MODAL: Lỗi xóa ── -->
-    <div class="modal fade" :class="{ show: hienLoiXoa }" :style="hienLoiXoa ? 'display:block' : ''"
-      tabindex="-1" role="dialog" @click.self="hienLoiXoa = false">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content border-left-danger">
-          <div class="modal-header bg-light">
-            <h5 class="modal-title text-danger"><i class="fas fa-exclamation-triangle mr-2"></i>Không thể xóa</h5>
-            <button type="button" class="close" @click="hienLoiXoa = false"><span>&times;</span></button>
-          </div>
-          <div class="modal-body">
-            <p class="mb-0">{{ loiXoaNoiDung }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @click="hienLoiXoa = false">Đã hiểu</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div v-if="hienLoiXoa" class="modal-backdrop fade show"></div>
-
-    <!-- ── MODAL: Xác nhận xóa ── -->
-    <div class="modal fade" :class="{ show: hienXacNhanXoa }" :style="hienXacNhanXoa ? 'display:block' : ''"
-      tabindex="-1" role="dialog" @click.self="hienXacNhanXoa = false">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Xác nhận xóa</h5>
-            <button type="button" class="close" @click="hienXacNhanXoa = false"><span>&times;</span></button>
-          </div>
-          <div class="modal-body">
-            <p class="mb-0">{{ xacNhanXoaText }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="hienXacNhanXoa = false">Hủy</button>
-            <button type="button" class="btn btn-danger" :disabled="dangXoa" @click="dongYXoa">
-              {{ dangXoa ? 'Đang xóa...' : 'Xóa' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
     <div v-if="hienXacNhanXoa" class="modal-backdrop fade show"></div>
 
   </div>
@@ -190,20 +148,23 @@ import axiosClient from '../../api/axiosClient';
 import DanhMucNode from './DanhMucNode.vue';
 import '../../assets/css_admin/quan-ly-danh-muc.css';
 
-// ── State ──
-const cayDanhMuc  = ref([]);   // Dữ liệu dạng cây từ API
+// ── Danh sách Icon gợi ý ──
+const danhSachIcon = [
+  'fa-capsules', 'fa-pills', 'fa-prescription-bottle-alt', 'fa-heartbeat', 
+  'fa-brain', 'fa-shield-virus', 'fa-baby', 'fa-hand-holding-medical', 
+  'fa-thermometer', 'fa-vials', 'fa-first-aid', 'fa-lungs', 
+  'fa-eye', 'fa-tooth', 'fa-spa'
+];
+
+const cayDanhMuc  = ref([]);
 const dangTai     = ref(false);
 const dangLuu     = ref(false);
 const dangXoa     = ref(false);
 const toasts      = ref([]);
-
-// Modal thêm/sửa
 const hienModal   = ref(false);
 const dangSuaId   = ref(null);
 const loiModal    = ref('');
 const slugTay     = ref(false);
-const iconFile    = ref(null);
-const iconPreview = ref('');
 
 const form = reactive({
   tenDanhMuc:   '',
@@ -211,69 +172,40 @@ const form = reactive({
   moTa:         '',
   slug:         '',
   trangThai:    'hien',
+  icon:         'fa-capsules'
 });
 
-// Modal lỗi xóa
-const hienLoiXoa    = ref(false);
+const hienLoiXoa = ref(false);
 const loiXoaNoiDung = ref('');
+const hienXacNhanXoa = ref(false);
+const xacNhanXoaText = ref('');
+const pendingXoaId = ref(null);
 
-// Modal xác nhận xóa
-const hienXacNhanXoa  = ref(false);
-const xacNhanXoaText  = ref('');
-const pendingXoaId    = ref(null);
-
-// ── Danh sách phẳng để chọn cha trong modal ──
-// Tìm đến đoạn này trong file QuanLyDanhMuc.vue của bạn
-// ── Danh sách phẳng để chọn cha trong modal ──
 const danhSachPhang = computed(() => {
   const result = [];
-  
-  // Kiểm tra an toàn: Nếu không có dữ liệu hoặc không phải mảng thì thoát sớm
-  if (!cayDanhMuc.value || !Array.isArray(cayDanhMuc.value)) {
-    return result;
-  }
-
+  if (!cayDanhMuc.value || !Array.isArray(cayDanhMuc.value)) return result;
   const flatten = (nodes) => {
-    // Kiểm tra nodes bên trong hàm đệ quy
-    if (!nodes || !Array.isArray(nodes)) return;
-
     nodes.forEach(n => {
-      // Đẩy item hiện tại vào danh sách phẳng
-      result.push({ 
-        maDanhMuc: n.maDanhMuc, 
-        tenDanhMuc: n.tenDanhMuc 
-      });
-      
-      // Nếu có con, tiếp tục đệ quy
-      if (n.children && Array.isArray(n.children) && n.children.length > 0) {
-        flatten(n.children);
-      }
+      result.push({ maDanhMuc: n.maDanhMuc, tenDanhMuc: n.tenDanhMuc });
+      if (n.children && n.children.length > 0) flatten(n.children);
     });
   };
-
   flatten(cayDanhMuc.value);
   return result;
-}); 
-// ── Load dữ liệu ──
+});
+
 const loadData = async () => {
   dangTai.value = true;
   try {
-    // Vì interceptor đã return response.data, nên 'res' ở đây chính là JSON từ server
     const res = await axiosClient.get('/DanhMuc/cay'); 
-    
-    // Kiểm tra xem res là mảng trực tiếp hay có bọc trong field .data không
     cayDanhMuc.value = Array.isArray(res) ? res : (res.data || []); 
-    
-    console.log("Dữ liệu cây đã nhận:", cayDanhMuc.value);
   } catch (err) {
     showToast('Lỗi tải danh mục.', 'danger');
-    console.error(err);
   } finally {
     dangTai.value = false;
   }
 };
 
-// ── Slug ──
 const slugifyVi = (str) => {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd').replace(/Đ/g, 'D')
@@ -285,123 +217,132 @@ const autoSlug = () => {
   if (!slugTay.value) form.slug = slugifyVi(form.tenDanhMuc);
 };
 
-// ── Modal thêm ──
 const moModalThem = () => {
-  dangSuaId.value   = null;
-  loiModal.value    = '';
-  slugTay.value     = false;
-  iconFile.value    = null;
-  iconPreview.value = '';
-  Object.assign(form, { tenDanhMuc: '', maDanhMucCha: null, moTa: '', slug: '', trangThai: 'hien' });
+  dangSuaId.value = null;
+  loiModal.value = '';
+  slugTay.value = false;
+  Object.assign(form, { tenDanhMuc: '', maDanhMucCha: null, moTa: '', slug: '', trangThai: 'hien', icon: 'fa-capsules' });
   hienModal.value = true;
 };
 
-// ── Modal sửa ──
 const moModalSua = (node) => {
-  dangSuaId.value   = node.maDanhMuc;
-  loiModal.value    = '';
-  slugTay.value     = true;
-  iconFile.value    = null;
-  iconPreview.value = node.icon || '';
+  dangSuaId.value = node.maDanhMuc;
+  loiModal.value = '';
+  slugTay.value = true;
   Object.assign(form, {
     tenDanhMuc:   node.tenDanhMuc,
     maDanhMucCha: node.maDanhMucCha ?? null,
     moTa:         node.moTa || '',
     slug:         node.slug || '',
     trangThai:    node.trangThai || 'hien',
+    icon:         node.icon || 'fa-capsules'
   });
   hienModal.value = true;
 };
 
 const dongModal = () => { hienModal.value = false; };
 
-// ── Chọn icon ──
-const chonIcon = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  iconFile.value    = file;
-  iconPreview.value = URL.createObjectURL(file);
-};
-
-// ── Lưu danh mục ──
-// POST /DanhMuc     (thêm mới)
-// PUT  /DanhMuc/:id (sửa)
 const luuDanhMuc = async () => {
   loiModal.value = '';
   if (!form.tenDanhMuc.trim()) { loiModal.value = 'Vui lòng nhập tên danh mục.'; return; }
-  if (dangSuaId.value && form.maDanhMucCha === dangSuaId.value) {
-    loiModal.value = 'Không thể chọn chính danh mục này làm danh mục cha.'; return;
-  }
 
   dangLuu.value = true;
   try {
-    const fd = new FormData();
-    fd.append('tenDanhMuc',   form.tenDanhMuc);
-    fd.append('maDanhMucCha', form.maDanhMucCha ?? '');
-    fd.append('moTa',         form.moTa);
-    fd.append('slug',         form.slug);
-    fd.append('trangThai',    form.trangThai);
-    if (iconFile.value) fd.append('icon', iconFile.value);
+    const formData = new FormData();
+    // Ghi đúng tên thuộc tính giống trong class DanhMucDTO của C#
+    formData.append('TenDanhMuc', form.tenDanhMuc);
+    if (form.maDanhMucCha && form.maDanhMucCha !== 0) {
+    formData.append('MaDanhMucCha', form.maDanhMucCha);
+}
+    formData.append('MoTa', form.moTa || '');
+    formData.append('Slug', form.slug);
+    formData.append('TrangThai', form.trangThai);
+    formData.append('Icon', form.icon); 
+
+    // QUAN TRỌNG: Thêm cấu hình Header ở tham số thứ 3
+    const config = {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    };
 
     if (dangSuaId.value) {
-      await axiosClient.put(`/DanhMuc/${dangSuaId.value}`, fd);
-      showToast('Đã cập nhật danh mục.', 'success');
+      // axiosClient.put(url, data, config)
+      await axiosClient.put(`/DanhMuc/${dangSuaId.value}`, formData, config);
+      showToast('Đã cập nhật thành công.', 'success');
     } else {
-      await axiosClient.post('/DanhMuc', fd);
-      showToast('Đã thêm danh mục.', 'success');
+      await axiosClient.post('/DanhMuc', formData, config);
+      showToast('Đã thêm thành công.', 'success');
     }
+    
     dongModal();
     loadData();
   } catch (err) {
-    loiModal.value = err.response?.data?.message || 'Có lỗi xảy ra.';
+    console.error("Lỗi 415 chi tiết:", err.response);
+    loiModal.value = err.response?.data?.message || 'Lỗi định dạng dữ liệu (415).';
   } finally {
     dangLuu.value = false;
   }
 };
 
-// ── Xóa ──
-// DELETE /DanhMuc/:id
-const xuLyXoa = (node) => {
-  if (node.soSanPham > 0) {
-    loiXoaNoiDung.value = `Danh mục "${node.tenDanhMuc}" đang có ${node.soSanPham} sản phẩm. Hãy chuyển các sản phẩm sang danh mục khác trước khi xóa.`;
-    hienLoiXoa.value = true;
-    return;
-  }
-  pendingXoaId.value   = node.maDanhMuc;
-  xacNhanXoaText.value = `Bạn có chắc muốn xóa danh mục "${node.tenDanhMuc}"?`;
-  hienXacNhanXoa.value = true;
-};
-
-const dongYXoa = async () => {
-  dangXoa.value = true;
-  try {
-    await axiosClient.delete(`/DanhMuc/${pendingXoaId.value}`);
-    showToast('Đã xóa danh mục.', 'success');
-    hienXacNhanXoa.value = false;
-    loadData();
-  } catch (err) {
-    showToast(err.response?.data?.message || 'Không thể xóa.', 'danger');
-  } finally {
-    dangXoa.value = false;
-  }
-};
-
-// ── Đổi thứ tự ──
-// PUT /DanhMuc/:id/thu-tu  body: { huong: 'len' | 'xuong' }
-const doiThuTu = async (node, huong) => {
-  try {
-    await axiosClient.put(`/DanhMuc/${node.maDanhMuc}/thu-tu`, { huong });
-    loadData();
-  } catch {
-    showToast('Không thể đổi thứ tự.', 'danger');
-  }
-};
-
-// ── Toast ──
 const showToast = (message, type = 'info') => {
   toasts.value.push({ message, type });
   setTimeout(() => toasts.value.shift(), 3200);
 };
+// Thêm vào trong <script setup> của file QuanLyDanhMuc.vue
 
+// 1. Hàm xử lý đổi thứ tự
+const doiThuTu = async (node, huong) => {
+  try {
+    // Gọi API Put kèm body là hướng di chuyển
+    await axiosClient.put(`/DanhMuc/${node.maDanhMuc}/thu-tu`, { huong: huong });
+    showToast(`Đã chuyển ${node.tenDanhMuc} lên/xuống.`, 'success');
+    loadData(); // Load lại cây danh mục để thấy sự thay đổi
+  } catch (err) {
+    const msg = err.response?.data?.message || 'Không thể đổi thứ tự.';
+    showToast(msg, 'warning');
+  }
+};
+
+// 2. Hàm xử lý Xóa
+const xuLyXoa = async (node) => {
+  // Kiểm tra nhanh ở Frontend nếu node có sản phẩm
+  if (node.soSanPham > 0) {
+    alert(`Danh mục "${node.tenDanhMuc}" đang có ${node.soSanPham} sản phẩm. Bạn không thể xóa!`);
+    return;
+  }
+
+  if (confirm(`Bạn có chắc muốn xóa danh mục "${node.tenDanhMuc}"?`)) {
+    try {
+      await axiosClient.delete(`/DanhMuc/${node.maDanhMuc}`);
+      showToast('Đã xóa danh mục thành công.', 'success');
+      loadData();
+    } catch (err) {
+      // Backend sẽ trả về lỗi nếu có sản phẩm mà FE chưa check hết
+      const errorMsg = err.response?.data?.message || 'Lỗi khi xóa.';
+      alert(errorMsg); 
+    }
+  }
+};
 onMounted(loadData);
 </script>
+
+<style scoped>
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  background: #fdfdfd;
+}
+.btn-icon-select {
+  font-size: 1.2rem;
+  padding: 10px;
+  transition: 0.2s;
+}
+.btn-icon-select:hover {
+  transform: scale(1.1);
+}
+.btn-icon-select.active {
+  background-color: #4e73df;
+  color: white;
+  border-color: #4e73df;
+}
+</style>

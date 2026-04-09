@@ -21,52 +21,50 @@
                 <th style="min-width: 200px;">Tên thuốc</th>
                 <th style="min-width: 130px;">Đơn vị</th>
                 <th style="min-width: 150px;">Số lượng</th>
-                <th style="min-width: 220px;">Lô hàng (FEFO)</th>
+                <th style="min-width: 220px;">Lô hàng</th>
                 <th style="min-width: 120px;">Thành tiền</th>
                 <th style="min-width: 50px;">Xóa</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(sanPham, viTri) in props.cartItems" :key="viTri">
-                <td>
-                  <div class="font-weight-bold text-primary">{{ sanPham.tenThuoc }}</div>
-                  <small class="text-muted">Giá: {{ dinhDangTien(sanPham.giaBan) }}</small>
+                <td class="align-middle">
+                  <div class="font-weight-bold text-primary text-truncate" style="max-width: 250px;">
+                    {{ sanPham.tenThuoc }}
+                  </div>
+                  <div class="small text-muted">{{ dinhDangTien(sanPham.giaBan) }}</div>
                 </td>
-                <td>
-                  <select class="form-control form-control-sm" v-model="sanPham.maDvtSelected"
+
+                <td class="align-middle">
+                  <select class="form-control form-control-sm custom-select-sm" v-model="sanPham.maDvtSelected"
                     @change="capNhatGiaTheoDonVi(sanPham)">
                     <option v-for="donVi in sanPham.danhSachDonVi" :key="donVi.maDvt" :value="donVi.maDvt">
-                      {{ donVi.tenDonVi }} - {{ dinhDangTien(donVi.giaBan) }}
+                      {{ donVi.tenDonVi }}
                     </option>
                   </select>
                 </td>
-                <td>
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <button class="btn btn-outline-secondary" @click="capNhatSoLuong(viTri, -1)">-</button>
-                    </div>
-                    <input type="number" class="form-control text-center" v-model.number="sanPham.soLuong" min="1">
-                    <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" @click="capNhatSoLuong(viTri, 1)">+</button>
-                    </div>
+
+                <td class="align-middle text-center">
+                  <div class="quantity-group">
+                    <input type="number" class="form-control" v-model.number="sanPham.soLuong">
                   </div>
                 </td>
-                <td>
-                  <select class="form-control form-control-sm" v-model="sanPham.loHangSelected">
+
+                <td class="align-middle">
+                  <select class="form-control form-control-sm custom-select-sm" v-model="sanPham.loHangSelected">
                     <option v-for="lo in sanPham.danhSachLo" :key="lo.maLo" :value="lo.maLo">
-                      Lô: {{ lo.maLo }} - HSD: {{ dinhDangNgay(lo.hanSuDung) }} (Tồn: {{ lo.soLuongTon }})
+                      Lô: {{ lo.maLo }} - HSD: {{ dinhDangNgay(lo.hanSuDung) }}
                     </option>
                   </select>
-                  <div v-if="!sanPham.danhSachLo || sanPham.danhSachLo.length === 0" class="small text-danger">
-                    Hết hàng!
-                  </div>
                 </td>
-                <td class="text-right font-weight-bold">
+
+                <td class="align-middle text-right font-weight-bold text-dark">
                   {{ dinhDangTien(sanPham.giaBan * sanPham.soLuong) }}
                 </td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-outline-danger" @click="xoaSanPham(viTri)">
-                    <i class="fas fa-trash"></i>
+
+                <td class="align-middle text-center">
+                  <button class="btn btn-sm btn-link text-danger p-0" @click="xoaSanPham(viTri)">
+                    <i class="fas fa-trash-alt"></i>
                   </button>
                 </td>
               </tr>
@@ -104,8 +102,8 @@
 
             <!-- Overlay khi đang gọi API tìm thuốc -->
             <div v-if="dangTimThuoc" style="position: absolute; inset: 0; background: rgba(0,0,0,0.65);
-                     display: flex; flex-direction: column; align-items: center;
-                     justify-content: center; z-index: 10;">
+                    display: flex; flex-direction: column; align-items: center;
+                    justify-content: center; z-index: 10;">
               <div class="spinner-border text-light mb-2" style="width: 2.5rem; height: 2.5rem;"></div>
               <div class="text-white font-weight-bold">Đang tìm thuốc...</div>
               <div class="text-white-50 small mt-1">Mã: {{ scannedResult }}</div>
@@ -301,4 +299,5 @@ input[type=number] {
 #reader video {
   object-fit: cover;
 }
+
 </style>

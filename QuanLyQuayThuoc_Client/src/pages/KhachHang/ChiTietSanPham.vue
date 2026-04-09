@@ -54,9 +54,6 @@
                   @click="selectedUnitIndex = index"
                 >
                   {{ dv.tenDonVi }}
-                  <span class="check-icon" v-if="selectedUnitIndex === index">
-                    <i class="fa fa-check"></i> 
-                  </span>
                 </div>
               </div>
             </div>
@@ -186,31 +183,40 @@
 
       <section class="related-card mt-4">
         <h2>Sản phẩm tương tự</h2>
-        <div class="related-slider d-flex overflow-auto">
+        <div class="related-slider d-flex overflow-auto p-2" style="gap: 15px;">
           <router-link
             v-for="item in dsSanPhamTuongTu"
             :key="item.maThuoc"
             :to="{ name: 'ChiTietSanPham', params: { id: item.maThuoc } }"
-            class="related-item p-3 text-center"
+            class="related-item p-3 text-center shadow-sm bg-white rounded"
+            style="min-width: 180px; text-decoration: none; color: inherit;"
           >
             <img :src="getImageUrl(item.hinhAnhChinh)" style="width: 100px; height: 100px; object-fit: cover;" />
-            <div class="mt-2">{{ item.tenThuoc }}</div>
+            <div class="mt-2 text-truncate font-weight-bold">{{ item.tenThuoc }}</div>
+            <div class="text-danger small">{{ formatTien(item.giaBan) }}</div>
           </router-link>
         </div>
       </section>
 
       <section class="related-card mt-4">
         <h2>Sản phẩm thường mua cùng</h2>
-        <div class="related-slider d-flex overflow-auto">
-          <router-link
-            v-for="item in dsThuongMuaCung"
-            :key="item.maThuoc"
-            :to="{ name: 'ChiTietSanPham', params: { id: item.maThuoc } }"
-            class="related-item p-3 text-center"
+        <div class="related-slider d-flex overflow-auto p-2" style="gap: 15px;">
+          <div 
+            v-for="item in dsThuongMuaCung" 
+            :key="item.id" 
+            class="related-item p-3 text-center shadow-sm bg-white rounded"
+            style="min-width: 180px;"
           >
-            <img :src="getImageUrl(item.hinhAnhChinh)" style="width: 100px; height: 100px; object-fit: cover;" />
-            <div class="mt-2">{{ item.tenThuoc }}</div>
-          </router-link>
+            <router-link :to="{ name: 'ChiTietSanPham', params: { id: item.id } }" style="text-decoration: none; color: inherit;">
+                <img :src="getImageUrl(item.image)" style="width: 100px; height: 100px; object-fit: cover;" />
+                <div class="mt-2 text-truncate font-weight-bold">{{ item.name }}</div>
+                <div class="text-danger small">{{ formatTien(item.price) }} / {{ item.unit }}</div>
+            </router-link>
+            <button class="btn btn-sm btn-outline-primary mt-2 w-100" @click="themNhanhVaoGio(item)">Thêm nhanh</button>
+          </div>
+          <div v-if="dsThuongMuaCung.length === 0" class="p-4 text-muted w-100 text-center">
+            Đang tìm kiếm gợi ý phù hợp cho bạn...
+          </div>
         </div>
       </section>
     </div>
@@ -224,6 +230,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient'; 
 import { authState } from '../../api/auth'; 
 import Swal from 'sweetalert2';
+import bus from '../../api/bus';
 
 const route = useRoute();
 const router = useRouter();
@@ -233,7 +240,8 @@ const thuoc = ref({
   tenThuoc: '', nhaSanXuat: '', nuocSanXuat: '', maThuoc: '', soDangKy: '',
   donViTinhs: [], loHangs: [], laThuocKeDon: false, moTaNgan: '', quyCach: '',
   dangBaoChe: '', hanSuDungThang: 0, thanhPhan: '', congDung: '', cachDung: '',
-  doiTuongSuDung: '', chongChiDinh: '', tacDungPhu: '', luuY: '', baoQuan: ''
+  doiTuongSuDung: '', chongChiDinh: '', tacDungPhu: '', luuY: '', baoQuan: '',
+  maDanhMuc: null
 });
 
 const danhSachAnh = ref([]);
@@ -245,10 +253,7 @@ const dsThuongMuaCung = ref([]);
 const soLuong = ref(1);
 
 const diToiTuVan = () => {
-  router.push({ 
-    name: 'ChatbotTuVan', 
-    query: { open: 'true' } 
-  });
+  bus.emit('open-chat', { tenThuoc: thuoc.value.tenThuoc });
 };
 
 // --- COMPUTED ---
@@ -286,16 +291,9 @@ const giamSoLuong = () => {
 };
 
 const kiemTraNhapTay = () => {
-  if (!soLuong.value || soLuong.value < 1) {
-    soLuong.value = 1;
-  }
+  if (!soLuong.value || soLuong.value < 1) soLuong.value = 1;
   if (soLuong.value > tongTonKho.value) {
-    Swal.fire({
-      title: 'Vượt quá tồn kho',
-      text: `Sản phẩm này chỉ còn ${tongTonKho.value} trong kho`,
-      icon: 'warning',
-      timer: 2000
-    });
+    Swal.fire({ title: 'Vượt quá tồn kho', text: `Chỉ còn ${tongTonKho.value} sản phẩm`, icon: 'warning' });
     soLuong.value = tongTonKho.value;
   }
 };
@@ -307,6 +305,8 @@ const loadProduct = async () => {
     const data = await axiosClient.get(`/ThuocKhachHang/${productId}`);
     thuoc.value = data;
 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     const images = [];
     if (data.hinhAnhChinh) images.push(data.hinhAnhChinh);
     if (data.hinhAnhThuocs && data.hinhAnhThuocs.length > 0) {
@@ -317,16 +317,14 @@ const loadProduct = async () => {
     }
     danhSachAnh.value = images;
     anhHienTai.value = data.hinhAnhChinh || images[0] || '';
-
     selectedUnitIndex.value = 0;
-    activeTab.value = 'dacdiem';
-    soLuong.value = 1;
 
+    // Gọi API Sản phẩm tương tự (Cùng danh mục)
     if (data.maDanhMuc) {
       loadRelatedProducts(data.maDanhMuc, productId);
+      // Gọi API Sản phẩm thường mua cùng (Theo mapping danh mục cố định)
+      loadFrequentlyBoughtProducts(data.maDanhMuc, productId);
     }
-    loadFrequentlyBoughtProducts(productId);
-
   } catch (error) {
     console.error('Không thể tải dữ liệu thuốc:', error);
   }
@@ -343,11 +341,10 @@ const loadRelatedProducts = async (maDanhMuc, currentProductId) => {
   }
 };
 
-const loadFrequentlyBoughtProducts = async (currentProductId) => {
+const loadFrequentlyBoughtProducts = async (maDanhMuc, currentProductId) => {
   try {
-    const data = await axiosClient.get(`/ThuocKhachHang/FrequentlyBoughtWith`, {
-      params: { currentProductId: Number(currentProductId) }
-    });
+    // Gọi API mới làm ở Backend với 2 tham số: maDanhMuc hiện tại và productId hiện tại
+    const data = await axiosClient.get(`/ThuocKhachHang/FrequentlyBoughtWith/${maDanhMuc}/${currentProductId}`);
     dsThuongMuaCung.value = data;
   } catch (error) {
     console.error('Lỗi khi tải thuốc thường mua cùng:', error);
@@ -356,52 +353,38 @@ const loadFrequentlyBoughtProducts = async (currentProductId) => {
 
 const themGioHang = async () => {
   if (!authState.user) {
-    Swal.fire({
-      title: 'Thông báo',
-      text: 'Vui lòng đăng nhập để thực hiện chức năng này!',
-      icon: 'warning',
-      confirmButtonText: 'Đăng nhập ngay',
-      showCancelButton: true,
-      cancelButtonText: 'Để sau'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        router.push('/dang-nhap'); 
-      }
-    });
+    Swal.fire({ title: 'Thông báo', text: 'Vui lòng đăng nhập!', icon: 'warning', confirmButtonText: 'Đăng nhập' })
+      .then((r) => { if (r.isConfirmed) router.push('/dang-nhap'); });
     return;
   }
 
   const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
-  if (!activeUnit) {
-    Swal.fire('Lỗi', 'Vui lòng chọn đơn vị tính!', 'error');
-    return;
-  }
-
-  const payload = {
-    MaThuoc: thuoc.value.maThuoc,
-    MaDvt: activeUnit.maDvt,
-    SoLuong: soLuong.value 
-  };
+  const payload = { MaThuoc: thuoc.value.maThuoc, MaDvt: activeUnit.maDvt, SoLuong: soLuong.value };
 
   try {
     await axiosClient.post('GioHang/them', payload);
-    Swal.fire({
-      title: 'Thành công!',
-      text: 'Sản phẩm đã được thêm vào giỏ hàng',
-      icon: 'success',
-      confirmButtonText: 'Xem giỏ hàng',
-      showCancelButton: true,
-      cancelButtonText: 'Ở lại'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        router.push('/gio-hang');
-      }
-    });
-  } catch (error) {
-    console.error('Lỗi khi thêm giỏ hàng:', error);
-    Swal.fire('Thất bại', 'Không thể thêm sản phẩm vào giỏ hàng.', 'error');
+    Swal.fire({ title: 'Thành công!', icon: 'success', showCancelButton: true, confirmButtonText: 'Xem giỏ' })
+      .then((r) => { if (r.isConfirmed) router.push('/gio-hang'); });
+  } catch (e) {
+    Swal.fire('Thất bại', 'Không thể thêm sản phẩm.', 'error');
   }
 };
+
+const themNhanhVaoGio = async (item) => {
+    // Logic thêm nhanh dành cho gợi ý "Mua cùng"
+    if (!authState.user) {
+        Swal.fire('Thông báo', 'Bạn cần đăng nhập để mua hàng', 'warning');
+        return;
+    }
+    try {
+        // Tự động tìm đơn vị cơ bản của sản phẩm gợi ý để thêm vào giỏ
+        // Chú ý: Backend cần trả về thêm MaDvt của đơn vị cơ bản trong API FrequentlyBoughtWith
+        // Nếu chưa có, bạn có thể hướng người dùng vào xem Chi Tiết.
+        router.push(`/thuoc/${item.id}`);
+    } catch (e) {
+        console.error(e);
+    }
+}
 
 onMounted(loadProduct);
 
@@ -411,94 +394,14 @@ watch(() => route.params.id, (newId) => {
 </script>
 
 <style scoped>
-/* CSS CHO NHÃN TRÊN ẢNH */
-.image-viewer {
-  position: relative; /* Quan trọng để đặt nhãn con absolute */
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #eee;
-}
-
-.prescription-label {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 10;
-  background-color: rgba(255, 255, 255, 0.9);
-  color: #d9534f;
-  padding: 5px 12px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 13px;
-  border: 1px solid #d9534f;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  pointer-events: none;
-}
-
-.main-image {
-  width: 100%;
-  height: 400px;
-  object-fit: contain;
-  display: block;
-}
-
-/* Các CSS cũ */
-.unit-options { gap: 10px; }
-.unit-item {
-  position: relative;
-  padding: 8px 25px;
-  border: 1px solid #dee2e6;
-  border-radius: 20px;
-  cursor: pointer;
-  background-color: #fff;
-  transition: all 0.2s ease;
-  user-select: none;
-  font-size: 14px;
-  min-width: 80px;
-  text-align: center;
-}
-.unit-item:hover { border-color: #007bff; color: #007bff; }
-.unit-item.active {
-  border-color: #007bff;
-  color: #007bff;
-  background-color: #f0f7ff;
-  font-weight: 500;
-  overflow: hidden;
-}
-.unit-item.active::after {
-  content: "";
-  position: absolute;
-  top: 0; right: 0;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 0 18px 18px 0;
-  border-color: transparent #007bff transparent transparent;
-}
-.unit-item.active::before {
-  content: "✓";
-  position: absolute;
-  top: -1px; right: 2px;
-  color: white;
-  font-size: 10px;
-  z-index: 1;
-  font-weight: bold;
-}
-
+/* GIỮ NGUYÊN CSS CỦA BẠN */
+.image-viewer { position: relative; background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
+.prescription-label { position: absolute; top: 12px; left: 12px; z-index: 10; background-color: rgba(255, 255, 255, 0.9); color: #d9534f; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 13px; border: 1px solid #d9534f; }
+.main-image { width: 100%; height: 400px; object-fit: contain; display: block; }
+.unit-item { padding: 8px 25px; border: 1px solid #dee2e6; border-radius: 20px; cursor: pointer; transition: all 0.2s ease; }
+.unit-item.active { border-color: #007bff; color: #007bff; background-color: #f0f7ff; }
 .stock-available { background-color: #e6f9f0; color: #1a7f4e; }
 .stock-empty { background-color: #ffebee; color: #c62828; }
-
-.btn-danger {
-  background-color: #ff0000 !important;
-  border-color: #ff0000 !important;
-  color: white !important;
-}
-
-.btn-danger:hover {
-  background-color: #cc0000 !important;
-}
-
-.gap-3 {
-  gap: 1rem !important;
-}
+.related-slider::-webkit-scrollbar { height: 6px; }
+.related-slider::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 </style>

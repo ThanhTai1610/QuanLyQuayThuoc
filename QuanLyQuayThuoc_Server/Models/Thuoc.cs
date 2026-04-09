@@ -60,4 +60,5 @@ public partial class Thuoc
     public virtual DanhMuc? MaDanhMucNavigation { get; set; }
 
     public virtual ICollection<ChuDeSucKhoe> MaChuDes { get; set; } = new List<ChuDeSucKhoe>();
+
 }

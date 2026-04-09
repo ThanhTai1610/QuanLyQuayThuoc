@@ -1,6 +1,7 @@
-﻿namespace QuanLyQuayThuoc.Services.Interface
+﻿namespace QuanLyQuayThuoc.Services.Interfaces
 {
-    public class IChatbotService
+    public interface IChatBotService
     {
+        Task<string> GenerateAsync(string prompt);
     }
 }

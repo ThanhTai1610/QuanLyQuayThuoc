@@ -42,6 +42,8 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                         TongTien = dh.TongTien ?? 0,
                         TrangThai = dh.TrangThai,
 
+                        MaThuoc = dh.ChiTietDonHangs.Select(ct => ct.MaLoNavigation.MaThuoc).FirstOrDefault(),
+                        MaDVT = dh.ChiTietDonHangs.Select(ct => ct.MaDvt).FirstOrDefault(),
                         // Lấy thông tin từ ChiTietDonHang đầu tiên thông qua Navigation
                         TenSanPham = dh.ChiTietDonHangs
                             .Select(ct => ct.MaLoNavigation.MaThuocNavigation.TenThuoc)
