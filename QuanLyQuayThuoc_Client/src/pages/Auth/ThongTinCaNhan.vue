@@ -387,39 +387,3 @@ const dangXuat = () => {
 onMounted(taiThongTinHoSo);
 </script>
 
-<style scoped>
-/* Layout */
-.account-wrapper { min-height: 80vh; }
-.account-content-card { border-radius: 15px; }
-
-/* Avatar */
-.avatar-circle {
-  width: 140px; height: 140px; margin: 0 auto;
-  border-radius: 50%; overflow: hidden;
-  border: 5px solid #fff; cursor: pointer;
-  background: #f8f9fa; display: flex; align-items: center; justify-content: center;
-  transition: all 0.3s ease;
-}
-.avatar-circle:hover { filter: brightness(0.9); transform: scale(1.02); }
-.avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-placeholder i { font-size: 60px; color: #dee2e6; }
-
-.btn-change-avatar {
-  position: absolute; bottom: 8px; right: 8px;
-  width: 38px; height: 38px; border-radius: 50%;
-  background: #007bff; color: #fff; border: 3px solid #fff;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
-}
-.btn-change-avatar:hover { background: #0056b3; transform: scale(1.1); }
-
-/* Info list */
-.info-grid .row:last-child { border-bottom: none !important; }
-.bg-soft-primary { background-color: rgba(0, 123, 255, 0.1); }
-
-/* Form styles */
-.input-group-text { border: none; }
-.form-control, .form-select { border: none; padding: 10px 15px; }
-.form-control:focus, .form-select:focus { box-shadow: none; background: #fff !important; border: 1px solid #007bff; }
-.font-weight-bold { font-weight: 600 !important; }
-</style>

@@ -125,10 +125,11 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount, nextTick } from 'vue';
-import { Html5QrcodeScanner } from 'html5-qrcode';
-import axios from 'axios';
-import Swal from 'sweetalert2';
+import { ref, onBeforeUnmount, nextTick } from "vue";
+import * as Html5Qrcode from "html5-qrcode";
+const Html5QrcodeScanner = Html5Qrcode.Html5QrcodeScanner;
+import axiosClient from "../../../api/axiosClient";
+import Swal from "sweetalert2";
 
 const props = defineProps({
   cartItems: { type: Array, default: () => [] }
@@ -177,13 +178,7 @@ const onScanSuccess = async (decodedText) => {
   if (navigator.vibrate) navigator.vibrate(100);
 
   try {
-    const token = localStorage.getItem('token');
-    const response = await axios.get(
-      `https://localhost:7070/api/BanHang/tim-thuoc-barcode/${decodedText}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    const thuocMoi = response.data;
+    const thuocMoi = await axiosClient.get(`/BanHang/tim-thuoc-barcode/${decodedText}`);
 
     if (!thuocMoi || !thuocMoi.maThuoc) {
       Swal.fire({

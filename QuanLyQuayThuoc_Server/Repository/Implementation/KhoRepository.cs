@@ -6,6 +6,7 @@ using QuanLyQuayThuoc.DTOs.Kho;
 using QuanLyQuayThuoc.DTOs.SanPham;
 using BarcodeStandard;
 using SkiaSharp;
+using Type = BarcodeStandard.Type;
 
 namespace QuanLyQuayThuoc.Repositories
 {
@@ -215,11 +216,9 @@ namespace QuanLyQuayThuoc.Repositories
         {
             try
             {
-                var congCuVe = new BarcodeStandard.Barcode();
+                var congCuVe = new Barcode();
 
-                var img = congCuVe.Encode(BarcodeStandard.Type.Code128, noiDungMa, SKColors.Black, SKColors.White, 250, 80);
-
-                using (var data = img.Encode(SKEncodedImageFormat.Png, 100))
+                var img = congCuVe.Encode(Type.Code128, noiDungMa, SKColors.Black, SKColors.White, 250, 80); using (var data = img.Encode(SKEncodedImageFormat.Png, 100))
                 using (var boNhoTam = new MemoryStream())
                 {
                     data.SaveTo(boNhoTam);
