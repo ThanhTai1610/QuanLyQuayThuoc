@@ -26,10 +26,6 @@
           <span class="step">
             <span class="bullet">2</span> Đặt hàng
           </span>
-          <span class="mx-1 text-gray-400">›</span>
-          <span class="step">
-            <span class="bullet">3</span> Hoàn tất
-          </span>
         </div>
 
         <!-- Loading -->
@@ -203,7 +199,6 @@ const thongBaoMa = ref('');
 const apDungThanhCong = ref(false);
 
 // ── Load giỏ hàng từ API ──
-// axiosClient đã tự return response.data nên 'res' chính là mảng dữ liệu
 const loadGioHang = async () => {
   dangTai.value = true;
   try {
@@ -243,7 +238,6 @@ const capNhatSoLuong = (item, val) => {
 };
 
 // ── Đổi đơn vị tính ──
-// Khi đổi MaDVT, cập nhật giá và tên đơn vị tương ứng
 const doiDonVi = (item) => {
   if (!item.danhSachDVT) return;
   const dvt = item.danhSachDVT.find(d => d.maDVT === item.maDVT);
@@ -282,7 +276,7 @@ const xoaTatCa = async () => {
   const result = await Swal.fire({
     title: 'Làm trống giỏ hàng?',
     text: 'Tất cả sản phẩm sẽ bị xóa sạch!',
-    icon: 'warning',            // ✅ Sửa từ 'danger' → 'warning'
+    icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#d33',
     cancelButtonColor: '#3085d6',
@@ -302,13 +296,14 @@ const xoaTatCa = async () => {
 };
 
 // ── Cập nhật giỏ hàng lên server ──
-// PUT /GioHang/cap-nhat — body: [{ maGioHang, soLuong, maDVT }]
+// SỬA LỖI: Dùng cả hai dạng field name để đồng bộ với API
+// API trả về 'maDVT' (xem console.log khi load) — giữ đúng tên đó ở đây
 const capNhatGioHang = async () => {
   try {
     await axiosClient.put('/GioHang/cap-nhat', gioHang.value.map(i => ({
       maGioHang: i.maGioHang,
       soLuong: i.soLuong,
-      maDVT: i.maDVT,   // Xem console.log để xác nhận đúng tên field từ API
+      maDVT: i.maDVT ?? i.maDvt,  // SỬA LỖI: fallback cả hai dạng phòng trường hợp API trả về 'maDvt'
     })));
 
     Swal.fire({
@@ -332,8 +327,7 @@ const apDungMa = async () => {
       ma: maGiamGia.value.trim(),
       tongTien: tamTinh.value,
     });
-    // axiosClient đã unwrap data nên dùng res trực tiếp
-    soTienGiam.value = res.soTienGiam;
+    soTienGiam.value = res.soTienGiam ?? res.SoTienGiam ?? 0;
     thongBaoMa.value = `Áp dụng thành công! Giảm ${formatGia(soTienGiam.value)}`;
     apDungThanhCong.value = true;
   } catch {
@@ -344,7 +338,6 @@ const apDungMa = async () => {
 };
 
 // ── Tiếp tục đặt hàng ──
-// Đồng bộ giỏ hàng trước rồi mới chuyển trang
 const tiepTucDatHang = async () => {
   // Chặn nếu có sản phẩm hết hàng
   const coHetHang = gioHang.value.some(item => item.maLo === 0);

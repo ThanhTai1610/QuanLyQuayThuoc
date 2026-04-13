@@ -43,9 +43,6 @@ namespace QuanLyQuayThuoc.Controllers
             }
         }
 
-        /// <summary>
-        /// SỬA ĐỔI: Điều hướng trực tiếp về trang đặt hàng/bán hàng thay vì trang hoan-tat riêng biệt
-        /// </summary>
         [HttpGet("ket-qua-momo")]
         public async Task<IActionResult> KetQuaMoMo()
         {
@@ -55,14 +52,18 @@ namespace QuanLyQuayThuoc.Controllers
                 return Content("Lỗi phản hồi MoMo: Không tìm thấy resultCode");
 
             string resultCode = query["resultCode"].ToString();
-            string orderId = query["orderId"].ToString();
-            // extraData được gán là "NhanVien" hoặc "KhachHang" từ Frontend gửi lên
+            string momoOrderId = query["orderId"].ToString(); // Ví dụ: "37_1712712345"
             string userType = query.ContainsKey("extraData") ? query["extraData"].ToString() : "KhachHang";
+
+            // ✅ BƯỚC 1: Tách chuỗi để lấy ID gốc
+            // Nếu có dấu '_', lấy phần tử đầu tiên. Nếu không, giữ nguyên mã.
+            string originalIdStr = momoOrderId.Contains("_") ? momoOrderId.Split('_')[0] : momoOrderId;
 
             // Cập nhật Database nếu thành công
             if (resultCode == "0")
             {
-                if (int.TryParse(orderId, out int maDonHang))
+                // ✅ BƯỚC 2: Dùng originalIdStr đã tách để ép kiểu sang int
+                if (int.TryParse(originalIdStr, out int maDonHang))
                 {
                     var donHang = await _context.DonHangs.FindAsync(maDonHang);
                     if (donHang != null)
@@ -76,18 +77,15 @@ namespace QuanLyQuayThuoc.Controllers
 
             string status = (resultCode == "0") ? "success" : "error";
 
-            // --- PHẦN SỬA ĐỔI ĐƯỜNG DẪN REDIRECT ---
-
-            // Nếu là Nhân viên: Quay về trang Bán hàng tại quầy
+            // Trả về Frontend: 
+            // Bạn nên trả về momoOrderId (để Frontend tự tách) hoặc originalIdStr tùy ý. 
+            // Ở đây mình trả về momoOrderId để khớp với code Frontend mình đã hướng dẫn bạn split.
             if (userType == "NhanVien")
             {
-                // Giả sử route của trang bán hàng là /ban-hang hoặc /nhan-vien/ban-hang
-                return Redirect($"http://localhost:5173/ban-hang?orderId={orderId}&status={status}");
+                return Redirect($"http://localhost:5173/nhan-vien/ban-hang?orderId={momoOrderId}&status={status}");
             }
 
-            // Nếu là Khách hàng: Quay về chính trang Đặt hàng (để hiện Swal thông báo)
-            // Giả sử route trang đặt hàng của khách là /dat-hang hoặc /checkout
-            return Redirect($"http://localhost:5173/dat-hang?orderId={orderId}&status={status}");
+            return Redirect($"http://localhost:5173/dat-hang?orderId={momoOrderId}&status={status}");
         }
     }
 }

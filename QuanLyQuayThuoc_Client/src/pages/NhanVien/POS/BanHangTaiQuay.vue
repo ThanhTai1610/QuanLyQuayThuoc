@@ -4,34 +4,23 @@
 
     <div class="row mt-3">
       <div class="col-xl-8 col-lg-7">
-        <GioHang
-          :cartItems="cacSanPhamTrongGio"
-          @remove-item="xoaSanPham"
-          @update-quantity="capNhatSoLuong"
-          @add-to-cart="themVaoGioHang"
-        />
+        <GioHang :cartItems="cacSanPhamTrongGio" @remove-item="xoaSanPham" @update-quantity="capNhatSoLuong"
+          @add-to-cart="themVaoGioHang" />
       </div>
 
       <div class="col-xl-4 col-lg-5">
-        <ThanhToan
-          :tongTienHang="tongTienHang"
-          :maDonHang="maDonHang"
-          @checkout="moHoaDon"
-          @clear-cart="xoaGioHang"
-        />
+        <ThanhToan :tongTienHang="tongTienHang" :maDonHang="maDonHang" @checkout="moHoaDon" @clear-cart="xoaGioHang" />
       </div>
     </div>
 
-    <Modals
-      :invoiceData="duLieuHoaDon"
-      @add-quick-item="themVaoGioHang"
-      @finish-payment="xuLyHoanThanhThanhToan"
-    />
+    <Modals :invoiceData="duLieuHoaDon" :isMoMo="isMoMoComplete" @add-quick-item="themVaoGioHang"
+      @finish-payment="xuLyHoanThanhThanhToan" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue';
+import { ref, computed, reactive, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 import TimKiem from '../../NhanVien/POS/TimKiem.vue';
 import GioHang from '../../NhanVien/POS/GioHang.vue';
@@ -41,15 +30,20 @@ import { useMomo } from '../../../services/useMomo';
 import { Modal } from 'bootstrap';
 import Swal from 'sweetalert2';
 
-// STATE
+const route = useRoute();
+const router = useRouter();
+const { createPayment } = useMomo();
+const isMoMoComplete = ref(false);
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
 const cacSanPhamTrongGio = ref([]);
 const maDonHang = ref('POS-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0'));
 
 const duLieuHoaDon = reactive({
-  maHd: maDonHang.value,
+  maHd: '',
   thoiGian: '',
   khachHang: '',
-  cacSanPhamTrongGio: [],
+  cartItems: [],
   tongTienHang: 0,
   giamGia: 0,
   canTra: 0,
@@ -57,19 +51,16 @@ const duLieuHoaDon = reactive({
   _chiTietThanhToan: null
 });
 
-// COMPUTED
-const tongTienHang = computed(() => {
-  return cacSanPhamTrongGio.value.reduce(
-    (tong, sanPham) => tong + sanPham.giaBan * sanPham.soLuong,
-    0
-  );
-});
+// ─── COMPUTED ─────────────────────────────────────────────────────────────────
+const tongTienHang = computed(() =>
+  cacSanPhamTrongGio.value.reduce((sum, sp) => sum + sp.giaBan * sp.soLuong, 0)
+);
 
-// CART LOGIC
+// ─── CART LOGIC ───────────────────────────────────────────────────────────────
 const themVaoGioHang = (sanPham) => {
-  const sanPhamHienCo = cacSanPhamTrongGio.value.find(i => i.maThuoc === sanPham.maThuoc);
-  if (sanPhamHienCo) {
-    sanPhamHienCo.soLuong += 1;
+  const hiCo = cacSanPhamTrongGio.value.find(i => i.maThuoc === sanPham.maThuoc);
+  if (hiCo) {
+    hiCo.soLuong += 1;
   } else {
     cacSanPhamTrongGio.value.push({
       ...sanPham,
@@ -81,82 +72,78 @@ const themVaoGioHang = (sanPham) => {
 };
 
 const capNhatSoLuong = ({ index, change }) => {
-  const sanPham = cacSanPhamTrongGio.value[index];
-  if (sanPham) {
-    sanPham.soLuong += change;
-    if (sanPham.soLuong <= 0) xoaSanPham(index);
+  const sp = cacSanPhamTrongGio.value[index];
+  if (sp) {
+    sp.soLuong += change;
+    if (sp.soLuong <= 0) xoaSanPham(index);
   }
 };
 
-const xoaSanPham = (viTri) => {
-  cacSanPhamTrongGio.value.splice(viTri, 1);
-};
+const xoaSanPham = (viTri) => { cacSanPhamTrongGio.value.splice(viTri, 1); };
 
 const xoaGioHang = () => {
-  if (cacSanPhamTrongGio.value.length === 0) return;
+  if (!cacSanPhamTrongGio.value.length) return;
   Swal.fire({
-    title: 'Xác nhận xóa?',
-    text: 'Toàn bộ thuốc trong giỏ sẽ bị loại bỏ',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Xoá',
-    cancelButtonText: 'Hoàn tác'
-  }).then((ketQua) => {
-    if (ketQua.isConfirmed) {
+    title: 'Xác nhận xóa?', text: 'Toàn bộ thuốc trong giỏ sẽ bị loại bỏ',
+    icon: 'warning', showCancelButton: true,
+    confirmButtonColor: '#d33', cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Xoá', cancelButtonText: 'Hoàn tác'
+  }).then(r => {
+    if (r.isConfirmed) {
       cacSanPhamTrongGio.value = [];
-      Swal.fire('Đã xóa!', 'Giỏ hàng của bạn hiện đang trống.', 'success');
+      Swal.fire('Đã xóa!', 'Giỏ hàng trống.', 'success');
     }
   });
 };
 
-// OPEN INVOICE MODAL
+// ─── CHECKOUT ROUTER ─────────────────────────────────────────────────────────
 const moHoaDon = (chiTietThanhToan) => {
-  if (cacSanPhamTrongGio.value.length === 0) {
-    Swal.fire({
-      icon: 'info',
-      title: 'Giỏ hàng trống',
-      text: 'Vui lòng chọn ít nhất một loại thuốc để thanh toán!',
-      confirmButtonColor: '#3085d6'
-    });
+  if (!cacSanPhamTrongGio.value.length) {
+    Swal.fire({ icon: 'info', title: 'Giỏ hàng trống', text: 'Vui lòng chọn ít nhất một loại thuốc!', confirmButtonColor: '#3085d6' });
     return;
   }
 
-  duLieuHoaDon.maHd = maDonHang.value;
-  duLieuHoaDon.thoiGian = new Date().toLocaleString('vi-VN');
-  duLieuHoaDon.cartItems = [...cacSanPhamTrongGio.value];
-  duLieuHoaDon.tongTienHang = tongTienHang.value;
-  duLieuHoaDon.giamGia = chiTietThanhToan.giamGia;
-  duLieuHoaDon.canTra = chiTietThanhToan.khachCanTra;
+  if (chiTietThanhToan.phuongThuc === 'momo') {
+    xuLyMoMo(chiTietThanhToan);
+    return;
+  }
 
-  const pt = chiTietThanhToan.phuongThuc;
-  duLieuHoaDon.phuongThuc =
-    pt === 'tien-mat' ? 'Tiền mặt' : pt === 'momo' ? 'Ví MoMo' : 'Chuyển khoản';
-
-  duLieuHoaDon._chiTietThanhToan = chiTietThanhToan;
-
-  const phanTuModal = document.getElementById('modalHoaDon');
-  if (phanTuModal) Modal.getOrCreateInstance(phanTuModal).show();
+  // Tiền mặt → mở modal hóa đơn
+  dienDuLieuHoaDon(chiTietThanhToan, tongTienHang.value, [...cacSanPhamTrongGio.value], 'Tiền mặt');
+  Modal.getOrCreateInstance(document.getElementById('modalHoaDon')).show();
 };
 
-const { createPayment } = useMomo();
+// ─── HELPER ──────────────────────────────────────────────────────────────────
+const dienDuLieuHoaDon = (chiTiet, tongTien, danhSachHang, tenPhuongThuc) => {
+  duLieuHoaDon.maHd = maDonHang.value;
+  duLieuHoaDon.thoiGian = new Date().toLocaleString('vi-VN');
+  duLieuHoaDon.cartItems = danhSachHang;
+  duLieuHoaDon.tongTienHang = tongTien;
+  duLieuHoaDon.giamGia = chiTiet?.giamGia ?? 0;
+  duLieuHoaDon.canTra = tongTien - (chiTiet?.giamGia ?? 0);
+  duLieuHoaDon.phuongThuc = tenPhuongThuc;
+  duLieuHoaDon._chiTietThanhToan = chiTiet;
+};
 
-const goiApiThanhToan = async (chiTietThanhToan) => {
-  if (cacSanPhamTrongGio.value.length === 0) return;
+// ─── FLOW MOMO: tạo đơn hàng → redirect sang trang MoMo ─────────────────────
+const xuLyMoMo = async (chiTietThanhToan) => {
+  // ✅ Lưu ngay trước khi làm bất cứ điều gì
+  const soTien = Math.round(tongTienHang.value - (chiTietThanhToan.giamGia || 0));
+  const snapshot = [...cacSanPhamTrongGio.value];
+  const tongTienSnapshot = tongTienHang.value;
+
   try {
     const token = localStorage.getItem('token');
-    const phuongThuc = chiTietThanhToan.phuongThuc;
-    const phuongThucBackend = phuongThuc === 'momo' ? 'Momo' : 'TienMat';
 
+    // Bước 1: Tạo đơn hàng trên backend
     const dto = {
-      phuongThucThanhToan: phuongThucBackend,
+      phuongThucThanhToan: 'Momo',
       giamGia: chiTietThanhToan.giamGia || 0,
-      chiTiet: cacSanPhamTrongGio.value.map(sanPham => ({
-        maLo: sanPham.loHangSelected,
-        maDVT: sanPham.maDvtSelected,
-        soLuong: sanPham.soLuong,
-        giaBan: sanPham.giaBan
+      chiTiet: snapshot.map(sp => ({
+        maLo: sp.loHangSelected,
+        maDVT: sp.maDvtSelected,
+        soLuong: sp.soLuong,
+        giaBan: sp.giaBan
       }))
     };
 
@@ -166,58 +153,165 @@ const goiApiThanhToan = async (chiTietThanhToan) => {
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    if (ketQua.data.success) {
-      const maDonHangMoi = ketQua.data.maDonHang;
+    // ✅ Hỗ trợ cả chữ hoa (C#) lẫn chữ thường
+    const isSuccess = ketQua.data?.Success === true || ketQua.data?.success === true;
+    const maDonHangMoi = ketQua.data?.MaDonHang ?? ketQua.data?.maDonHang;
 
-      if (phuongThuc === 'momo') {
-        datLaiTrang();
-        await createPayment(
-          Math.round(tongTienHang.value - (chiTietThanhToan.giamGia || 0)),
-          `Bán tại quầy - HD: ${maDonHangMoi}`,
-          maDonHangMoi.toString(),
-          'NhanVien'
-        );
-        return;
-      }
-
-      Swal.fire({
-        title: 'Thành công!',
-        text: `Hóa đơn #${maDonHangMoi} đã được lưu hệ thống.`,
-        icon: 'success',
-        confirmButtonText: 'Đóng',
-        confirmButtonColor: '#28a745',
-        timer: 2500,
-        timerProgressBar: true
-      });
-
-      datLaiTrang();
+    if (!isSuccess || maDonHangMoi == null) {
+      throw new Error(ketQua.data?.Message || ketQua.data?.message || 'Tạo đơn hàng thất bại');
     }
-  } catch (loi) {
-    console.error(loi);
-    Swal.fire({
-      title: 'Lỗi thanh toán',
-      text: loi.message || loi.response?.data?.message || 'Không thể kết nối Server',
-      icon: 'error'
-    });
+
+    // Chuẩn bị dữ liệu hóa đơn để hiện sau khi MoMo redirect về
+    // (lưu vào sessionStorage để dùng lại khi trang reload)
+    sessionStorage.setItem('momoInvoice', JSON.stringify({
+      maHd: String(maDonHangMoi),
+      thoiGian: new Date().toLocaleString('vi-VN'),
+      cartItems: snapshot,
+      tongTienHang: tongTienSnapshot,
+      giamGia: chiTietThanhToan.giamGia || 0,
+      canTra: soTien,
+      phuongThuc: 'Ví MoMo'
+    }));
+
+    // Bước 2: ✅ Gọi useMomo.createPayment → redirect thẳng sang trang MoMo
+    // (giống hệt DatHang.vue, chỉ khác UserType = 'NhanVien')
+    await createPayment(
+      soTien,
+      `Bán tại quầy - HD: ${maDonHangMoi}`,
+      String(maDonHangMoi),
+      'NhanVien'
+    );
+
+    // Nếu createPayment thành công thì window.location.href đã chuyển trang rồi,
+    // code dưới đây sẽ không chạy
+
+  } catch (err) {
+    console.error('Lỗi MoMo:', err);
+    const msg = err.response?.data?.detail || err.response?.data?.message || err.message || 'Lỗi không xác định';
+    Swal.fire({ icon: 'error', title: 'Thanh toán MoMo thất bại', text: msg });
   }
 };
 
-const xuLyHoanThanhThanhToan = () => goiApiThanhToan(duLieuHoaDon._chiTietThanhToan);
+// ─── TIỀN MẶT: gọi API thanh toán khi bấm "Thanh toán xong" ─────────────────
+const goiApiThanhToan = async (chiTietThanhToan) => {
+  if (!cacSanPhamTrongGio.value.length) return;
+  try {
+    const token = localStorage.getItem('token');
+    const dto = {
+      phuongThucThanhToan: 'TienMat',
+      giamGia: chiTietThanhToan?.giamGia || 0,
+      chiTiet: cacSanPhamTrongGio.value.map(sp => ({
+        maLo: sp.loHangSelected,
+        maDVT: sp.maDvtSelected,
+        soLuong: sp.soLuong,
+        giaBan: sp.giaBan
+      }))
+    };
+
+    const ketQua = await axios.post(
+      'https://localhost:7070/api/BanHang/thanh-toan',
+      dto,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const isSuccess = ketQua.data?.Success === true || ketQua.data?.success === true;
+    const maDonHangMoi = ketQua.data?.MaDonHang ?? ketQua.data?.maDonHang;
+
+    if (isSuccess && maDonHangMoi != null) {
+      Swal.fire({
+        title: 'Thành công!', text: `Hóa đơn #${maDonHangMoi} đã được lưu.`,
+        icon: 'success', confirmButtonText: 'Đóng', confirmButtonColor: '#28a745',
+        timer: 2500, timerProgressBar: true
+      });
+      datLaiTrang();
+    } else {
+      Swal.fire({ title: 'Lỗi', text: ketQua.data?.Message || 'Thanh toán thất bại.', icon: 'error' });
+    }
+  } catch (loi) {
+    Swal.fire({ title: 'Lỗi', text: loi.response?.data?.Message || loi.message || 'Không thể kết nối Server', icon: 'error' });
+  }
+};
+
+const xuLyHoanThanhThanhToan = () => {
+  // MoMo đã xong → chỉ reset, không gọi API thêm
+  if (duLieuHoaDon.phuongThuc === 'Ví MoMo') {
+    datLaiTrang();
+    return;
+  }
+  goiApiThanhToan(duLieuHoaDon._chiTietThanhToan);
+};
 
 const datLaiTrang = () => {
   cacSanPhamTrongGio.value = [];
+  isMoMoComplete.value = false;
   maDonHang.value = 'POS-' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-  const phanTuModal = document.getElementById('modalHoaDon');
-  if (phanTuModal) Modal.getInstance(phanTuModal)?.hide();
-
-  const nenModal = document.querySelector('.modal-backdrop');
-  if (nenModal) {
-    nenModal.remove();
+  const el = document.getElementById('modalHoaDon');
+  if (el) Modal.getInstance(el)?.hide();
+  const backdrop = document.querySelector('.modal-backdrop');
+  if (backdrop) {
+    backdrop.remove();
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
   }
 };
+
+// ─── CALLBACK KHI MOMO REDIRECT VỀ /ban-hang?orderId=...&status=... ──────────
+onMounted(() => {
+  const { orderId, status } = route.query;
+
+  // Kiểm tra nếu có tham số trả về từ MoMo
+  if (orderId && status) {
+    if (status === 'success') {
+      // 1. Lấy dữ liệu hóa đơn đã lưu tạm trước khi đi thanh toán
+      const saved = sessionStorage.getItem('momoInvoice');
+      if (saved) {
+        try {
+          const invoice = JSON.parse(saved);
+
+          // Đổ dữ liệu vào object reactive dùng cho Modal hóa đơn
+          duLieuHoaDon.maHd = invoice.maHd;
+          duLieuHoaDon.thoiGian = invoice.thoiGian;
+          duLieuHoaDon.cartItems = invoice.cartItems;
+          duLieuHoaDon.tongTienHang = invoice.tongTienHang;
+          duLieuHoaDon.giamGia = invoice.giamGia;
+          duLieuHoaDon.canTra = invoice.canTra;
+          duLieuHoaDon.phuongThuc = 'Ví MoMo';
+
+          // ✅ QUAN TRỌNG: Bật cờ này để Modal biết đây là đơn đã thanh toán xong
+          isMoMoComplete.value = true;
+
+          // Xóa dữ liệu tạm trong session
+          sessionStorage.removeItem('momoInvoice');
+        } catch (e) {
+          console.error("Lỗi xử lý dữ liệu hóa đơn:", e);
+        }
+      }
+
+      // 2. HIỆN THẲNG MODAL HÓA ĐƠN
+      setTimeout(() => {
+        const modalEl = document.getElementById('modalHoaDon');
+        if (modalEl) {
+          const modalInstance = Modal.getOrCreateInstance(modalEl);
+          modalInstance.show();
+        }
+      }, 300);
+
+      // 3. Xóa các tham số trên URL để thanh địa chỉ sạch sẽ (tránh refresh hiện lại)
+      router.replace({ query: {} });
+
+    } else {
+      // Nếu thất bại thì xóa session và báo lỗi
+      sessionStorage.removeItem('momoInvoice');
+      router.replace({ query: {} });
+      Swal.fire({
+        icon: 'error',
+        title: 'Thanh toán MoMo thất bại',
+        text: 'Giao dịch bị hủy hoặc không thành công.'
+      });
+    }
+  }
+});
 </script>
 
 <style scoped>
