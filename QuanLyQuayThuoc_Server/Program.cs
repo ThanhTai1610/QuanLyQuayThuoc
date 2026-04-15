@@ -12,9 +12,15 @@ using QuanLyQuayThuoc.Repository.Interfaces;
 using QuanLyQuayThuoc.Repository.Implementation;
 using QuanLyQuayThuoc.Models.Momo;
 using QuanLyQuayThuoc.Services.Momo;
+using Microsoft.AspNetCore.DataProtection;
 
 System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls13;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Cấu hình lưu Key bảo mật vào thư mục 'keys' để không bị văng Login khi Restart server
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "keys")));
 
 // --- 1. KẾT NỐI DATABASE & CORS ---
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -23,12 +29,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVueApp", policy =>
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:5173",                     // Cho máy cá nhân khi dev
+                "https://quanlyquaythuoc.runasp.net",       // Tên miền của Tài
+                "http://quanlyquaythuoc.runasp.net"
+              )
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials());
 });
-
 
 // --- 2. ĐĂNG KÝ REPOSITORY & SERVICES ---
 builder.Services.AddScoped<INguoiDungRepository, NguoiDungRepository>();
@@ -49,7 +58,7 @@ builder.Services.AddHttpClient<IChatBotService, ChatbotService>();
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoOption"));
 builder.Services.AddScoped<IMomoService, MomoService>();
 
-// --- 3. CẤU HÌNH SWAGGER (DI CHUYỂN LÊN ĐÂY) ---
+// --- 3. CẤU HÌNH SWAGGER ---
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
@@ -59,7 +68,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Description = "Chỉ cần dán mã Token vào đây (Không cần ghi chữ Bearer)"
+        Description = "Dán mã Token vào đây (Không cần ghi chữ Bearer)"
     });
 
     options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
@@ -95,21 +104,24 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-// CHỐT CẤU HÌNH TẠI ĐÂY
 var app = builder.Build();
-app.UseStaticFiles();
-// --- 5. CẤU HÌNH PIPELINE (MIDDLEWARE) ---
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-app.UseRouting();
-app.UseCors("AllowVueApp");
-app.UseHttpsRedirection();
 
+// --- 5. CẤU HÌNH PIPELINE (MIDDLEWARE) ---
+
+// Bật Swagger cho cả Production để Tài dễ kiểm tra lỗi API trên hosting
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseStaticFiles(); // Cho phép truy cập index.html, css, js
+app.UseRouting();
+
+// Thứ tự quan trọng: CORS -> Auth -> Endpoints
+app.UseCors("AllowVueApp");
+
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();

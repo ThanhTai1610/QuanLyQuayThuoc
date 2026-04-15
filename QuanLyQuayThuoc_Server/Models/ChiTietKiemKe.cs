@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QuanLyQuayThuoc.Models;
 
@@ -14,7 +15,6 @@ public partial class ChiTietKiemKe
     public int? SoLuongThucTe { get; set; }
 
     public string? LyDoLech { get; set; }
-
     public virtual LoHang MaLoNavigation { get; set; } = null!;
 
     public virtual PhieuKiemKe MaPhieuNavigation { get; set; } = null!;
