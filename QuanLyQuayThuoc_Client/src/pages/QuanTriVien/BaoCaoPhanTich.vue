@@ -40,17 +40,17 @@
 </template>
 
 <script setup>
-import '../../assets/css_Admin/bao-cao-phan-tich.css';
+import '../../assets/css_admin/bao-cao-phan-tich.css';
 import { ref, onMounted } from 'vue';
 import axiosClient from '../../api/axiosClient';
 
-import BcChiSoChinh       from './BcChiSoChinh.vue';
-import BcDoanhThuLoiNhuan from './BcDoanhThuLoiNhuan.vue';
-import BcTopBanChay       from './BcTopBanChay.vue';
-import BcTopXemNhieu      from './BcTopXemNhieu.vue';
-import BcCanhBaoHanDung   from './BcCanhBaoHanDung.vue';
-import BcTonKhoThap       from './BcTonKhoThap.vue';
-import BcNhanVien         from './BcNhanVien.vue';
+import BcChiSoChinh       from './Bcchisochinh.vue';
+import BcDoanhThuLoiNhuan from './Bcdoanhthuloinhuan.vue';
+import BcTopBanChay       from './Bctopbanchay.vue';
+import BcTopXemNhieu      from './Bctopxemnhieu.vue';
+import BcCanhBaoHanDung   from './Bccanhbaohandung.vue';
+import BcTonKhoThap       from './Bctonkhothap.vue';
+import BcNhanVien         from './Bcnhanvien.vue';
 
 const kyHienTai = ref('');
 const chiSo     = ref(null);

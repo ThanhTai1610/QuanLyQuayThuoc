@@ -2,9 +2,14 @@
   <router-view></router-view>
 
   <ChatbotTuVan />
-  
-  </template>
+</template>
 
 <script setup>
-import ChatbotTuVan from './components/ChatbotTuVan.vue'; // Tài kiểm tra lại đường dẫn file này nhé
+import { defineAsyncComponent } from 'vue';
+
+// Sử dụng defineAsyncComponent để giải quyết cảnh báo [INEFFECTIVE_DYNAMIC_IMPORT]
+// và giúp Vercel không bị lỗi khi build.
+const ChatbotTuVan = defineAsyncComponent(() =>
+  import('./components/ChatbotTuVan.vue')
+);
 </script>

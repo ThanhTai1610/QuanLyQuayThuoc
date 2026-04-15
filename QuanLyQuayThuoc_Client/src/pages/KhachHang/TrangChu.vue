@@ -71,7 +71,6 @@ import { ref, onMounted, computed } from 'vue'; // Đã thêm computed
 import axios from 'axios';
 import HomeBanner from './HomeBanner.vue';
 import SanPhamNhaThuoc from './SanPhamNhaThuoc.vue';
-import ChatbotTuVan from '../../components/ChatbotTuVan.vue';
 import BenhTheoMua from './BenhTheoMua.vue';
 import SanPhamBanChay from './SanPhamBanChay.vue';
 

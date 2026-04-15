@@ -145,7 +145,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
 import axiosClient from '../../api/axiosClient';
-import DanhMucNode from './DanhMucNode.vue';
+import DanhMucNode from './DanhMucnode.vue';
 import '../../assets/css_admin/quan-ly-danh-muc.css';
 
 // ── Danh sách Icon gợi ý ──

@@ -31,8 +31,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowVueApp", policy =>
         policy.WithOrigins(
                 "http://localhost:5173",                     // Cho máy cá nhân khi dev
-                "https://quanlyquaythuoc.runasp.net",       // Tên miền của Tài
-                "http://quanlyquaythuoc.runasp.net"
+                "https://quan-ly-quay-thuoc-client.vercel.app"       // Tên miền của Tài
               )
               .AllowAnyMethod()
               .AllowAnyHeader()
