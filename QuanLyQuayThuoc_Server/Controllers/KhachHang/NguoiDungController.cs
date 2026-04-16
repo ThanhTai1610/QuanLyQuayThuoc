@@ -89,32 +89,39 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
         [HttpPost("quen-mat-khau")]
         public async Task<IActionResult> QuenMatKhau([FromBody] QuenMatKhauDto model)
         {
-            // 1. Kiểm tra Email
-            var user = await _context.NguoiDungs.FirstOrDefaultAsync(u => u.Email == model.Email);
-            if (user == null) return NotFound(new { message = "Email không tồn tại." });
+            try
+            {
+                // 1. Kiểm tra Email
+                var user = await _context.NguoiDungs.FirstOrDefaultAsync(u => u.Email == model.Email);
+                if (user == null) return NotFound(new { message = "Email không tồn tại trong hệ thống." });
 
-            // 2. Tạo OTP và lưu DB
-            string otp = new Random().Next(100000, 999999).ToString();
-            user.MaOtp = otp;
-            user.HanOtp = DateTime.Now.AddMinutes(5);
-            await _context.SaveChangesAsync();
+                // 2. Tạo OTP và lưu vào DB
+                string otp = new Random().Next(100000, 999999).ToString();
+                user.MaOtp = otp;
+                user.HanOtp = DateTime.Now.AddMinutes(5);
+                await _context.SaveChangesAsync();
 
-            // 3. GỬI MAIL CHẠY NGẦM (Fire and Forget)
-            // Không dùng await ở đây để trả về Ok ngay lập tức
-            _ = Task.Run(async () => {
-                try
+                // 3. Gửi Mail và đợi kết quả (Bỏ Task.Run)
+                string subject = "Mã xác nhận quên mật khẩu - Pharmative";
+                string body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực 5 phút.";
+
+                // Đợi gửi xong mới trả về kết quả cho Frontend
+                bool isSent = await EmailHelper.SendEmailAsync(model.Email, subject, body);
+
+                if (isSent)
                 {
-                    string subject = "Mã xác nhận quên mật khẩu - Pharmative";
-                    string body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực 5 phút.";
-                    await EmailHelper.SendEmailAsync(model.Email, subject, body);
+                    return Ok(new { success = true, message = "Mã OTP đã được gửi về Email." });
                 }
-                catch (Exception ex)
+                else
                 {
-                    // Log lỗi ra file nếu cần để kiểm tra sau
+                    return StatusCode(500, new { message = "Gửi mail thất bại. Tài kiểm tra lại App Password Gmail nhé!" });
                 }
-            });
-
-            return Ok(new { message = "Mã OTP đang được gửi." });
+            }
+            catch (Exception ex)
+            {
+                // Trả về lỗi chi tiết để Tài dễ debug
+                return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
+            }
         }
         [AllowAnonymous]
         [HttpPost("dat-lai-mat-khau")]

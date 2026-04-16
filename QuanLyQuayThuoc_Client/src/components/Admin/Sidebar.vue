@@ -63,10 +63,23 @@
     <div class="text-center d-none d-md-inline">
       <button class="rounded-circle border-0" id="sidebarToggle" @click="toggleSidebar"></button>
     </div>
+
+    <!-- Nút Đăng xuất ở cuối Sidebar -->
+    <hr class="sidebar-divider">
+    <li class="nav-item mt-auto">
+      <a class="nav-link cursor-pointer" @click.prevent="handleLogout">
+        <i class="fas fa-fw fa-sign-out-alt"></i>
+        <span>Đăng xuất</span>
+      </a>
+    </li>
   </ul>
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 const toggleSidebar = () => {
   document.body.classList.toggle('sidebar-toggled');
   const sidebar = document.querySelector('.sidebar');
@@ -74,11 +87,20 @@ const toggleSidebar = () => {
     sidebar.classList.toggle('toggled');
   }
 };
+
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user'); // Xóa thêm thông tin user nếu có
+  router.push({ name: 'DangNhap' });
+};
 </script>
 
 <style scoped>
 /* Giữ nguyên class từ CSS cũ của Tài */
 .nav-item.active .nav-link {
   font-weight: bold;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

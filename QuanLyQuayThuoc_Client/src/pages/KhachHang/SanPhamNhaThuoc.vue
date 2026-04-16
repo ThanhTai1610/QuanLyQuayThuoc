@@ -75,7 +75,7 @@ const getImageUrl = (path) => {
 
   // 3. Nếu là đường dẫn nội bộ (ví dụ: /images/sanpham.jpg)
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `https://localhost:7070${cleanPath}`;
+  return `${import.meta.env.VITE_API_URL.replace('/api', '')}${cleanPath}`;
 };
 
 const formatPrice = (value) => {

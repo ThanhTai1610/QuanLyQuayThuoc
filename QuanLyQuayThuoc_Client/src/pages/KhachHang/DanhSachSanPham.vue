@@ -325,7 +325,7 @@ const xoaBoLoc = () => {
 const getImageUrl = (path) => {
   if (!path) return 'https://via.placeholder.com/300x300.png?text=No+Image';
   if (path.startsWith('http')) return path;
-  return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
+  return `${import.meta.env.VITE_API_URL.replace('/api', '')}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
 const getFlagUrl = (countryName) => {
@@ -352,6 +352,13 @@ const formatGia = (value) =>
 watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => loadData(true), { deep: true });
 
 onMounted(() => {
+  if (route.query.maDanhMuc) {
+    // Nếu có mã danh mục từ URL (ví dụ từ Trang chủ bấm qua), thì tick chọn nó luôn
+    const dmId = parseInt(route.query.maDanhMuc);
+    if (!isNaN(dmId)) {
+      locDanhMuc.value = [dmId];
+    }
+  }
   loadData();
   loadSidebar();
 });

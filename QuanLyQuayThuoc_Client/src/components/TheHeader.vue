@@ -211,7 +211,7 @@ const getImageUrl = (path) => {
   if (!path) return 'https://via.placeholder.com/100x100.png?text=Thuoc';
   if (path.startsWith('http')) return path;
   // Đảm bảo khớp với Port Backend của Tài
-  return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
+  return `${import.meta.env.VITE_API_URL.replace('/api', '')}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 const onSearchInput = () => {
   clearTimeout(searchTimer);

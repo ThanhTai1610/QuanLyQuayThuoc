@@ -147,7 +147,7 @@ const doiTab = async (id) => {
 const getImageUrl = (path) => {
   if (!path) return '/images/no-image.png';
   if (path.startsWith('http')) return path;
-  return `https://localhost:7070${path}`;
+  return `${import.meta.env.VITE_API_URL.replace('/api', '')}${path}`;
 };
 
 const formatGia = (value) =>

@@ -54,7 +54,7 @@ const xuLyTimKiem = () => {
 
     try {
       dangTai.value = true;
-      const ketQua = await axios.get('https://localhost:7070/api/BanHang/tim-kiem', {
+      const ketQua = await axios.get(`${import.meta.env.VITE_API_URL}/BanHang/tim-kiem`, {
         params: { tenThuoc: tuKhoaTimKiem.value }
       });
 
@@ -80,7 +80,7 @@ const xuLyTimKiem = () => {
 
 const chonSanPham = async (thuoc) => {
   try {
-    const ketQuaLo = await axios.get(`https://localhost:7070/api/BanHang/lo-hang/${thuoc.maThuoc}`);
+    const ketQuaLo = await axios.get(`${import.meta.env.VITE_API_URL}/BanHang/lo-hang/${thuoc.maThuoc}`);
     const danhSachLo = (ketQuaLo.data || []).map(lo => ({
       maLo: lo.maLo,
       hanSuDung: lo.hanSuDung,

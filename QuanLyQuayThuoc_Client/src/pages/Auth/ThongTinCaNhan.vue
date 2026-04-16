@@ -227,7 +227,7 @@ const taiThongTinHoSo = async () => {
 
 const getFullUrl = (path) => {
   if (!path) return '';
-  return path.startsWith('http') ? path : `https://localhost:7070${path}`;
+  return path.startsWith('http') ? path : `${import.meta.env.VITE_API_URL.replace('/api', '')}${path}`;
 };
 
 const moModalTuyChonAnh = () => toggleModal('modalTuyChonAnh', 'show');

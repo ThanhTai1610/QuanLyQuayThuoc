@@ -217,7 +217,7 @@ const tabs = [
   { label: 'Tất cả',    value: '' },
   { label: 'Chờ xử lý', value: 'Chờ xử lý' },
   { label: 'Đang giao', value: 'Đang giao' },
-  { label: 'Đã giao',   value: 'Đã giao' },
+  { label: 'Hoàn tất',   value: 'Hoàn tất' },
   { label: 'Đã hủy',    value: 'Đã hủy' },
 ];
 
@@ -306,7 +306,7 @@ const getFullUrl = (path) => {
   if (!path) return '/img/default-product.png';
   if (path.startsWith('http')) return path;
   const prefix = path.startsWith('/') ? '' : '/uploads/';
-  return `https://localhost:7070${prefix}${path}`;
+  return `${import.meta.env.VITE_API_URL.replace('/api', '')}${prefix}${path}`;
 };
 
 const dinhDangNgay = (val) => {

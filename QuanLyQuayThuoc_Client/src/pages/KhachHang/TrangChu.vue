@@ -34,7 +34,7 @@
 
         <div class="row align-items-stretch" v-else-if="rootCategories.length > 0">
           <div class="col-md-3 col-6 mb-4" v-for="cat in rootCategories" :key="cat.maDanhMuc">
-            <router-link :to="'/danh-muc/' + cat.slug" class="category-item-link">
+            <router-link :to="{ name: 'DanhSachSanPham', query: { maDanhMuc: cat.maDanhMuc } }" class="category-item-link">
               <div class="category-card text-center h-100 p-4">
                 
                 <div class="category-icon-wrap mb-3">
@@ -74,7 +74,7 @@ import SanPhamNhaThuoc from './SanPhamNhaThuoc.vue';
 import BenhTheoMua from './BenhTheoMua.vue';
 import SanPhamBanChay from './SanPhamBanChay.vue';
 
-const BASE_URL = 'https://localhost:7070';
+const BASE_URL = import.meta.env.VITE_API_URL.replace('/api', '');
 
 // 1. Dùng rawCategories để chứa toàn bộ dữ liệu từ API
 const rawCategories = ref([]); 

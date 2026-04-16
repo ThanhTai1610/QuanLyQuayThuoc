@@ -50,7 +50,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient';
+
+const router = useRouter();
 
 const bestSellers = ref([]);
 const loading = ref(true);
@@ -84,7 +87,7 @@ const getImageUrl = (path) => {
   if (!path) return 'https://via.placeholder.com/300x300.png?text=No+Image';
   if (path.trim().startsWith('http')) return path.trim(); 
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  return `https://localhost:7070${cleanPath}`;
+  return `${import.meta.env.VITE_API_URL.replace('/api', '')}${cleanPath}`;
 };
 
 const formatPrice = (price) => {
@@ -92,7 +95,7 @@ const formatPrice = (price) => {
 };
 
 const handleBuy = (item) => {
-  console.log("Mua sản phẩm:", item.id);
+  router.push({ name: 'ChiTietSanPham', params: { id: item.id } });
 };
 
 onMounted(fetchBestSellers);

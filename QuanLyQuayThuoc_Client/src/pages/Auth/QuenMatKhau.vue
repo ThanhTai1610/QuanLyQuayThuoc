@@ -71,20 +71,32 @@ const dangGui = ref(false);
 const guiMaOtp = async () => {
   loi.value = '';
   const emailTrim = email.value.trim();
-  if (!emailTrim) { loi.value = 'Vui lòng nhập email.'; return; }
+  
+  if (!emailTrim) { 
+    loi.value = 'Vui lòng nhập email.'; 
+    return; 
+  }
 
   dangGui.value = true;
   try {
-    // Gọi API (Backend giờ đã trả về rất nhanh vì gửi mail ngầm)
-    await axiosClient.post('/NguoiDung/quen-mat-khau', { email: emailTrim });
+    // Gọi API và đợi phản hồi từ server
+    const response = await axiosClient.post('/NguoiDung/quen-mat-khau', { email: emailTrim });
 
-    // Lưu lại email để Bước 2 sử dụng
+    // Khi xuống được đây (không nhảy vào catch) tức là API đã gọi thành công
     localStorage.setItem('pharmative_reset_email', emailTrim);
-
-    // Chuyển trang liền
-    router.push({ name: 'QuenMatKhauOtp' });
+    // Chuyển sang Bước 2: Nhập OTP
+    router.push({ name: 'QuenMatKhauOTP' });
   } catch (error) {
-    loi.value = error.response?.data?.message || 'Có lỗi xảy ra.';
+    // 3. Hiển thị lỗi chi tiết từ Backend (ví dụ: "Email không tồn tại" hoặc "Lỗi Database")
+    console.error("Lỗi gửi OTP:", error);
+    
+    if (error.response) {
+      // Lỗi từ server trả về (404, 500, 400)
+      loi.value = error.response.data.message || 'Server đang gặp sự cố kết nối Database.';
+    } else {
+      // Lỗi mạng hoặc không kết nối được server
+      loi.value = 'Không thể kết nối đến máy chủ. Tài kiểm tra lại Backend nhé!';
+    }
   } finally {
     dangGui.value = false;
   }

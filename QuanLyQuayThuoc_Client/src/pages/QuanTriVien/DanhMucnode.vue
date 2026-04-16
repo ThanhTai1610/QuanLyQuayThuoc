@@ -104,7 +104,7 @@ const iconInfo = computed(() => {
   if (iconData && (iconData.includes('.') || iconData.includes('/'))) {
     return {
       type: 'image',
-      value: iconData.startsWith('http') ? iconData : `https://localhost:7070${iconData.startsWith('/') ? '' : '/'}${iconData}`
+      value: iconData.startsWith('http') ? iconData : `${import.meta.env.VITE_API_URL.replace('/api', '')}${iconData.startsWith('/') ? '' : '/'}${iconData}`
     };
   }
 

@@ -27,10 +27,10 @@ onMounted(async () => {
       chartInstance = new window.Chart(canvasRef.value.getContext('2d'), {
         type: 'bar',
         data: {
-          labels: res.data.map(d => d.hoTen),
+          labels: res.map(d => d.hoTen),
           datasets: [{
             label: 'Số đơn',
-            data: res.data.map(d => d.soDon),
+            data: res.map(d => d.soDon),
             backgroundColor: 'rgba(78,115,223,0.7)',
             borderColor: 'rgba(78,115,223,1)',
             borderWidth: 1,

@@ -58,8 +58,8 @@ const chiSo     = ref(null);
 const loadChiSo = async () => {
   try {
     const res = await axiosClient.get('/BaoCao/chi-so-chinh');
-    chiSo.value     = res.data;
-    kyHienTai.value = res.data.kyBaoCao || '';
+    chiSo.value     = res;
+    kyHienTai.value = res.kyBaoCao || '';
   } catch (err) {
     console.error('Lỗi tải chỉ số chính:', err);
   }

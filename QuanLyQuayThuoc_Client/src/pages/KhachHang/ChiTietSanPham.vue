@@ -115,8 +115,8 @@
                   </button>
                   
                   <button @click="guiDonThuoc" class="btn btn-light btn-lg flex-grow-1 py-3 font-weight-bold border">
-                    Gửi đơn thuốc
-                  </button>
+    Gửi đơn thuốc
+</button>
                 </div>
               </template>
 
@@ -221,6 +221,11 @@
       </section>
     </div>
   </div>
+  <GuiDonThuocModal 
+  :isOpen="showModalDonThuoc" 
+  :product="thuoc" 
+  @close="showModalDonThuoc = false" 
+/>
 </template>
 
 <script setup>
@@ -231,7 +236,12 @@ import axiosClient from '../../api/axiosClient';
 import { authState } from '../../api/auth'; 
 import Swal from 'sweetalert2';
 import bus from '../../api/bus';
+import GuiDonThuocModal from './GuiDonThuocModal.vue';
+const showModalDonThuoc = ref(false);
 
+const guiDonThuoc = () => {
+  showModalDonThuoc.value = true;
+};
 const route = useRoute();
 const router = useRouter();
 
@@ -272,7 +282,7 @@ const formatTien = (so) => {
 const getImageUrl = (path) => {
   if (!path) return 'https://via.placeholder.com/400x400.png?text=Duoc+Pham';
   if (path.startsWith('http')) return path;
-  return `https://localhost:7070${path.startsWith('/') ? '' : '/'}${path}`;
+  return `${import.meta.env.VITE_API_URL.replace('/api', '')}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
 // --- LOGIC TĂNG GIẢM SỐ LƯỢNG ---

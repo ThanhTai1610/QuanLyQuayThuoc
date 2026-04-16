@@ -148,7 +148,7 @@ const xuLyMoMo = async (chiTietThanhToan) => {
     };
 
     const ketQua = await axios.post(
-      'https://localhost:7070/api/BanHang/thanh-toan',
+      `${import.meta.env.VITE_API_URL}/BanHang/thanh-toan`,
       dto,
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -209,7 +209,7 @@ const goiApiThanhToan = async (chiTietThanhToan) => {
     };
 
     const ketQua = await axios.post(
-      'https://localhost:7070/api/BanHang/thanh-toan',
+      `${import.meta.env.VITE_API_URL}/BanHang/thanh-toan`,
       dto,
       { headers: { Authorization: `Bearer ${token}` } }
     );

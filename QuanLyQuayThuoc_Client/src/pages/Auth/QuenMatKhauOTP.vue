@@ -50,7 +50,7 @@
             </button>
 
             <div class="small-links mt-4 text-center">
-              <router-link to="/quen-mat-khau">Quay lại bước 1</router-link>
+              <router-link to="/auth/quen-mat-khau">Quay lại bước 1</router-link>
             </div>
           </div>
         </div>

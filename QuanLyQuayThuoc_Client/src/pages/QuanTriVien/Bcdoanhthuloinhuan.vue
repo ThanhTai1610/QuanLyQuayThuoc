@@ -26,7 +26,7 @@
       </div>
 
       <p class="bc-data-note mb-0">
-        API trả về số liệu theo kỳ đã chọn — <strong>GET /BaoCao/doanh-thu-loi-nhuan?ky=thang</strong>.
+        <strong>Doanh thu</strong>
       </p>
     </div>
   </div>
@@ -36,8 +36,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import axiosClient from '../../api/axiosClient';
 
+// TÀI LƯU Ý: Import trực tiếp thư viện đã tải về ở đây
+import Chart from 'chart.js/auto';
+
 const canvasRef = ref(null);
-const kyChon    = ref('thang');
+const kyChon = ref('thang');
 let chartInstance = null;
 
 const danhSachKy = [
@@ -50,20 +53,28 @@ const danhSachKy = [
 const loadData = async () => {
   try {
     const res = await axiosClient.get('/BaoCao/doanh-thu-loi-nhuan', { params: { ky: kyChon.value } });
-    veChart(res.data);
+    console.log("Dữ liệu nhận được:", res);
+    
+    if (res && res.nhan) {
+      veChart(res);
+    }
   } catch (err) {
-    console.error('Lỗi tải biểu đồ doanh thu:', err);
+    console.error('Lỗi tải biểu đồ:', err);
   }
 };
 
 const veChart = (data) => {
   if (!canvasRef.value) return;
-  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 
-  const Chart = window.Chart;
-  if (!Chart) return;
+  // Nếu đã có biểu đồ trước đó thì phải xóa đi để vẽ mới (tránh chồng chéo)
+  if (chartInstance) { 
+    chartInstance.destroy(); 
+  }
 
-  chartInstance = new Chart(canvasRef.value.getContext('2d'), {
+  const ctx = canvasRef.value.getContext('2d');
+  
+  // Khởi tạo biểu đồ bằng thư viện đã import
+  chartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: data.nhan,
@@ -71,29 +82,81 @@ const veChart = (data) => {
         {
           label: 'Doanh thu',
           data: data.doanhThu,
-          backgroundColor: 'rgba(78,115,223,0.7)',
-          borderColor: 'rgba(78,115,223,1)',
+          backgroundColor: '#4e73df',
+          borderColor: '#4e73df',
           borderWidth: 1,
         },
         {
           label: 'Lợi nhuận',
           data: data.loiNhuan,
-          backgroundColor: 'rgba(28,200,138,0.7)',
-          borderColor: 'rgba(28,200,138,1)',
+          backgroundColor: '#1cc88a',
+          borderColor: '#1cc88a',
           borderWidth: 1,
-        },
-      ],
+        }
+      ]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: true,
-      scales: { y: { beginAtZero: true } },
-    },
+      maintainAspectRatio: false, // Quan trọng: Để khớp với chiều cao CSS
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return value.toLocaleString('vi-VN') + ' đ';
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top'
+        }
+      }
+    }
   });
 };
 
-const doiKy = (ky) => { kyChon.value = ky; loadData(); };
+const doiKy = (ky) => {
+  kyChon.value = ky;
+  loadData();
+};
 
-onMounted(loadData);
-onBeforeUnmount(() => { if (chartInstance) chartInstance.destroy(); });
+onMounted(() => {
+  loadData();
+});
+
+onBeforeUnmount(() => {
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+});
 </script>
+
+<style scoped>
+.bc-chart-canvas-wrap {
+  position: relative;
+  /* Đây là mấu chốt: Canvas phải có chiều cao để hiện hình */
+  height: 350px; 
+  width: 100%;
+  margin-top: 20px;
+}
+
+.bc-chart-toolbar {
+  margin-bottom: 15px;
+}
+
+.bc-chart-legend-hint {
+  font-size: 0.8rem;
+  color: #858796;
+  display: block;
+}
+
+.bc-data-note {
+  font-size: 0.75rem;
+  color: #b7b9cc;
+  margin-top: 10px;
+  text-align: right;
+}
+</style>
