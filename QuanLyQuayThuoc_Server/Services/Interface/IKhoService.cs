@@ -1,4 +1,4 @@
-﻿using QuanLyQuayThuoc.DTOs.Kho;
+using QuanLyQuayThuoc.DTOs.Kho;
 using QuanLyQuayThuoc.DTOs.SanPham;
 
 namespace QuanLyQuayThuoc.Services.Interfaces

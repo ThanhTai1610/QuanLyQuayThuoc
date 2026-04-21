@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.Models;
 using QuanLyQuayThuoc.Repositories.Interfaces;
@@ -13,10 +13,12 @@ namespace QuanLyQuayThuoc.Repositories
     public class KhoRepository : IKhoRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly Microsoft.AspNetCore.Hosting.IWebHostEnvironment _env;
 
-        public KhoRepository(ApplicationDbContext context)
+        public KhoRepository(ApplicationDbContext context, Microsoft.AspNetCore.Hosting.IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
         public async Task<IEnumerable<object>> TimKiemThuocAsync(string query)
         {
@@ -24,12 +26,14 @@ namespace QuanLyQuayThuoc.Repositories
 
             return await _context.Thuocs
                 .Where(t => t.TenThuoc.Contains(query) || t.ThanhPhan.Contains(query))
-                .Select(t => new {
+                .Select(t => new
+                {
                     t.MaThuoc,
                     t.TenThuoc,
                     HamLuong = t.ThanhPhan,
                     SoLuongTon = t.LoHangs.Sum(l => (int?)l.SoLuongTon) ?? 0,
-                    DanhSachDonVi = t.DonViTinhs.Select(d => new {
+                    DanhSachDonVi = t.DonViTinhs.Select(d => new
+                    {
                         d.MaDvt,
                         d.TenDonVi,
                         d.GiaBan,
@@ -116,7 +120,7 @@ namespace QuanLyQuayThuoc.Repositories
             {
                 query = query.Where(l => l.MaThuocNavigation.TenThuoc.Contains(search) || l.SoLo.Contains(search));
             }
-                
+
             if (!string.IsNullOrEmpty(thang) && DateTime.TryParse(thang + "-01", out var parsedDate))
             {
                 var thangDateOnly = DateOnly.FromDateTime(parsedDate);
@@ -288,12 +292,46 @@ namespace QuanLyQuayThuoc.Repositories
                     LaThuocKeDon = dto.LaThuocKeDon ?? false,
                     NgayTao = now
                 };
+
+                if (!string.IsNullOrEmpty(dto.HinhAnh) && dto.HinhAnh.Contains("base64,"))
+                {
+                    try
+                    {
+                        string rootPath = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                        var drugsPath = Path.Combine(rootPath, "uploads", "drugs");
+                        if (!Directory.Exists(drugsPath)) Directory.CreateDirectory(drugsPath);
+
+                        var base64Data = dto.HinhAnh.Split("base64,")[1];
+                        var imageBytes = Convert.FromBase64String(base64Data);
+                        var fileName = $"drug_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid().ToString().Substring(0, 8)}.jpg";
+                        var filePath = Path.Combine(drugsPath, fileName);
+
+                        await File.WriteAllBytesAsync(filePath, imageBytes);
+                        thuocMoi.HinhAnhChinh = $"/uploads/drugs/{fileName}";
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log error or ignore if image fails
+                        Console.WriteLine("Error saving drug image: " + ex.Message);
+                    }
+                }
+
+                // 1. Phân tích đơn vị nhập để quy đổi
+                var donViNhapInfo = dto.ChiTiet.FirstOrDefault(x => x.TenDonVi.ToLower() == dto.TenDonViNhap.ToLower());
+                int heSoQuyDoi = donViNhapInfo?.GiaTriQuyDoi ?? 1;
+
+                // 2. Chuẩn hóa về đơn vị cơ bản
+                int tongSoLuongLe = dto.SoLuong * heSoQuyDoi;
+                decimal giaNhapLe = heSoQuyDoi > 0 ? (dto.GiaNhap / (decimal)heSoQuyDoi) : dto.GiaNhap;
+
+                // 3. Tạo thuốc và lưu để lấy MaThuoc
                 _context.Thuocs.Add(thuocMoi);
                 await _context.SaveChangesAsync();
+
+                // 4. Lưu danh sách đơn vị tính
                 for (int i = 0; i < dto.ChiTiet.Count; i++)
                 {
                     var item = dto.ChiTiet[i];
-
                     var maVach = now.ToString("yyMMdd") + thuocMoi.MaThuoc.ToString("D4") + i.ToString("D2");
 
                     var donViTinh = new DonViTinh
@@ -307,20 +345,22 @@ namespace QuanLyQuayThuoc.Repositories
                     };
                     _context.DonViTinhs.Add(donViTinh);
 
-                    var loHangMoi = new LoHang
-                    {
-                        MaThuoc = thuocMoi.MaThuoc,
-                        SoLo = item.SoLo,
-                        HanSuDung = DateOnly.FromDateTime(item.HanSuDung),
-                        GiaNhap = item.GiaNhap,
-                        SoLuongTon = item.SoLuong,
-                        NgaySanXuat = today
-                    };
-                    _context.LoHangs.Add(loHangMoi);
-
+                    // Trả về thông tin barcode để UI hiển thị/in
                     item.MaVach = maVach;
                     item.HinhAnhMaVach = TaoHinhAnhMaVachBase64(maVach);
                 }
+
+                // 5. Lưu DUY NHẤT 1 lô hàng (Đã được quy đổi về đơn vị gốc)
+                var loHangMoi = new LoHang
+                {
+                    MaThuoc = thuocMoi.MaThuoc,
+                    SoLo = dto.SoLo,
+                    HanSuDung = DateOnly.FromDateTime(dto.HanSuDung),
+                    GiaNhap = giaNhapLe,
+                    SoLuongTon = tongSoLuongLe,
+                    NgaySanXuat = today
+                };
+                _context.LoHangs.Add(loHangMoi);
 
                 await _context.SaveChangesAsync();
                 await giaoDich.CommitAsync();

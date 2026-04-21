@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using QuanLyQuayThuoc.DTOs.Kho;
 using QuanLyQuayThuoc.DTOs.SanPham;
 using QuanLyQuayThuoc.Models;
@@ -28,6 +28,5 @@ namespace QuanLyQuayThuoc.Repositories.Interfaces
         Task<IEnumerable<MaVachDto>> GetMaVachTheoThuocAsync(int maThuoc);
         Task<bool> ThemThuocMoiVaNhapKhoAsync(ThemThuocMoiVaNhapKhoDto dto);
         Task<object?> TimThuocTheoBarcodeAsync(string maVach);
-
     }
 }

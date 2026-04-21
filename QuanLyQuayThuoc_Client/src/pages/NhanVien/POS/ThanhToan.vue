@@ -79,7 +79,6 @@
         </div>
 
         <div v-if="thongTinThanhToan.phuongThuc === 'momo'" class="mb-3 border rounded p-3 text-center bg-white">
-          <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" width="50" class="mb-2">
           <div class="small font-weight-bold text-primary">Thanh toán qua Ví MoMo</div>
           <div class="small text-muted">Hệ thống sẽ tạo mã QR sau khi nhấn "Thanh toán"</div>
         </div>

@@ -86,20 +86,16 @@
                   <div class="cart-controls">
                     <div class="cart-qty-group mb-1">
                       <div class="input-group input-group-sm">
-                        <div class="input-group-prepend">
-                          <button class="btn btn-outline-primary" type="button"
-                            @click="giamSoLuong(item)">&minus;</button>
-                        </div>
+                        <button class="btn btn-outline-primary" type="button"
+                          @click="giamSoLuong(item)">&minus;</button>
                         <input
                           type="text"
-                          class="form-control text-center"
+                          class="form-control text-center qty-input"
                           :value="item.soLuong"
                           @change="capNhatSoLuong(item, $event.target.value)"
                         />
-                        <div class="input-group-append">
-                          <button class="btn btn-outline-primary" type="button"
-                            @click="tangSoLuong(item)">&plus;</button>
-                        </div>
+                        <button class="btn btn-outline-primary" type="button"
+                          @click="tangSoLuong(item)">&plus;</button>
                       </div>
                     </div>
                     <div class="cart-price-wrapper">
