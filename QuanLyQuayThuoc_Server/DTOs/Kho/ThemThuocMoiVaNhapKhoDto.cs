@@ -1,4 +1,4 @@
-﻿// DTOs/Kho/ThemThuocMoiVaNhapKhoDto.cs
+// DTOs/Kho/ThemThuocMoiVaNhapKhoDto.cs
 namespace QuanLyQuayThuoc.DTOs.Kho
 {
     public class ThemThuocMoiVaNhapKhoDto
@@ -8,6 +8,7 @@ namespace QuanLyQuayThuoc.DTOs.Kho
         public DateTime NgayNhap { get; set; }
         public string? GhiChu { get; set; }
 
+        // Thông tin thuốc
         public string TenThuoc { get; set; } = null!;
         public int? MaDanhMuc { get; set; }
         public string? SoDangKy { get; set; }
@@ -18,6 +19,15 @@ namespace QuanLyQuayThuoc.DTOs.Kho
         public string? ThanhPhan { get; set; }
         public string? MoTaNgan { get; set; }
         public bool? LaThuocKeDon { get; set; }
+        public string? HinhAnh { get; set; }
+
+        // Thông tin Lô (Duy nhất cho thuốc mới khi tạo)
+        public string SoLo { get; set; } = null!;
+        public DateTime HanSuDung { get; set; }
+        public decimal GiaNhap { get; set; }       // Giá của "Đơn vị nhập"
+        public int SoLuong { get; set; }           // Số lượng của "Đơn vị nhập"
+        public string TenDonViNhap { get; set; } = null!; // Tên đơn vị dùng để nhập (Hộp/Vỉ...)
+
         public List<DonViTinhVaLoDto> ChiTiet { get; set; } = new();
     }
 
@@ -27,11 +37,8 @@ namespace QuanLyQuayThuoc.DTOs.Kho
         public decimal GiaBan { get; set; }
         public int GiaTriQuyDoi { get; set; }             // Quy đổi ra đơn vị nhỏ nhất, VD: 1 Hộp = 10 vỉ → 10
         public bool LaDonViCoBan { get; set; }            // true = đơn vị nhỏ nhất
-
-        public string SoLo { get; set; } = null!;
-        public DateTime HanSuDung { get; set; }
-        public decimal GiaNhap { get; set; }
-        public int SoLuong { get; set; }
+        
+        // Các trường barcode/ảnh được server sinh ra dựa trên đơn vị tính này
         public string? MaVach { get; set; }
         public string? HinhAnhMaVach { get; set; }
     }

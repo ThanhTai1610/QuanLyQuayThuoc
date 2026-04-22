@@ -73,7 +73,11 @@
                 </thead>
                 <tbody>
                   <tr v-for="lo in danhSachHienThi" :key="lo.maLo" :class="rowClass(lo)">
-                    <td class="font-weight-bold">{{ lo.soLo }}</td>
+                    <td>
+                      <a href="#" class="text-primary font-weight-bold" @click.prevent="xemThuocCungLo(lo.soLo)">
+                        {{ lo.soLo }}
+                      </a>
+                    </td>
                     <td>
                       {{ lo.hanSuDung }}
                       <span v-if="laHetHan(lo)" class="badge badge-danger ml-1">Hết hạn</span>
@@ -194,6 +198,47 @@
       </div>
     </div>
     <div v-if="hienModal" class="modal-backdrop fade show"></div>
+
+    <!-- MODAL CHI TIẾT THUỐC CÙNG LÔ -->
+    <div v-if="hienModalLo" class="custom-modal-overlay">
+      <div class="custom-modal-content" style="width: 750px;">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="m-0">Lô hàng: {{ soLoHienTai }}</h5>
+          <button class="btn-close-white" @click="hienModalLo = false">&times;</button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="p-3 bg-light border-bottom">
+            <span class="small text-muted">Danh sách các loại thuốc sử dụng chung số lô này</span>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover m-0">
+              <thead class="bg-white">
+                <tr>
+                  <th class="pl-3">Tên thuốc</th>
+                  <th>Hạn dùng</th>
+                  <th class="text-right">Tồn kho</th>
+                  <th class="text-right pr-3">Giá nhập</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, idx) in danhSachCungLo" :key="idx">
+                  <td class="pl-3 py-2">
+                    <i class="fas fa-capsules text-primary mr-1"></i>
+                    <strong>{{ item.tenThuoc }}</strong>
+                  </td>
+                  <td>{{ item.hanSuDung }}</td>
+                  <td class="text-right text-info font-weight-bold">{{ item.soLuongTon }}</td>
+                  <td class="text-right pr-3">{{ formatGia(item.giaNhap) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary px-4" @click="hienModalLo = false">Đóng</button>
+        </div>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -299,6 +344,17 @@ const luuSuaLo = async () => {
 
 const formatGia = (v) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v ?? 0);
+
+const hienModalLo = ref(false);
+const soLoHienTai = ref('');
+const danhSachCungLo = ref([]);
+
+const xemThuocCungLo = (soLo) => {
+  soLoHienTai.value = soLo;
+  // Lọc từ danh sách hiện tại (nếu muốn check toàn bộ hệ thống thì gọi API)
+  danhSachCungLo.value = danhSach.value.filter(l => l.soLo === soLo);
+  hienModalLo.value = true;
+};
 
 onMounted(loadData);
 </script>
