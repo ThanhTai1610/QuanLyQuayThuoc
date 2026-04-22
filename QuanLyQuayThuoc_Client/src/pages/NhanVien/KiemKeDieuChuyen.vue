@@ -47,9 +47,15 @@
           <div class="col-md-4">
             <div class="form-group">
               <label>&nbsp;</label>
-              <button type="button" class="btn btn-outline-secondary btn-sm btn-block" @click="resetLoc">
-                <i class="fas fa-sync-alt mr-1"></i> Xóa lọc
-              </button>
+              <div class="d-flex gap-2">
+                <button type="button" :class="['btn btn-sm flex-grow-1', locSapHetHan ? 'btn-warning' : 'btn-outline-warning']" 
+                  @click="toggleLocHetHan">
+                  <i class="fas fa-exclamation-triangle mr-1"></i> {{ locSapHetHan ? 'Đang lọc sắp hết hạn' : 'Lọc lô sắp hết hạn' }}
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" @click="resetLoc" title="Xóa tất cả lọc">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -75,7 +81,11 @@
                   <div class="font-weight-bold">{{ item.tenThuoc }}</div>
                   <div class="small text-muted"><span class="kiemke-batch">{{ item.soLo }}</span></div>
                 </td>
-                <td class="kiemke-hsd">{{ item.hanSuDung }}</td>
+                <td class="kiemke-hsd">
+                  <div class="font-weight-bold">{{ item.hanSuDung }}</div>
+                  <span v-if="getTinhTrangHSD(item.hanSuDung) === 'het-han'" class="badge badge-danger">Đã hết hạn</span>
+                  <span v-else-if="getTinhTrangHSD(item.hanSuDung) === 'sap-het-han'" class="badge badge-warning">Sắp hết hạn</span>
+                </td>
                 <td><strong>{{ item.soLuongTon }}</strong></td>
                 <td>
                   <input type="number" min="0" step="1" class="form-control form-control-sm"
@@ -205,6 +215,7 @@ import axiosClient from '../../api/axiosClient';
 
 // ── State ──
 const locDanhMuc = ref('');
+const locSapHetHan = ref(false);
 const toasts = ref([]);
 const tatCaLo = ref([]); 
 const lichSu = ref([]);
@@ -267,13 +278,34 @@ const apDungLocFilter = () => {
     return;
   }
   danhSachHienThi.value = tatCaLo.value.filter(item => {
-    return !locDanhMuc.value || item.danhMuc === locDanhMuc.value;    
+    const khớpDM = !locDanhMuc.value || item.danhMuc === locDanhMuc.value;
+    const khớpHSD = !locSapHetHan.value || getTinhTrangHSD(item.hanSuDung) !== 'binh-thuong';
+    return khớpDM && khớpHSD;    
   });
+};
+
+const toggleLocHetHan = () => {
+  locSapHetHan.value = !locSapHetHan.value;
+  apDungLocFilter();
 };
 
 const resetLoc = () => {
   locDanhMuc.value = '';
+  locSapHetHan.value = false;
   apDungLocFilter();
+};
+
+const getTinhTrangHSD = (dateStr) => {
+  if (!dateStr) return 'binh-thuong';
+  const hsd = new Date(dateStr);
+  const today = new Date();
+  if (hsd <= today) return 'het-han';
+  
+  const timeDiff = hsd.getTime() - today.getTime();
+  const ninetyDaysInMs = 90 * 24 * 60 * 60 * 1000;
+  if (timeDiff <= ninetyDaysInMs) return 'sap-het-han';
+  
+  return 'binh-thuong';
 };
 
 const capNhatChenhLech = (item) => {

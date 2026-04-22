@@ -181,40 +181,58 @@
         </div>
       </section>
 
-      <section class="related-card mt-4">
-        <h2>Sản phẩm tương tự</h2>
-        <div class="related-slider d-flex overflow-auto p-2" style="gap: 15px;">
+      <section class="related-section mt-5">
+        <div class="section-header d-flex justify-content-between align-items-center mb-3">
+          <h2 class="section-title">Sản phẩm tương tự</h2>
+          <router-link to="/san-pham" class="view-all">Xem tất cả <i class="fas fa-chevron-right ml-1"></i></router-link>
+        </div>
+        <div class="related-slider pb-3">
           <router-link
             v-for="item in dsSanPhamTuongTu"
             :key="item.maThuoc"
             :to="{ name: 'ChiTietSanPham', params: { id: item.maThuoc } }"
-            class="related-item p-3 text-center shadow-sm bg-white rounded"
-            style="min-width: 180px; text-decoration: none; color: inherit;"
+            class="product-mini-card"
           >
-            <img :src="getImageUrl(item.hinhAnhChinh)" style="width: 100px; height: 100px; object-fit: cover;" />
-            <div class="mt-2 text-truncate font-weight-bold">{{ item.tenThuoc }}</div>
-            <div class="text-danger small">{{ formatTien(item.giaBan) }}</div>
+            <div class="card-img-wrap">
+              <img :src="getImageUrl(item.hinhAnhChinh)" :alt="item.tenThuoc" />
+            </div>
+            <div class="card-info">
+              <h3 class="card-name">{{ item.tenThuoc }}</h3>
+              <div class="card-price">{{ formatTien(item.giaBan) }}</div>
+            </div>
           </router-link>
         </div>
       </section>
 
-      <section class="related-card mt-4">
-        <h2>Sản phẩm thường mua cùng</h2>
-        <div class="related-slider d-flex overflow-auto p-2" style="gap: 15px;">
+      <section class="related-section mt-4">
+        <div class="section-header mb-3">
+          <h2 class="section-title">Sản phẩm thường mua cùng</h2>
+        </div>
+        <div class="related-slider pb-3">
           <div 
             v-for="item in dsThuongMuaCung" 
             :key="item.id" 
-            class="related-item p-3 text-center shadow-sm bg-white rounded"
-            style="min-width: 180px;"
+            class="product-mini-card has-action"
           >
-            <router-link :to="{ name: 'ChiTietSanPham', params: { id: item.id } }" style="text-decoration: none; color: inherit;">
-                <img :src="getImageUrl(item.image)" style="width: 100px; height: 100px; object-fit: cover;" />
-                <div class="mt-2 text-truncate font-weight-bold">{{ item.name }}</div>
-                <div class="text-danger small">{{ formatTien(item.price) }} / {{ item.unit }}</div>
+            <router-link :to="{ name: 'ChiTietSanPham', params: { id: item.id } }" class="card-link">
+              <div class="card-img-wrap">
+                <img :src="getImageUrl(item.image)" :alt="item.name" />
+              </div>
+              <div class="card-info">
+                <h3 class="card-name">{{ item.name }}</h3>
+                <div class="card-price">
+                  {{ formatTien(item.price) }} <span class="card-unit">/ {{ item.unit }}</span>
+                </div>
+              </div>
             </router-link>
-            <button class="btn btn-sm btn-outline-primary mt-2 w-100" @click="themNhanhVaoGio(item)">Thêm nhanh</button>
+            <div class="card-action">
+              <button class="btn-quick-add" @click="themNhanhVaoGio(item)">
+                <i class="fas fa-cart-plus mr-1"></i> Thêm vào giỏ
+              </button>
+            </div>
           </div>
-          <div v-if="dsThuongMuaCung.length === 0" class="p-4 text-muted w-100 text-center">
+          <div v-if="dsThuongMuaCung.length === 0" class="empty-suggestion p-5 text-center w-100">
+            <div class="spinner-grow text-primary spinner-grow-sm mr-2"></div>
             Đang tìm kiếm gợi ý phù hợp cho bạn...
           </div>
         </div>
@@ -373,26 +391,49 @@ const themGioHang = async () => {
 
   try {
     await axiosClient.post('GioHang/them', payload);
-    Swal.fire({ title: 'Thành công!', icon: 'success', showCancelButton: true, confirmButtonText: 'Xem giỏ' })
-      .then((r) => { if (r.isConfirmed) router.push('/gio-hang'); });
+    Swal.fire({
+      icon: 'success',
+      title: 'Đã thêm!',
+      text: `${thuoc.value.tenThuoc} đã vào giỏ hàng.`,
+      confirmButtonText: 'Xem giỏ hàng',
+      showCancelButton: true,
+      cancelButtonText: 'Tiếp tục',
+    }).then((result) => {
+      if (result.isConfirmed) router.push('/gio-hang');
+    });
   } catch (e) {
     Swal.fire('Thất bại', 'Không thể thêm sản phẩm.', 'error');
   }
 };
 
 const themNhanhVaoGio = async (item) => {
-    // Logic thêm nhanh dành cho gợi ý "Mua cùng"
     if (!authState.user) {
-        Swal.fire('Thông báo', 'Bạn cần đăng nhập để mua hàng', 'warning');
+        Swal.fire({ title: 'Thông báo', text: 'Vui lòng đăng nhập!', icon: 'warning', confirmButtonText: 'Đăng nhập' })
+            .then((r) => { if (r.isConfirmed) router.push('/dang-nhap'); });
         return;
     }
     try {
-        // Tự động tìm đơn vị cơ bản của sản phẩm gợi ý để thêm vào giỏ
-        // Chú ý: Backend cần trả về thêm MaDvt của đơn vị cơ bản trong API FrequentlyBoughtWith
-        // Nếu chưa có, bạn có thể hướng người dùng vào xem Chi Tiết.
-        router.push(`/thuoc/${item.id}`);
+        const payload = { 
+            MaThuoc: item.id || item.maThuoc, 
+            MaDvt: item.maDvt || 1, // Fallback về 1 nếu backend vẫn trả về 0
+            SoLuong: 1 
+        };
+        console.log("Payload thêm nhanh:", payload);
+        await axiosClient.post('GioHang/them', payload);
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Đã thêm!',
+            text: `${item.name} đã vào giỏ hàng.`,
+            confirmButtonText: 'Xem giỏ hàng',
+            showCancelButton: true,
+            cancelButtonText: 'Tiếp tục',
+        }).then((result) => {
+            if (result.isConfirmed) router.push('/gio-hang');
+        });
     } catch (e) {
         console.error(e);
+        Swal.fire('Lỗi', 'Không thể thêm sản phẩm nhanh vào giỏ.', 'error');
     }
 }
 
@@ -404,7 +445,166 @@ watch(() => route.params.id, (newId) => {
 </script>
 
 <style scoped>
-/* GIỮ NGUYÊN CSS CỦA BẠN */
+/* CSS RE-DESIGNED SECTIONS */
+.related-section {
+  background: transparent;
+}
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  position: relative;
+  padding-left: 15px;
+}
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: #007bff;
+  border-radius: 4px;
+}
+.view-all {
+  font-size: 14px;
+  color: #007bff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.view-all:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+.related-slider {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding: 10px 5px;
+  scroll-behavior: smooth;
+}
+.related-slider::-webkit-scrollbar {
+  height: 6px;
+}
+.related-slider::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.related-slider::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 10px;
+}
+
+.product-mini-card {
+  min-width: 200px;
+  max-width: 200px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.product-mini-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-color: #007bff33;
+}
+.product-mini-card.has-action {
+  height: 100%;
+}
+
+.card-img-wrap {
+  width: 100%;
+  height: 160px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+.card-img-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
+}
+.product-mini-card:hover .card-img-wrap img {
+  transform: scale(1.1);
+}
+
+.card-info {
+  padding: 12px 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+.card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  height: 2.8em;
+}
+.card-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #d9534f;
+  margin-top: auto;
+}
+.card-unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: #718096;
+}
+
+.card-action {
+  padding: 0 15px 15px;
+}
+.btn-quick-add {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #007bff;
+  background: #fff;
+  color: #007bff;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.btn-quick-add:hover {
+  background: #007bff;
+  color: #fff;
+}
+
+.empty-suggestion {
+  background: #f8fafc;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* GIỮ NGUYÊN CSS CŨ CỦA BẠN NẾU CẦN */
 .image-viewer { position: relative; background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: 1px solid #eee; }
 .prescription-label { position: absolute; top: 12px; left: 12px; z-index: 10; background-color: rgba(255, 255, 255, 0.9); color: #d9534f; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 13px; border: 1px solid #d9534f; }
 .main-image { width: 100%; height: 400px; object-fit: contain; display: block; }
@@ -412,6 +612,4 @@ watch(() => route.params.id, (newId) => {
 .unit-item.active { border-color: #007bff; color: #007bff; background-color: #f0f7ff; }
 .stock-available { background-color: #e6f9f0; color: #1a7f4e; }
 .stock-empty { background-color: #ffebee; color: #c62828; }
-.related-slider::-webkit-scrollbar { height: 6px; }
-.related-slider::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
 </style>

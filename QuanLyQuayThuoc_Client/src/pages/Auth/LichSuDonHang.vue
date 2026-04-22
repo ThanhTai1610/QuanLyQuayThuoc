@@ -57,7 +57,7 @@
                       <span class="text-muted">{{ dinhDangNgay(don.ngayDat) }}</span>
                     </div>
                     <div class="order-tag badge" :class="bgTrangThai(don.trangThai)">
-                      {{ don.trangThai }}
+                      {{ getLabelTrangThai(don.trangThai) }}
                     </div>
                   </div>
 
@@ -154,7 +154,7 @@
               </div>
               <div class="col-md-6 text-md-end mt-3 mt-md-0">
                 <p class="mb-1 text-muted small text-uppercase fw-bold">Trạng thái</p>
-                <span class="badge mb-2" :class="bgTrangThai(chiTiet.trangThai)">{{ chiTiet.trangThai }}</span>
+                <span class="badge mb-2" :class="bgTrangThai(chiTiet.trangThai)">{{ getLabelTrangThai(chiTiet.trangThai) }}</span>
                 <p class="mb-0 small text-muted">Ngày đặt: {{ dinhDangNgay(chiTiet.ngayDat) }}</p>
               </div>
             </div>
@@ -217,7 +217,7 @@ const tabs = [
   { label: 'Tất cả',    value: '' },
   { label: 'Chờ xử lý', value: 'Chờ xử lý' },
   { label: 'Đang giao', value: 'Đang giao' },
-  { label: 'Hoàn tất',   value: 'Hoàn tất' },
+  { label: 'Hoàn tất',  value: 'Đã giao' },
   { label: 'Đã hủy',    value: 'Đã hủy' },
 ];
 
@@ -319,6 +319,8 @@ const dinhDangNgay = (val) => {
 
 const formatGia = (value) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
+
+const getLabelTrangThai = (val) => tabs.find(t => t.value === val)?.label || val;
 
 const bgTrangThai = (trangThai) => {
   switch (trangThai) {

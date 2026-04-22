@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Protocol;
+using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.DTOs.SanPham;
@@ -25,8 +25,8 @@ namespace QuanLyQuayThuoc.Repository.Implementation
                                  join d in _context.DanhMucs on t.MaDanhMuc equals d.MaDanhMuc
                                  join dvt in _context.DonViTinhs on t.MaThuoc equals dvt.MaThuoc
                                  where dvt.LaDonViCoBan == true &&
-                                       (t.TenThuoc.ToLower().Contains(searchTerm) ||
-                                        d.TenDanhMuc.ToLower().Contains(searchTerm))
+                                       (EF.Functions.Collate(t.TenThuoc, "SQL_Latin1_General_CP1_CI_AI").Contains(searchTerm) ||
+                                        EF.Functions.Collate(d.TenDanhMuc, "SQL_Latin1_General_CP1_CI_AI").Contains(searchTerm))
                                  select new SanPhamSearchDto
                                  {
                                      Id = t.MaThuoc, // Đảm bảo t.MaThuoc của 2 thuốc phải khác nhau

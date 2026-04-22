@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.DTOs.SanPham;
@@ -25,7 +25,7 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
 
             // 1. Tìm kiếm theo tên
             if (!string.IsNullOrEmpty(q))
-                query = query.Where(t => t.TenThuoc.Contains(q));
+                query = query.Where(t => EF.Functions.Collate(t.TenThuoc, "SQL_Latin1_General_CP1_CI_AI").Contains(q));
 
             // 2. Lọc theo danh mục (hỗ trợ nhiều mã cách nhau dấu phẩy)
             if (!string.IsNullOrEmpty(danhMuc))
