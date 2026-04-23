@@ -2,7 +2,7 @@
   <div class="chatbot-container">
     <button @click="toggleChat" class="chatbot-fab" :class="{ 'fab-active': isOpen }">
       <span v-if="!isOpen" class="fab-content">
-        <i class="fas fa-comments"></i> Tư vấn AI
+        <i class="fas fa-comments"></i> Tư vấn dược
       </span>
       <span v-else class="fab-content">
         <i class="fas fa-times"></i> Đóng
@@ -17,8 +17,8 @@
             <span class="status-dot"></span>
           </div>
           <div class="header-text">
-            <p class="name">Dược sĩ Pharmative (AI)</p>
-            <p class="status">Sẵn sàng tư vấn 24/7</p>
+            <p class="name">Dược sĩ tư vấn Pharmative</p>
+            <p class="status">Tư vấn ngắn gọn, đúng trọng tâm</p>
           </div>
         </div>
       </div>
@@ -28,7 +28,7 @@
           <div class="msg-bubble shadow-sm">
             {{ msg.text }}
           </div>
-          <span class="msg-time">{{ getCurrentTime() }}</span>
+          <span class="msg-time">{{ msg.time }}</span>
         </div>
 
         <div v-if="isTyping" class="msg-wrapper bot">
@@ -39,42 +39,57 @@
       </div>
 
       <div class="chatbot-footer">
-  <div class="input-wrapper">
-    <input 
-      v-model="input" 
-      @keyup.enter="handleSend" 
-      placeholder="Hỏi dược sĩ về thuốc, triệu chứng..."
-      type="text"
-      :disabled="isTyping"
-    >
-    <button @click="handleSend" class="send-btn" :disabled="!input.trim() || isTyping">
-      <i class="fas fa-paper-plane"></i>
-    </button>
-  </div>
-</div>
+        <div class="input-wrapper">
+          <input
+            v-model="input"
+            @keyup.enter="handleSend"
+            placeholder="Mô tả triệu chứng, thuốc đang dùng hoặc sản phẩm bạn cần hỏi..."
+            type="text"
+            :disabled="isTyping"
+          >
+          <button @click="handleSend" class="send-btn" :disabled="!input.trim() || isTyping">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import axiosClient from '../api/axiosClient'; 
-import bus from '../api/bus'; 
+import axiosClient from '../api/axiosClient';
+import bus from '../api/bus';
 
-// --- STATE ---
 const isOpen = ref(false);
 const input = ref('');
 const chatBox = ref(null);
 const isTyping = ref(false);
-const currentProduct = ref(""); 
+const currentProduct = ref('');
+
+function formatTime(date) {
+  return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+}
+
+const createMessage = (role, text) => ({
+  role,
+  text,
+  time: formatTime(new Date())
+});
+
+const normalizeReply = (text) =>
+  String(text || '')
+    .replace(/\r/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 
 const messages = ref([
-  { role: 'bot', text: 'Chào Tài! Tôi là dược sĩ ảo. Bạn cần tư vấn về cách dùng thuốc hay gặp triệu chứng gì không?' }
+  createMessage(
+    'bot',
+    'Xin chào. Tôi hỗ trợ tư vấn về công dụng, cách dùng, lưu ý an toàn và lựa chọn sản phẩm phù hợp. Bạn hãy nêu triệu chứng, độ tuổi và thuốc đang dùng nếu có.'
+  )
 ]);
 
-// --- LOGIC FUNCTIONS ---
-
-// Tự động cuộn xuống tin nhắn cuối cùng
 const scrollToBottom = async () => {
   await nextTick();
   if (chatBox.value) {
@@ -87,38 +102,35 @@ const toggleChat = () => {
   if (isOpen.value) scrollToBottom();
 };
 
-const getCurrentTime = () => {
-  const now = new Date();
-  return now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-};
-
 const handleSend = async () => {
   if (!input.value.trim() || isTyping.value) return;
-  
-  const userText = input.value;
-  messages.value.push({ role: 'user', text: userText });
+
+  const userText = input.value.trim();
+  messages.value.push(createMessage('user', userText));
   input.value = '';
   isTyping.value = true;
   await scrollToBottom();
 
   try {
-    
     const response = await axiosClient.post('/Chatbot/ask', {
       message: userText,
-      tenThuoc: currentProduct.value // Truyền context thuốc đang xem
+      tenThuoc: currentProduct.value
     });
 
-    messages.value.push({ 
-      role: 'bot', 
-      text: response.reply || response.data?.reply || 'Dược sĩ đã nhận thông tin.' 
-    });
+    const reply =
+      response.reply ||
+      response.data?.reply ||
+      'Tôi đã ghi nhận thông tin. Bạn có thể cho biết thêm triệu chứng chính hoặc tên sản phẩm cần hỏi để tôi tư vấn sát hơn.';
 
+    messages.value.push(createMessage('bot', normalizeReply(reply)));
   } catch (error) {
-    console.error("Lỗi Chatbot:", error);
-    messages.value.push({ 
-      role: 'bot', 
-      text: 'Kết nối với dược sĩ bị gián đoạn. Tài kiểm tra lại mạng hoặc đăng nhập lại nhé!' 
-    });
+    console.error('Lỗi Chatbot:', error);
+    messages.value.push(
+      createMessage(
+        'bot',
+        'Kết nối tư vấn đang gián đoạn. Bạn vui lòng thử lại sau ít phút. Nếu đang có triệu chứng nặng hoặc bất thường, hãy liên hệ cơ sở y tế gần nhất.'
+      )
+    );
   } finally {
     isTyping.value = false;
     await scrollToBottom();
@@ -128,13 +140,21 @@ const handleSend = async () => {
 onMounted(() => {
   bus.on('open-chat', (data) => {
     isOpen.value = true;
+
     if (data?.tenThuoc) {
+      const isNewProduct = currentProduct.value !== data.tenThuoc;
       currentProduct.value = data.tenThuoc;
-      messages.value.push({ 
-        role: 'bot', 
-        text: `Chào bạn! Tôi thấy bạn đang quan tâm thuốc "${data.tenThuoc}". Bạn cần tư vấn kỹ hơn về sản phẩm này không?` 
-      });
+
+      if (isNewProduct) {
+        messages.value.push(
+          createMessage(
+            'bot',
+            `Tôi thấy bạn đang xem sản phẩm "${data.tenThuoc}". Bạn có thể hỏi về công dụng, cách dùng, đối tượng sử dụng, lưu ý an toàn hoặc sản phẩm phù hợp với triệu chứng hiện tại.`
+          )
+        );
+      }
     }
+
     scrollToBottom();
   });
 });
@@ -143,4 +163,3 @@ onUnmounted(() => {
   bus.off('open-chat');
 });
 </script>
-

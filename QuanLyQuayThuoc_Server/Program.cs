@@ -53,6 +53,9 @@ builder.Services.AddScoped<IKhoService, KhoService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpClient<IChatBotService, ChatbotService>();
+builder.Services.AddSingleton<EmailQueueService>();
+builder.Services.AddSingleton<IEmailQueueService>(sp => sp.GetRequiredService<EmailQueueService>());
+builder.Services.AddHostedService<EmailBackgroundService>();
 
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoOption"));
 builder.Services.AddScoped<IMomoService, MomoService>();

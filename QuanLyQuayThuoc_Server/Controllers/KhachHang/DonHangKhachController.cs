@@ -42,30 +42,51 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                         TongTien = dh.TongTien ?? 0,
                         TrangThai = dh.TrangThai,
 
-                        MaThuoc = dh.ChiTietDonHangs.Select(ct => ct.MaLoNavigation.MaThuoc).FirstOrDefault(),
-                        MaDVT = dh.ChiTietDonHangs.Select(ct => ct.MaDvt).FirstOrDefault(),
+                        MaThuoc = dh.ChiTietDonHangs
+                            .OrderBy(ct => ct.MaChiTiet)
+                            .Select(ct => ct.MaLoNavigation.MaThuoc)
+                            .FirstOrDefault(),
+                        MaDVT = dh.ChiTietDonHangs
+                            .OrderBy(ct => ct.MaChiTiet)
+                            .Select(ct => ct.MaDvt)
+                            .FirstOrDefault(),
                         // Lấy thông tin từ ChiTietDonHang đầu tiên thông qua Navigation
                         TenSanPham = dh.ChiTietDonHangs
+                            .OrderBy(ct => ct.MaChiTiet)
                             .Select(ct => ct.MaLoNavigation.MaThuocNavigation.TenThuoc)
                             .FirstOrDefault(),
 
                         HinhAnh = dh.ChiTietDonHangs
+                            .OrderBy(ct => ct.MaChiTiet)
                             .Select(ct => ct.MaLoNavigation.MaThuocNavigation.HinhAnhChinh)
                             .FirstOrDefault(),
 
                         SoLuong = dh.ChiTietDonHangs
+                            .OrderBy(ct => ct.MaChiTiet)
                             .Select(ct => ct.SoLuong)
                             .FirstOrDefault() ?? 0,
 
                         // Sử dụng MaDvtNavigation thay vì Join thủ công
                         DonVi = dh.ChiTietDonHangs
+                            .OrderBy(ct => ct.MaChiTiet)
                             .Select(ct => ct.MaDvtNavigation.TenDonVi)
                             .FirstOrDefault(),
 
                         // Tính số lượng sản phẩm khác
                         SoSanPhamKhac = dh.ChiTietDonHangs.Count() > 1
                                         ? dh.ChiTietDonHangs.Count() - 1
-                                        : 0
+                                        : 0,
+
+                        SanPhamsTomTat = dh.ChiTietDonHangs
+                            .OrderBy(ct => ct.MaChiTiet)
+                            .Select(ct => new SanPhamTomTatDonHangDto
+                            {
+                                TenSanPham = ct.MaLoNavigation.MaThuocNavigation.TenThuoc,
+                                HinhAnh = ct.MaLoNavigation.MaThuocNavigation.HinhAnhChinh,
+                                SoLuong = ct.SoLuong ?? 0,
+                                DonVi = ct.MaDvtNavigation.TenDonVi
+                            })
+                            .ToList()
                     })
                     .ToListAsync();
 

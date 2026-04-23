@@ -3,17 +3,17 @@
     <div class="container py-4">
 
       <div class="d-flex align-items-center justify-content-between mb-3">
-        <router-link to="/" class="btn btn-link p-0">â† Vá» trang chá»§</router-link>
-        <div class="products-page-title">Danh sÃ¡ch sáº£n pháº©m nhÃ  thuá»‘c</div>
+        <router-link to="/" class="btn btn-link p-0">← Về trang chủ</router-link>
+        <div class="products-page-title">Danh sách sản phẩm nhà thuốc</div>
       </div>
 
       <div class="row">
         <div class="col-lg-3 mb-4">
           <aside class="filter-sidebar">
-            <h2 class="filter-title"><i class="fas fa-filter mr-2"></i>Bá»™ lá»c thÃ´ng minh</h2>
+            <h2 class="filter-title"><i class="fas fa-filter mr-2"></i>Bộ lọc thông minh</h2>
 
             <div class="filter-group">
-              <div class="filter-label">Danh má»¥c</div>
+              <div class="filter-label">Danh mục</div>
               <div class="filter-scroll-container">
                 <label class="filter-option" v-for="dm in danhSachDanhMuc" :key="dm.maDanhMuc">
                   <input type="checkbox" :value="dm.maDanhMuc" v-model="locDanhMuc" />
@@ -24,7 +24,7 @@
             </div>
 
             <div class="filter-group">
-              <div class="filter-label">Äá»‘i tÆ°á»£ng</div>
+              <div class="filter-label">Đối tượng</div>
               <label class="filter-option" v-for="dt in danhSachDoiTuong" :key="dt">
                 <input type="checkbox" :value="dt" v-model="locDoiTuong" />
                 <span class="custom-check"></span>
@@ -33,7 +33,7 @@
             </div>
 
             <div class="filter-group">
-              <div class="filter-label">NhÃ  sáº£n xuáº¥t</div>
+              <div class="filter-label">Nhà sản xuất</div>
               <div class="filter-scroll-container">
                 <label class="filter-option" v-for="nsx in danhSachNSX" :key="nsx">
                   <input type="checkbox" :value="nsx" v-model="locNSX" />
@@ -44,7 +44,7 @@
             </div>
 
             <div class="filter-group">
-              <div class="filter-label">Khoáº£ng giÃ¡</div>
+              <div class="filter-label">Khoảng giá</div>
               <label class="filter-option" v-for="g in danhSachGia" :key="g.value">
                 <input type="radio" name="gia" :value="g.value" v-model="locGia" />
                 <span class="custom-radio"></span>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="filter-group mb-0">
-              <div class="filter-label">Dáº¡ng bÃ o cháº¿</div>
+              <div class="filter-label">Dạng bào chế</div>
               <label class="filter-option" v-for="dbc in danhSachDBC" :key="dbc">
                 <input type="checkbox" :value="dbc" v-model="locDBC" />
                 <span class="custom-check"></span>
@@ -62,7 +62,7 @@
             </div>
 
             <button class="btn btn-reset-filter btn-sm btn-block mt-4" @click="xoaBoLoc">
-              <i class="fas fa-sync-alt mr-2"></i> LÃ m má»›i bá»™ lá»c
+              <i class="fas fa-sync-alt mr-2"></i> Làm mới bộ lọc
             </button>
           </aside>
         </div>
@@ -70,23 +70,23 @@
         <div class="col-lg-9">
           <div class="products-toolbar">
             <div class="products-found">
-              TÃ¬m tháº¥y <strong>{{ tongSanPham }} sáº£n pháº©m</strong>
+              Tìm thấy <strong>{{ tongSanPham }} sản phẩm</strong>
               <span v-if="tuKhoa"> cho "<em>{{ tuKhoa }}</em>"</span>
             </div>
-            <div class="products-found">
-              <label for="sapXep" class="mb-0 mr-2">Sáº¯p xáº¿p theo:</label>
-              <select id="sapXep" class="form-control d-inline-block w-auto" v-model="sapXep" @change="loadData(true)">
-                <option value="ban-chay">BÃ¡n cháº¡y nháº¥t</option>
-                <option value="gia-tang">GiÃ¡ tháº¥p Ä‘áº¿n cao</option>
-                <option value="gia-giam">GiÃ¡ cao Ä‘áº¿n tháº¥p</option>
-                <option value="moi-nhat">Má»›i nháº¥t</option>
+            <div class="products-found products-sort">
+              <label for="sapXep" class="mb-0 mr-2 products-sort-label">Sắp xếp theo:</label>
+              <select id="sapXep" class="form-control d-inline-block w-auto products-sort-select" v-model="sapXep" @change="loadData(true)">
+                <option value="ban-chay">Bán chạy nhất</option>
+                <option value="gia-tang">Giá thấp đến cao</option>
+                <option value="gia-giam">Giá cao đến thấp</option>
+                <option value="moi-nhat">Mới nhất</option>
               </select>
             </div>
           </div>
 
           <div v-if="dangTai" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Äang táº£i...</span>
+              <span class="sr-only">Đang tải...</span>
             </div>
           </div>
 
@@ -95,12 +95,12 @@
               <div class="col-md-4 col-sm-6 mb-4" v-for="sp in danhSachSanPham" :key="sp.maThuoc">
                 <article class="product-card">
                   <div class="product-origin-badge"> 
-                    <img :src="getFlagUrl(sp.nuocSanXuat || 'viá»‡t nam')" class="flag-icon" />
-                    <span>{{ sp.nuocSanXuat || 'Viá»‡t Nam' }}</span>
+                    <img :src="getFlagUrl(sp.nuocSanXuat || 'việt nam')" class="flag-icon" />
+                    <span>{{ sp.nuocSanXuat || 'Việt Nam' }}</span>
                   </div>
                   
-                  <div v-if="sp.laThuocKeDon" class="product-badge-prescription" title="Thuá»‘c kÃª Ä‘Æ¡n">
-                     ðŸ”´ Thuá»‘c kÃª Ä‘Æ¡n
+                  <div v-if="sp.laThuocKeDon" class="product-badge-prescription" title="Thuốc kê đơn">
+                     Thuốc kê đơn
                   </div>
 
                   <img :src="getImageUrl(sp.hinhAnhChinh)" :alt="sp.tenThuoc" class="product-image" />
@@ -132,15 +132,15 @@
                       class="btn btn-primary btn-sm" 
                       @click="themVaoGio(sp)"
                       :disabled="sp.laThuocKeDon"
-                      :title="sp.laThuocKeDon ? 'Sáº£n pháº©m nÃ y cáº§n cÃ³ Ä‘Æ¡n thuá»‘c' : ''"
+                      :title="sp.laThuocKeDon ? 'Sản phẩm này cần có đơn thuốc' : ''"
                     >
-                      {{ sp.laThuocKeDon ? 'Cáº§n kÃª Ä‘Æ¡n' : 'Chá»n mua' }}
+                      {{ sp.laThuocKeDon ? 'Cần kê đơn' : 'Chọn mua' }}
                     </button>
                     
                     <router-link
                       :to="{ name: 'ChiTietSanPham', params: { id: sp.maThuoc } }"
                       class="btn btn-outline-primary btn-sm">
-                      Chi tiáº¿t
+                      Chi tiết
                     </router-link>
                   </div>
                 </article>
@@ -148,13 +148,13 @@
             </div>
 
             <div v-else class="text-center py-5 text-muted">
-              <p>KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m phÃ¹ há»£p.</p>
+              <p>Không tìm thấy sản phẩm phù hợp.</p>
             </div>
 
-            <nav aria-label="PhÃ¢n trang sáº£n pháº©m" v-if="tongTrang > 1">
+            <nav aria-label="Phân trang sản phẩm" v-if="tongTrang > 1">
               <ul class="pagination justify-content-center products-pagination">
                 <li class="page-item" :class="{ disabled: trangHienTai === 1 }">
-                  <a class="page-link" href="#" @click.prevent="doiTrang(trangHienTai - 1)">TrÆ°á»›c</a>
+                  <a class="page-link" href="#" @click.prevent="doiTrang(trangHienTai - 1)">Trước</a>
                 </li>
                 <li class="page-item"
                   v-for="p in tongTrang" :key="p"
@@ -202,16 +202,16 @@ const locDBC      = ref([]);
 
 const danhSachDanhMuc = ref([]);
 const danhSachNSX     = ref([]);
-const danhSachDoiTuong = ['Tráº» em', 'NgÆ°á»i lá»›n', 'Phá»¥ ná»¯ mang thai', 'NgÆ°á»i giÃ '];
-const danhSachDBC      = ['ViÃªn nÃ©n', 'ViÃªn nang', 'Siro', 'Bá»™t pha'];
+const danhSachDoiTuong = ['Trẻ em', 'Người lớn', 'Phụ nữ mang thai', 'Người già'];
+const danhSachDBC      = ['Viên nén', 'Viên nang', 'Siro', 'Bột pha'];
 const danhSachGia = [
-  { label: 'DÆ°á»›i 100.000Ä‘',         value: '0-100000'         },
-  { label: '100.000Ä‘ - 500.000Ä‘',      value: '100000-500000'    },
-  { label: '500.000Ä‘ - 1.000.000Ä‘',    value: '500000-1000000'   },
-  { label: 'TrÃªn 1.000.000Ä‘',          value: '1000000-99999999' },
+  { label: 'Dưới 100.000đ',           value: '0-100000'         },
+  { label: '100.000đ - 500.000đ',     value: '100000-500000'    },
+  { label: '500.000đ - 1.000.000đ',   value: '500000-1000000'   },
+  { label: 'Trên 1.000.000đ',         value: '1000000-99999999' },
 ];
 
-// --- LOGIC Xá»¬ LÃ ICON ---
+// --- LOGIC XỬ LÝ ICON ---
 
 const isImageUrl = (icon) => {
   if (!icon) return false;
@@ -226,19 +226,19 @@ const getFallbackIcon = (categoryName) => {
   if (!categoryName) return 'fas fa-pills';
   const name = categoryName.toLowerCase();
 
-  if (name.includes('tháº§n kinh') || name.includes('nÃ£o')) return 'fas fa-brain';
-  if (name.includes('vitamin') || name.includes('khoÃ¡ng cháº¥t')) return 'fas fa-capsules';
-  if (name.includes('sinh lÃ½') || name.includes('ná»™i tiáº¿t')) return 'fas fa-venetian-mask';
-  if (name.includes('tim máº¡ch') || name.includes('huyáº¿t Ã¡p')) return 'fas fa-heartbeat';
-  if (name.includes('miá»…n dá»‹ch') || name.includes('Ä‘á» khÃ¡ng')) return 'fas fa-shield-virus';
-  if (name.includes('tiÃªu hÃ³a')) return 'fas fa-lungs'; 
-  if (name.includes('lÃ n da')) return 'fas fa-hand-sparkles';
-  if (name.includes('da máº·t')) return 'fas fa-pump-medical';
+  if (name.includes('thần kinh') || name.includes('não')) return 'fas fa-brain';
+  if (name.includes('vitamin') || name.includes('khoáng chất')) return 'fas fa-capsules';
+  if (name.includes('sinh lý') || name.includes('nội tiết')) return 'fas fa-venetian-mask';
+  if (name.includes('tim mạch') || name.includes('huyết áp')) return 'fas fa-heartbeat';
+  if (name.includes('miễn dịch') || name.includes('đề kháng')) return 'fas fa-shield-virus';
+  if (name.includes('tiêu hóa')) return 'fas fa-lungs'; 
+  if (name.includes('làn da')) return 'fas fa-hand-sparkles';
+  if (name.includes('da mặt')) return 'fas fa-pump-medical';
   
   return 'fas fa-pills';
 };
 
-// --- LOGIC Dá»® LIá»†U ---
+// --- LOGIC DỮ LIỆU ---
 
 const loadData = async (resetTrang = false) => {
   if (resetTrang) trangHienTai.value = 1;
@@ -264,7 +264,7 @@ const loadData = async (resetTrang = false) => {
       tongTrang.value       = Math.ceil(tongSanPham.value / soLuongMoiTrang);
     }
   } catch (err) {
-    console.error('Lá»—i táº£i sáº£n pháº©m:', err);
+    console.error('Lỗi tải sản phẩm:', err);
   } finally {
     dangTai.value = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -280,7 +280,7 @@ const loadSidebar = async () => {
     danhSachDanhMuc.value = resDM.data || resDM || [];
     danhSachNSX.value     = resNSX.data || resNSX || [];
   } catch (err) {
-    console.error('Lá»—i táº£i sidebar:', err);
+    console.error('Lỗi tải sidebar:', err);
   }
 };
 
@@ -299,17 +299,17 @@ const themVaoGio = async (sp) => {
     });
     Swal.fire({
       icon: 'success',
-      title: 'ÄÃ£ thÃªm!',
-      text: `${sp.tenThuoc} Ä‘Ã£ vÃ o giá» hÃ ng.`,
-      confirmButtonText: 'Xem giá» hÃ ng',
+      title: 'Đã thêm!',
+      text: `${sp.tenThuoc} đã vào giỏ hàng.`,
+      confirmButtonText: 'Xem giỏ hàng',
       showCancelButton: true,
-      cancelButtonText: 'Tiáº¿p tá»¥c',
+      cancelButtonText: 'Tiếp tục',
     }).then((result) => {
       if (result.isConfirmed) router.push('/gio-hang');
     });
   } catch (err) {
     if (err.response?.status === 401) router.push('/dang-nhap'); 
-    else Swal.fire({ icon: 'error', title: 'Lá»—i', text: 'KhÃ´ng thá»ƒ thÃªm vÃ o giá».' });
+    else Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể thêm vào giỏ.' });
   }
 };
 
@@ -359,7 +359,7 @@ watch([locDanhMuc, locDoiTuong, locNSX, locGia, locDBC], () => loadData(true), {
 
 onMounted(() => {
   if (route.query.maDanhMuc) {
-    // Náº¿u cÃ³ mÃ£ danh má»¥c tá»« URL (vÃ­ dá»¥ tá»« Trang chá»§ báº¥m qua), thÃ¬ tick chá»n nÃ³ luÃ´n
+    // Nếu có mã danh mục từ URL (ví dụ từ Trang chủ bấm qua), thì tick chọn nó luôn
     const dmId = parseInt(route.query.maDanhMuc);
     if (!isNaN(dmId)) {
       locDanhMuc.value = [dmId];
@@ -371,7 +371,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Giá»¯ nguyÃªn CSS cÅ© cá»§a báº¡n */
+/* Giữ nguyên CSS cũ của bạn */
 .product-card {
   position: relative !important;
   background: #fff;
@@ -389,6 +389,50 @@ onMounted(() => {
   box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 }
 
+.products-page-title {
+  font-size: clamp(1.45rem, 1.15rem + 0.7vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.products-found {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.products-found strong {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.products-sort {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.products-sort-label {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.products-sort-select {
+  min-width: 210px;
+  height: 40px;
+  padding: 0 14px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #1e293b;
+  border-radius: 10px;
+  border-color: #dbe3ee;
+  box-shadow: none;
+}
+
 .product-origin-badge {
   position: absolute;
   top: 10px;
@@ -399,7 +443,9 @@ onMounted(() => {
   border-radius: 20px;
   display: flex;
   align-items: center;
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
   border: 1px solid #eee;
   height: 22px;
 }
@@ -407,24 +453,25 @@ onMounted(() => {
 .product-badge-prescription {
   position: absolute;
   top: 10px;
-  right: 10px; /* Äá»‘i diá»‡n quá»‘c ká»³ */
+  right: 10px; /* Đối diện quốc kỳ */
   z-index: 10;
   height: 22px;
-  /* Cá»°C Ká»² QUAN TRá»ŒNG: GiÃºp khung chá»‰ dÃ i báº±ng chá»¯ */
+  /* CỰC KỲ QUAN TRỌNG: Giúp khung chỉ dài bằng chữ */
   width: fit-content; 
   display: flex;
   align-items: center;
 
-  /* Style nhÃ£n nhá» gá»n */
-  background: rgba(255, 241, 240, 0.95); /* MÃ u ná»n Ä‘á» nháº¡t */
+  /* Style nhãn nhỏ gọn */
+  background: rgba(255, 241, 240, 0.95); /* Màu nền đỏ nhạt */
   padding: 2px 8px;
   border-radius: 20px; 
   border: 1px solid #ffccc7;
   
-  /* Font chá»¯ */
+  /* Font chữ */
   color: #cf1322;
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   line-height: 1;
   backdrop-filter: blur(2px);
 }
@@ -455,9 +502,11 @@ onMounted(() => {
 }
 
 .product-category-label {
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
   color: #007bff;
   display: flex;
   align-items: center;
@@ -474,6 +523,43 @@ onMounted(() => {
   text-align: center;
 }
 
+.product-name {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+  color: #0f172a;
+  margin-bottom: 8px;
+  min-height: 46px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.product-meta {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: #64748b;
+  margin-bottom: 10px;
+  min-height: 40px;
+}
+
+.product-price {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #dc2626;
+  margin-bottom: 14px;
+}
+
+.product-price span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
 .product-actions {
   display: flex;
   gap: 6px;
@@ -482,10 +568,12 @@ onMounted(() => {
 
 .product-actions .btn {
   flex: 1;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  padding: 8px 2px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  padding: 10px 8px;
+  line-height: 1.25;
 }
 
 .btn-primary:disabled {
@@ -494,7 +582,7 @@ onMounted(() => {
   color: #bfbfbf !important;
 }
 
-/* --- UI Bá»˜ Lá»ŒC Má»šI --- */
+/* --- UI BỘ LỌC MỚI --- */
 .filter-sidebar {
   background: #fff;
   border-radius: 12px;
@@ -504,9 +592,11 @@ onMounted(() => {
 }
 
 .filter-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #333;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: #1e293b;
   margin-bottom: 20px;
   padding-bottom: 12px;
   border-bottom: 2px solid #f0f4f8;
@@ -517,13 +607,14 @@ onMounted(() => {
 }
 
 .filter-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #555;
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.35;
+  color: #334155;
   margin-bottom: 12px;
 }
 
-/* Khung cuá»™n cho danh má»¥c dÃ i */
+/* Khung cuộn cho danh mục dài */
 .filter-scroll-container {
   max-height: 180px;
   overflow-y: auto;
@@ -562,7 +653,7 @@ onMounted(() => {
 
 .custom-radio { border-radius: 50%; }
 
-/* Khi Ä‘Æ°á»£c chá»n */
+/* Khi được chọn */
 .filter-option input:checked ~ .custom-check {
   background: #007bff;
   border-color: #007bff;
@@ -597,8 +688,10 @@ onMounted(() => {
 }
 
 .option-text {
-  font-size: 13.5px;
-  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #475569;
   transition: color 0.2s;
 }
 
@@ -610,12 +703,37 @@ onMounted(() => {
   background: #f8f9fa;
   border: 1px solid #dee2e6;
   color: #666;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.2;
   border-radius: 8px;
 }
 
 .btn-reset-filter:hover {
   background: #e9ecef;
   color: #333;
+}
+
+@media (max-width: 767.98px) {
+  .products-sort {
+    align-items: stretch;
+  }
+
+  .products-sort-select {
+    width: 100% !important;
+    min-width: 0;
+  }
+
+  .product-name {
+    min-height: auto;
+  }
+
+  .product-meta {
+    min-height: auto;
+  }
+
+  .product-actions .btn {
+    font-size: 0.8rem;
+  }
 }
 </style>

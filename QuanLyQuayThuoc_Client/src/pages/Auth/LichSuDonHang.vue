@@ -61,20 +61,33 @@
                     </div>
                   </div>
 
-                  <div class="order-item-body d-flex">
-                    <div class="order-thumb me-3">
+                  <div class="order-item-body d-flex flex-column flex-md-row gap-3">
+                    <div class="order-thumb">
                       <img :src="getFullUrl(don.hinhAnh)" alt="Sản phẩm" class="img-fluid rounded" style="width: 80px; height: 80px; object-fit: cover;" />
                     </div>
                     <div class="order-info flex-grow-1">
-                      <div class="fw-bold text-truncate" style="max-width: 300px;">{{ don.tenSanPham }}</div>
-                      <div v-if="don.soSanPhamKhac > 0" class="small text-muted">
+                      <div class="fw-bold order-product-name">{{ don.tenSanPham }}</div>
+                      <div v-if="don.soSanPhamKhac > 0" class="small text-muted mb-2">
                         +{{ don.soSanPhamKhac }} sản phẩm khác
+                      </div>
+                      <div v-if="getSanPhamPhu(don).length > 0" class="order-extra-products">
+                        <div
+                          v-for="sp in getSanPhamPhu(don)"
+                          :key="`${don.maDonHang}-${sp.tenSanPham}-${sp.donVi}`"
+                          class="order-extra-product"
+                        >
+                          <span class="order-extra-product__name">{{ sp.tenSanPham }}</span>
+                          <span class="order-extra-product__meta">x{{ sp.soLuong }} {{ sp.donVi }}</span>
+                        </div>
+                        <div v-if="hasThemSanPhamAn(don)" class="order-extra-more">
+                          +{{ don.sanPhamsTomTat.length - 3 }} sản phẩm khác
+                        </div>
                       </div>
                       <button class="btn btn-link btn-sm p-0 mt-1" @click="moXemChiTiet(don.maDonHang)">
                         Xem chi tiết
                       </button>
                     </div>
-                    <div class="order-summary text-end">
+                    <div class="order-summary text-md-end">
                       <div class="text-muted small">x{{ don.soLuong }} {{ don.donVi }}</div>
                       <div class="mt-2">
                         Thành tiền: <span class="text-primary fw-bold">{{ formatGia(don.tongTien) }}</span>
@@ -226,9 +239,13 @@ const tatCaDonDaLoc = computed(() =>
   donHang.value.filter(don => {
     const khopTab = !tabHienTai.value || don.trangThai === tabHienTai.value;
     const searchVal = tuKhoa.value.toLowerCase();
+    const khopSanPhamTomTat = (don.sanPhamsTomTat || []).some(sp =>
+      sp.tenSanPham?.toLowerCase().includes(searchVal)
+    );
     const khopTuKhoa = !tuKhoa.value
       || String(don.maDonHang).includes(searchVal)
-      || don.tenSanPham?.toLowerCase().includes(searchVal);
+      || don.tenSanPham?.toLowerCase().includes(searchVal)
+      || khopSanPhamTomTat;
     return khopTab && khopTuKhoa;
   })
 );
@@ -243,6 +260,10 @@ const donHangHienThi = computed(() => {
   const ketThuc = batDau + soDonMoiTrang;
   return tatCaDonDaLoc.value.slice(batDau, ketThuc);
 });
+
+const getSanPhamPhu = (don) => (don.sanPhamsTomTat || []).slice(1, 3);
+
+const hasThemSanPhamAn = (don) => (don.sanPhamsTomTat || []).length > 3;
 
 const chuyenTrang = (trang) => {
   if (trang >= 1 && trang <= tongSoTrang.value) {
@@ -469,6 +490,35 @@ onMounted(loadData);
 .nav-tabs .nav-link { color: #666; border: none; border-bottom: 2px solid transparent; }
 .nav-tabs .nav-link.active { color: #007bff; border-bottom: 2px solid #007bff; font-weight: bold; }
 .border-bottom-dashed { border-bottom: 1px dashed #dee2e6; }
+.order-product-name {
+  max-width: 420px;
+  line-height: 1.4;
+}
+.order-extra-products {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.order-extra-product {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+.order-extra-product__name {
+  font-weight: 500;
+}
+.order-extra-product__meta,
+.order-extra-more {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+.order-summary {
+  min-width: 210px;
+}
 
 /* CSS Phân trang */
 .pagination-rounded .page-link {
@@ -485,5 +535,15 @@ onMounted(loadData);
 .pagination-rounded .page-item.active .page-link {
   background-color: #007bff;
   color: #fff;
+}
+
+@media (max-width: 767.98px) {
+  .order-thumb {
+    width: 80px;
+  }
+
+  .order-summary {
+    min-width: 100%;
+  }
 }
 </style>

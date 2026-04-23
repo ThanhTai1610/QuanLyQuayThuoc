@@ -3,10 +3,10 @@
     <div class="container">
       <div class="season-disease-title">
         <span class="icon-heartbeat"></span>
-        <h2>Bá»‡nh theo mÃ¹a</h2>
+        <h2>Bệnh theo mùa</h2>
       </div>
       <p class="season-disease-sub">
-        Gá»£i Ã½ giáº£i phÃ¡p chÄƒm sÃ³c sá»©c khá»e theo tá»«ng nhÃ³m bá»‡nh thÆ°á»ng gáº·p khi giao mÃ¹a.
+        Gợi ý giải pháp chăm sóc sức khỏe theo từng nhóm bệnh thường gặp khi giao mùa.
       </p>
 
       <div class="season-tabs">
@@ -24,7 +24,7 @@
 
       <div v-if="dangTai" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Äang táº£i...</span>
+          <span class="visually-hidden">Đang tải...</span>
         </div>
       </div>
 
@@ -44,7 +44,7 @@
               :to="{ path: '/san-pham', query: { chuDe: thongTinChuDe.maChuDe } }"
               class="btn season-intro-btn"
             >
-              KhÃ¡m phÃ¡ ngay giáº£i phÃ¡p
+              Khám phá ngay giải pháp
             </router-link>
           </div>
         </div>
@@ -57,7 +57,7 @@
           >
             <div class="product-origin-badge">
               <img :src="getFlagUrl(sp.nuocSanXuat)" class="flag-icon" alt="flag" />
-              <span class="origin-text">{{ sp.nuocSanXuat || 'Viá»‡t Nam' }}</span>
+              <span class="origin-text">{{ sp.nuocSanXuat || 'Việt Nam' }}</span>
             </div>
             
             <img
@@ -78,7 +78,7 @@
               :to="{ name: 'ChiTietSanPham', params: { id: sp.maThuoc } }"
               class="btn season-buy-btn"
             >
-              Chá»n mua
+              Chọn mua
             </router-link>
           </article>
         </div>
@@ -98,7 +98,7 @@ const sanPhamChuDe   = ref([]);
 const tabHienTai     = ref(null);
 const dangTai        = ref(false);
 
-// HÃ m láº¥y link cá» Ä‘á»“ng bá»™ vá»›i trang bÃ¡n cháº¡y
+// Hàm lấy link cờ đồng bộ với trang bán chạy
 const getFlagUrl = (countryName) => {
   if (!countryName) return 'https://flagcdn.com/w40/vn.png';
 
@@ -131,7 +131,7 @@ const loadTabs = async () => {
       await loadNoiDungChuDe(res[0].maChuDe);
     }
   } catch (err) {
-    console.error('Lá»—i táº£i danh sÃ¡ch tab:', err);
+    console.error('Lỗi tải danh sách tab:', err);
   }
 };
 
@@ -142,7 +142,7 @@ const loadNoiDungChuDe = async (id) => {
     thongTinChuDe.value = res.info; 
     sanPhamChuDe.value = res.products;
   } catch (err) {
-    console.error('Lá»—i táº£i dá»¯ liá»‡u chá»§ Ä‘á»:', err);
+    console.error('Lỗi tải dữ liệu chủ đề:', err);
   } finally {
     dangTai.value = false;
   }
@@ -167,9 +167,9 @@ onMounted(loadTabs);
 </script>
 
 <style scoped>
-/* CSS bá»• sung Ä‘á»ƒ Badge hiá»ƒn thá»‹ Ä‘áº¹p trong card Bá»‡nh theo mÃ¹a */
+/* CSS bổ sung để badge hiển thị đẹp trong card Bệnh theo mùa */
 .season-product-card {
-  position: relative; /* Quan trá»ng Ä‘á»ƒ badge Ä‘Ã¨ lÃªn */
+  position: relative; /* Quan trọng để badge đè lên */
 }
 
 .product-origin-badge {

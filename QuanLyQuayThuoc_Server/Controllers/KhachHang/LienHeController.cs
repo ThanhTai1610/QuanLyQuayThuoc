@@ -1,20 +1,32 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QuanLyQuayThuoc.Helpers;
+using QuanLyQuayThuoc.Services.Interfaces;
+using QuanLyQuayThuoc.Services.Models;
 
 namespace QuanLyQuayThuoc.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-
     public class LienHeController : ControllerBase
     {
+        private readonly IEmailQueueService _emailQueueService;
+
+        public LienHeController(IEmailQueueService emailQueueService)
+        {
+            _emailQueueService = emailQueueService;
+        }
+
         [HttpPost("GuiDonThuoc")]
         public async Task<IActionResult> GuiDonThuoc([FromForm] DonThuocRequest request)
         {
-            // 1. Tạo nội dung Email
-            string adminEmail = "taiptpk04158@gmail.com"; // Email nhận thông báo
+            if (string.IsNullOrWhiteSpace(request.HoTen) || string.IsNullOrWhiteSpace(request.SoDienThoai))
+                return BadRequest(new { message = "Vui lòng nhập họ tên và số điện thoại." });
+
+            if (request.Files == null || request.Files.Count == 0)
+                return BadRequest(new { message = "Vui lòng tải ảnh đơn thuốc." });
+
+            string adminEmail = "taiptpk04158@gmail.com";
             string subject = $"[ĐƠN THUỐC MỚI] - Khách hàng: {request.HoTen}";
 
             string body = $@"
@@ -26,24 +38,41 @@ namespace QuanLyQuayThuoc.Controllers
                 <hr/>
                 <p><i>Vui lòng kiểm tra ảnh đính kèm để xem chi tiết đơn thuốc.</i></p>";
 
-            // 2. Gọi Helper gửi Mail
-            bool isSent = await EmailHelper.SendEmailWithAttachmentsAsync(adminEmail, subject, body, request.Files);
+            var attachments = new List<EmailAttachmentData>();
 
-            if (isSent)
-                return Ok(new { message = "Gửi yêu cầu thành công!" });
+            foreach (var file in request.Files)
+            {
+                await using var stream = file.OpenReadStream();
+                using var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
 
-            return BadRequest(new { message = "Gửi mail thất bại, Tài kiểm tra lại cấu hình SMTP nhé!" });
+                attachments.Add(new EmailAttachmentData
+                {
+                    FileName = file.FileName,
+                    ContentType = string.IsNullOrWhiteSpace(file.ContentType) ? "application/octet-stream" : file.ContentType,
+                    Content = memoryStream.ToArray()
+                });
+            }
+
+            await _emailQueueService.QueueEmailAsync(new EmailQueueItem
+            {
+                ToEmail = adminEmail,
+                Subject = subject,
+                Body = body,
+                Attachments = attachments
+            });
+
+            return Ok(new { message = "Đã ghi nhận yêu cầu tư vấn. Dược sĩ sẽ sớm liên hệ với bạn." });
         }
     }
 
-    // Class hứng dữ liệu từ Form
     public class DonThuocRequest
     {
-        public string HoTen { get; set; }
-        public string SoDienThoai { get; set; }
+        public string HoTen { get; set; } = string.Empty;
+        public string SoDienThoai { get; set; } = string.Empty;
         public string? GhiChu { get; set; }
-        public string TenThuoc { get; set; }
+        public string TenThuoc { get; set; } = string.Empty;
         public int SoLuong { get; set; }
-        public List<IFormFile>? Files { get; set; } // Hứng mảng ảnh từ Frontend
+        public List<IFormFile>? Files { get; set; }
     }
 }

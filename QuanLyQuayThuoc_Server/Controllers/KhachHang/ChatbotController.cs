@@ -23,13 +23,35 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
         {
             try
             {
-                var prompt = $@"Bạn là một dược sĩ tư vấn chuyên nghiệp tại nhà thuốc Pharmative.
-Khách hàng hỏi: {request.Message}.
-{(string.IsNullOrEmpty(request.TenThuoc) ? "" : $"Họ đang xem sản phẩm: {request.TenThuoc}.")}
-Yêu cầu: Trả lời bằng tiếng Việt, chuyên nghiệp, ngắn gọn.";
+                if (string.IsNullOrWhiteSpace(request.Message))
+                    return BadRequest(new { message = "Nội dung câu hỏi không được để trống." });
+
+                var prompt = $@"Bạn là dược sĩ tư vấn trực tuyến của nhà thuốc Pharmative.
+
+Nhiệm vụ:
+- Trả lời đúng trọng tâm câu hỏi khách hàng, không lan man.
+- Nếu thông tin chưa đủ để tư vấn an toàn, chỉ hỏi tối đa 2 câu hỏi làm rõ quan trọng nhất.
+- Ưu tiên tư vấn về: công dụng, cách dùng, lưu ý an toàn, đối tượng phù hợp, tương tác cơ bản, khi nào nên đi khám.
+- Không khẳng định chẩn đoán chắc chắn.
+- Không bịa thông tin không có trong câu hỏi.
+- Nếu có dấu hiệu nguy hiểm như sốt cao kéo dài, khó thở, đau ngực, co giật, chảy máu nhiều, phát ban nặng hoặc triệu chứng nặng lên nhanh, phải khuyên đi khám/cấp cứu ngay.
+- Không dùng giọng quảng cáo. Xưng hô là ""bạn"".
+
+Ngữ cảnh sản phẩm đang xem:
+{(string.IsNullOrWhiteSpace(request.TenThuoc) ? "Không có." : request.TenThuoc)}
+
+Câu hỏi của khách hàng:
+{request.Message}
+
+Yêu cầu định dạng trả lời:
+- Viết bằng tiếng Việt.
+- Tối đa 3 đoạn ngắn.
+- Ưu tiên câu trả lời trực tiếp trước, rồi mới đến lưu ý quan trọng.
+- Nếu cần hỏi thêm, hỏi ngắn gọn ở cuối.
+- Không dùng markdown, không mở đầu bằng lời chào dài.";
 
                 string rawJson = await _gemini.GenerateAsync(prompt);
-                string reply = ChuanHoaGeminiHelper.LayText(rawJson);
+                string reply = ChuanHoaGeminiHelper.LayText(rawJson).Trim();
 
                 return Ok(new { reply });
             }

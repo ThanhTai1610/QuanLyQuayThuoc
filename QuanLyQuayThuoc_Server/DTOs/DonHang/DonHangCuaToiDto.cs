@@ -17,5 +17,16 @@
 
         // Số lượng các loại thuốc khác trong cùng đơn hàng
         public int SoSanPhamKhac { get; set; }
+
+        // Danh sách tóm tắt để hiển thị nhanh nhiều sản phẩm trong đơn
+        public List<SanPhamTomTatDonHangDto> SanPhamsTomTat { get; set; } = new();
+    }
+
+    public class SanPhamTomTatDonHangDto
+    {
+        public string? TenSanPham { get; set; }
+        public string? HinhAnh { get; set; }
+        public int SoLuong { get; set; }
+        public string? DonVi { get; set; }
     }
 }
