@@ -42,6 +42,38 @@ const layTruong = (obj, tenCamelCase, tenPascalCase) => obj[tenCamelCase] !== un
 
 let boHenGio = null;
 
+const parseNgay = (value) => {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+};
+
+const laSapHetHan = (hanSuDung) => {
+  const hsd = parseNgay(hanSuDung);
+  if (!hsd) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (hsd < today) return false;
+
+  const sixMonthsLater = new Date(today);
+  sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+  return hsd < sixMonthsLater;
+};
+
+const sapXepLoTheoFefo = (danhSachLo) => {
+  return [...(danhSachLo || [])].sort((a, b) => {
+    const dateA = parseNgay(a.hanSuDung);
+    const dateB = parseNgay(b.hanSuDung);
+    if (!dateA && !dateB) return (a.maLo || 0) - (b.maLo || 0);
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+    if (dateA.getTime() !== dateB.getTime()) return dateA.getTime() - dateB.getTime();
+    return (a.maLo || 0) - (b.maLo || 0);
+  });
+};
+
 const xuLyTimKiem = () => {
   clearTimeout(boHenGio);
 
@@ -81,11 +113,13 @@ const xuLyTimKiem = () => {
 const chonSanPham = async (thuoc) => {
   try {
     const ketQuaLo = await axios.get(`${import.meta.env.VITE_API_URL}/BanHang/lo-hang/${thuoc.maThuoc}`);
-    const danhSachLo = (ketQuaLo.data || []).map(lo => ({
+    const danhSachLo = sapXepLoTheoFefo((ketQuaLo.data || []).map(lo => ({
       maLo: lo.maLo,
+      soLo: lo.soLo || `Lô ${lo.maLo}`,
       hanSuDung: lo.hanSuDung,
-      soLuongTon: lo.soLuongTon
-    }));
+      soLuongTon: lo.soLuongTon,
+      sapHetHan: laSapHetHan(lo.hanSuDung)
+    })));
 
     if (danhSachLo.length === 0) {
       alert("Thuốc này đã hết các lô hàng khả dụng!");

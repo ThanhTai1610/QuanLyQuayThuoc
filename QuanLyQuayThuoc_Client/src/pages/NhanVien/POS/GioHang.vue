@@ -53,9 +53,17 @@
                 <td class="align-middle">
                   <select class="form-control form-control-sm custom-select-sm" v-model="sanPham.loHangSelected">
                     <option v-for="lo in sanPham.danhSachLo" :key="lo.maLo" :value="lo.maLo">
-                      Lô: {{ lo.maLo }} - HSD: {{ dinhDangNgay(lo.hanSuDung) }}
+                      {{ hienThiNhanLo(lo) }} - HSD: {{ dinhDangNgay(lo.hanSuDung) }}{{ laSapHetHan(lo.hanSuDung) ? ' (Sắp hết hạn - FEFO)' : '' }}
                     </option>
                   </select>
+                  <div v-if="loFefo(sanPham)" class="small mt-1" :class="dangChonFefo(sanPham) ? 'text-success' : 'text-warning'">
+                    <template v-if="dangChonFefo(sanPham)">
+                      Đang chọn lô FEFO (hết hạn sớm nhất).
+                    </template>
+                    <template v-else>
+                      Ưu tiên FEFO: {{ hienThiNhanLo(loFefo(sanPham)) }} - HSD {{ dinhDangNgay(loFefo(sanPham).hanSuDung) }}.
+                    </template>
+                  </div>
                 </td>
 
                 <td class="align-middle text-right font-weight-bold text-dark">
@@ -245,6 +253,51 @@ const dinhDangTien = (giaTri) =>
 const dinhDangNgay = (chuoiNgay) => {
   if (!chuoiNgay) return 'N/A';
   return new Date(chuoiNgay).toLocaleDateString('vi-VN');
+};
+
+const parseNgay = (value) => {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+};
+
+const laSapHetHan = (hanSuDung) => {
+  const hsd = parseNgay(hanSuDung);
+  if (!hsd) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (hsd < today) return false;
+
+  const sixMonthsLater = new Date(today);
+  sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+  return hsd < sixMonthsLater;
+};
+
+const loFefo = (sanPham) => {
+  const danhSachLo = sanPham?.danhSachLo || [];
+  if (!danhSachLo.length) return null;
+
+  return [...danhSachLo].sort((a, b) => {
+    const dateA = parseNgay(a.hanSuDung);
+    const dateB = parseNgay(b.hanSuDung);
+    if (!dateA && !dateB) return (a.maLo || 0) - (b.maLo || 0);
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+    if (dateA.getTime() !== dateB.getTime()) return dateA.getTime() - dateB.getTime();
+    return (a.maLo || 0) - (b.maLo || 0);
+  })[0];
+};
+
+const dangChonFefo = (sanPham) => {
+  const loUuTien = loFefo(sanPham);
+  return !!loUuTien && sanPham.loHangSelected === loUuTien.maLo;
+};
+
+const hienThiNhanLo = (lo) => {
+  if (!lo) return 'Lô';
+  return lo.soLo ? `Lô ${lo.soLo}` : `Lô ${lo.maLo}`;
 };
 
 // --- Hành động giỏ hàng ---

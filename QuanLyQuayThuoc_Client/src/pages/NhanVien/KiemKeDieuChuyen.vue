@@ -88,8 +88,21 @@
                 </td>
                 <td><strong>{{ item.soLuongTon }}</strong></td>
                 <td>
-                  <input type="number" min="0" step="1" class="form-control form-control-sm"
-                    v-model.number="item.soLuongThucTe" @input="capNhatChenhLech(item)" />
+                  <template v-if="laLoHetHan(item)">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-outline-danger btn-block"
+                      :class="{ 'btn-danger text-white': daChonHuyLoHetHan(item) }"
+                      @click="toggleHuyLoHetHan(item)"
+                    >
+                      <i class="fas fa-trash-alt mr-1"></i>
+                      {{ daChonHuyLoHetHan(item) ? 'Bỏ chọn hủy lô' : 'Chọn hết hạn (hủy hết lô)' }}
+                    </button>
+                  </template>
+                  <template v-else>
+                    <input type="number" min="0" step="1" class="form-control form-control-sm"
+                      v-model.number="item.soLuongThucTe" @input="capNhatChenhLech(item)" />
+                  </template>
                 </td>
                 <td>
                   <span class="kiemke-chenh-lech" :class="chenhClass(item.chenhLech)">
@@ -97,20 +110,28 @@
                   </span>
                 </td>
                 <td>
-                  <select class="form-control form-control-sm" v-model="item.lyDo" :disabled="item.chenhLech === 0"
-                    :class="{ 'kiemke-reason-disabled': item.chenhLech === 0 }">
-                    <option value="">— Chọn lý do —</option>
-                    <template v-if="item.chenhLech > 0">
-                      <option value="Nhập sai">Nhập sai (Tăng kho)</option>
-                    </template>
-                    <template v-else-if="item.chenhLech < 0">
-                      <option value="Hỏng / Vỡ">Hỏng / Vỡ</option>
-                      <option value="Hết hạn">Hết hạn</option>
-                      <option value="Nhập sai">Nhập sai</option>
-                      <option value="Thất thoát">Thất thoát</option>
-                      <option value="Khác">Khác</option>
-                    </template>
-                  </select>
+                  <template v-if="laLoHetHan(item)">
+                    <span v-if="daChonHuyLoHetHan(item)" class="badge badge-danger">
+                      Hết hạn - Hủy toàn bộ lô
+                    </span>
+                    <span v-else class="text-muted small">Nhấn nút "Chọn hết hạn" để hủy hết lô</span>
+                  </template>
+                  <template v-else>
+                    <select class="form-control form-control-sm" v-model="item.lyDo" :disabled="item.chenhLech === 0"
+                      :class="{ 'kiemke-reason-disabled': item.chenhLech === 0 }">
+                      <option value="">— Chọn lý do —</option>
+                      <template v-if="item.chenhLech > 0">
+                        <option value="Nhập sai">Nhập sai (Tăng kho)</option>
+                      </template>
+                      <template v-else-if="item.chenhLech < 0">
+                        <option value="Hỏng / Vỡ">Hỏng / Vỡ</option>
+                        <option value="Hết hạn">Hết hạn</option>
+                        <option value="Nhập sai">Nhập sai</option>
+                        <option value="Thất thoát">Thất thoát</option>
+                        <option value="Khác">Khác</option>
+                      </template>
+                    </select>
+                  </template>
                 </td>
               </tr>
             </tbody>
@@ -295,17 +316,73 @@ const resetLoc = () => {
   apDungLocFilter();
 };
 
+const parseNgayHSD = (value) => {
+  if (!value) return null;
+
+  const raw = String(value).trim();
+  const vietnameseDate = raw.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+  if (vietnameseDate) {
+    const day = Number(vietnameseDate[1]);
+    const month = Number(vietnameseDate[2]);
+    const year = Number(vietnameseDate[3]);
+    const parsed = new Date(year, month - 1, day);
+    if (
+      parsed.getFullYear() === year &&
+      parsed.getMonth() === month - 1 &&
+      parsed.getDate() === day
+    ) {
+      return parsed;
+    }
+    return null;
+  }
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+};
+
 const getTinhTrangHSD = (dateStr) => {
-  if (!dateStr) return 'binh-thuong';
-  const hsd = new Date(dateStr);
+  const hsd = parseNgayHSD(dateStr);
+  if (!hsd) return 'binh-thuong';
+
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   if (hsd <= today) return 'het-han';
   
-  const timeDiff = hsd.getTime() - today.getTime();
-  const ninetyDaysInMs = 90 * 24 * 60 * 60 * 1000;
-  if (timeDiff <= ninetyDaysInMs) return 'sap-het-han';
+  const sixMonthsLater = new Date(today);
+  sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+  if (hsd < sixMonthsLater) return 'sap-het-han';
   
   return 'binh-thuong';
+};
+
+const laLoHetHan = (item) => getTinhTrangHSD(item?.hanSuDung) === 'het-han';
+
+const daChonHuyLoHetHan = (item) => {
+  const soLuongTon = Number(item?.soLuongTon) || 0;
+  return (
+    laLoHetHan(item) &&
+    item?.lyDo === 'Hết hạn' &&
+    Number(item?.soLuongThucTe) === 0 &&
+    Number(item?.chenhLech) === -soLuongTon
+  );
+};
+
+const toggleHuyLoHetHan = (item) => {
+  if (!laLoHetHan(item)) return;
+
+  const soLuongTon = Number(item.soLuongTon) || 0;
+
+  if (daChonHuyLoHetHan(item)) {
+    item.soLuongThucTe = soLuongTon;
+    item.chenhLech = 0;
+    item.lyDo = '';
+    return;
+  }
+
+  item.soLuongThucTe = 0;
+  item.chenhLech = -soLuongTon;
+  item.lyDo = 'Hết hạn';
 };
 
 const capNhatChenhLech = (item) => {

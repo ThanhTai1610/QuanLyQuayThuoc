@@ -23,6 +23,7 @@ namespace QuanLyQuayThuoc.Repositories
         public async Task<IEnumerable<object>> TimKiemThuocAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query)) return new List<object>();
+            var today = DateOnly.FromDateTime(DateTime.Today);
 
             return await _context.Thuocs
                 .Where(t => t.TenThuoc.Contains(query) || t.ThanhPhan.Contains(query))
@@ -31,7 +32,9 @@ namespace QuanLyQuayThuoc.Repositories
                     t.MaThuoc,
                     t.TenThuoc,
                     HamLuong = t.ThanhPhan,
-                    SoLuongTon = t.LoHangs.Sum(l => (int?)l.SoLuongTon) ?? 0,
+                    SoLuongTon = t.LoHangs
+                        .Where(l => l.HanSuDung >= today)
+                        .Sum(l => (int?)l.SoLuongTon) ?? 0,
                     DanhSachDonVi = t.DonViTinhs.Select(d => new
                     {
                         d.MaDvt,
@@ -60,6 +63,8 @@ namespace QuanLyQuayThuoc.Repositories
         {
             var lo = await _context.LoHangs.FindAsync(maLo);
             if (lo == null) throw new Exception("Không tìm thấy lô hàng.");
+            if (lo.HanSuDung < DateOnly.FromDateTime(DateTime.Today))
+                throw new Exception($"Lô {lo.SoLo} đã hết hạn, không thể bán.");
             if (lo.SoLuongTon < soLuongTru) throw new Exception($"Lô {lo.SoLo} không đủ hàng.");
             lo.SoLuongTon -= soLuongTru;
         }
@@ -68,9 +73,14 @@ namespace QuanLyQuayThuoc.Repositories
 
         public async Task<IEnumerable<LoHang>> GetLoHangByThuocAsync(int maThuoc)
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
             return await _context.LoHangs
-                .Where(l => l.MaThuoc == maThuoc && l.SoLuongTon > 0)
-                .OrderBy(l => l.HanSuDung).ToListAsync();
+                .Where(l => l.MaThuoc == maThuoc
+                    && l.SoLuongTon > 0
+                    && l.HanSuDung >= today)
+                .OrderBy(l => l.HanSuDung)
+                .ThenBy(l => l.MaLo)
+                .ToListAsync();
         }
 
         public async Task<KhoTongQuanResponseDto> GetTongQuanAsync(int? maDanhMuc, string search)
@@ -419,3 +429,4 @@ namespace QuanLyQuayThuoc.Repositories
         }
     }
 }
+

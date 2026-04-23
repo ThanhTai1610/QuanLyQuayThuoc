@@ -626,3 +626,12 @@ F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\refint\QuanLyQuayThuo
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.pdb
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.genruntimeconfig.cache
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\ref\QuanLyQuayThuoc.dll
+F:\QuanLyQuayThuoc\_build_check\server\appsettings.Development.json
+F:\QuanLyQuayThuoc\_build_check\server\appsettings.json
+F:\QuanLyQuayThuoc\_build_check\server\QuanLyQuayThuoc.staticwebassets.runtime.json
+F:\QuanLyQuayThuoc\_build_check\server\QuanLyQuayThuoc.staticwebassets.endpoints.json
+F:\QuanLyQuayThuoc\_build_check\server\QuanLyQuayThuoc.exe
+F:\QuanLyQuayThuoc\_build_check\server\QuanLyQuayThuoc.deps.json
+F:\QuanLyQuayThuoc\_build_check\server\QuanLyQuayThuoc.runtimeconfig.json
+F:\QuanLyQuayThuoc\_build_check\server\QuanLyQuayThuoc.dll
+F:\QuanLyQuayThuoc\_build_check\server\QuanLyQuayThuoc.pdb

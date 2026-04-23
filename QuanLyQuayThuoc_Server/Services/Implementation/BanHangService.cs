@@ -49,6 +49,7 @@
                     await _context.SaveChangesAsync();
 
                     decimal tongTienDonHang = 0;
+                    var today = DateOnly.FromDateTime(DateTime.Today);
 
                     foreach (var item in dto.ChiTiet)
                     {
@@ -60,12 +61,31 @@
 
                         int heSoQuyDoi = dvt.GiaTriQuyDoi ?? 1;
                         int soLuongQuyDoi = item.SoLuong * heSoQuyDoi;
-                        await _khoRepo.UpdateSoLuongAsync(item.MaLo, soLuongQuyDoi);
+
+                        var loNguon = await _context.LoHangs
+                            .FirstOrDefaultAsync(l => l.MaLo == item.MaLo);
+                        if (loNguon == null || !loNguon.MaThuoc.HasValue)
+                            throw new Exception($"Không tìm thấy lô hàng mã {item.MaLo}");
+
+                        var danhSachLoFefo = await _context.LoHangs
+                            .Where(l => l.MaThuoc == loNguon.MaThuoc
+                                && l.HanSuDung >= today)
+                            .OrderBy(l => l.HanSuDung)
+                            .ThenBy(l => l.MaLo)
+                            .ToListAsync();
+
+                        var loFefoPhuHop = danhSachLoFefo
+                            .FirstOrDefault(l => l.SoLuongTon >= soLuongQuyDoi);
+
+                        if (loFefoPhuHop == null)
+                            throw new Exception($"Không đủ tồn kho theo FEFO cho thuốc mã {loNguon.MaThuoc}");
+
+                        await _khoRepo.UpdateSoLuongAsync(loFefoPhuHop.MaLo, soLuongQuyDoi);
 
                         var chiTiet = new ChiTietDonHang
                         {
                             MaDonHang = donHang.MaDonHang,
-                            MaLo = item.MaLo,
+                            MaLo = loFefoPhuHop.MaLo,
                             MaDvt = item.MaDVT,
                             SoLuong = item.SoLuong,
                             GiaBanTaiThoiDiem = item.GiaBan

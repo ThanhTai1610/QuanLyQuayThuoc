@@ -57,16 +57,48 @@ const tongTienHang = computed(() =>
 );
 
 // ─── CART LOGIC ───────────────────────────────────────────────────────────────
+const parseNgay = (value) => {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+};
+
+const sapXepLoTheoFefo = (danhSachLo) => {
+  return [...(danhSachLo || [])].sort((a, b) => {
+    const dateA = parseNgay(a.hanSuDung);
+    const dateB = parseNgay(b.hanSuDung);
+    if (!dateA && !dateB) return (a.maLo || 0) - (b.maLo || 0);
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+    if (dateA.getTime() !== dateB.getTime()) return dateA.getTime() - dateB.getTime();
+    return (a.maLo || 0) - (b.maLo || 0);
+  });
+};
+
 const themVaoGioHang = (sanPham) => {
+  const danhSachLoFefo = sapXepLoTheoFefo(sanPham.danhSachLo || []);
+  const loMacDinh = danhSachLoFefo[0]?.maLo;
+
   const hiCo = cacSanPhamTrongGio.value.find(i => i.maThuoc === sanPham.maThuoc);
   if (hiCo) {
     hiCo.soLuong += 1;
+    if (danhSachLoFefo.length) {
+      hiCo.danhSachLo = danhSachLoFefo;
+      if (!hiCo.loHangSelected || !danhSachLoFefo.some(lo => lo.maLo === hiCo.loHangSelected)) {
+        hiCo.loHangSelected = loMacDinh || null;
+      }
+    }
   } else {
     cacSanPhamTrongGio.value.push({
       ...sanPham,
+      danhSachLo: danhSachLoFefo,
       soLuong: sanPham.soLuong || 1,
       maDvtSelected: sanPham.maDvtSelected || sanPham.danhSachDonVi?.[0]?.maDvt,
-      loHangSelected: sanPham.loHangSelected || sanPham.danhSachLo?.[0]?.maLo
+      loHangSelected:
+        (sanPham.loHangSelected && danhSachLoFefo.some(lo => lo.maLo === sanPham.loHangSelected))
+          ? sanPham.loHangSelected
+          : (loMacDinh || null)
     });
   }
 };
@@ -324,3 +356,4 @@ onMounted(() => {
   min-height: 100vh;
 }
 </style>
+
