@@ -174,7 +174,7 @@
               <input class="form-control" v-model="thuocMoi.soDangKy" />
             </div>
             <div class="col-md-6 mb-3">
-              <label class="small text-muted font-weight-bold">Quy cách đóng gói</label>
+              <label class="small text-muted font-weight-bold">Quy cách đóng gói (Dùng để sinh đơn vị tính)</label>
               <div class="d-flex">
                 <select class="form-control mr-2" v-model="quyCachLuaChon" style="flex: 1;">
                   <option value="">— Chọn quy cách —</option>
@@ -240,9 +240,9 @@
               <input type="date" class="form-control" v-model="thuocMoi.hanSuDung" />
             </div>
             <div class="col-md-3 mb-3">
-              <label class="small text-muted font-weight-bold">Giá nhập tổng <span class="text-danger">*</span></label>
-              <input type="number" class="form-control font-weight-bold text-primary" v-model.number="thuocMoi.giaNhap" />
-              <small class="text-muted">Giá của đơn vị bạn chọn nhập bên dưới</small>
+              <label class="small text-muted font-weight-bold">Giá nhập đơn vị <span class="text-danger">*</span></label>
+              <input type="number" class="form-control font-weight-bold text-primary" v-model.number="thuocMoi.giaNhap" @input="goiYGiaBan" />
+              <small class="text-muted">Cho 1 {{ thuocMoi.tenDonViNhap || 'đơn vị' }}</small>
             </div>
             <div class="col-md-3 mb-3">
               <label class="small text-muted font-weight-bold">Số lượng nhập <span class="text-danger">*</span></label>
@@ -257,13 +257,12 @@
             </div>
 
             <div class="col-12 mt-3">
-              <label class="small text-muted font-weight-bold uppercase">Danh sách đơn vị quy đổi (Tự động từ Quy cách)</label>
+              <label class="small text-muted font-weight-bold uppercase">Bảng quy đổi đơn vị tính (Xác định giá bán)</label>
               <div class="table-responsive">
-                <table class="table table-sm table-bordered bg-light">
+                <table class="premium-table">
                   <thead class="thead-dark small">
                     <tr>
                       <th>Tên đơn vị</th>
-                      <th>Hệ số quy đổi</th>
                       <th>Giá bán (đ)</th>
                       <th width="100">Cơ bản?</th>
                     </tr>
@@ -271,8 +270,8 @@
                   <tbody>
                     <tr v-for="(u, idx) in danhSachDonViMoi" :key="idx">
                       <td><input class="form-control form-control-sm" v-model="u.tenDonVi" /></td>
-                      <td><input type="number" class="form-control form-control-sm" v-model.number="u.giaTriQuyDoi" /></td>
-                      <td><input type="number" class="form-control form-control-sm" v-model.number="u.giaBan" /></td>
+                      <td><input type="number" class="form-control form-control-sm" v-model.number="u.giaBan" 
+                                 @input="capNhatGiaBanNhanh(idx)" /></td>
                       <td class="text-center">
                         <input type="radio" :value="true" v-model="u.laDonViCoBan" @change="setCoBan(idx)" />
                       </td>
@@ -318,8 +317,8 @@
           <h6 class="font-weight-bold text-secondary mb-3">
             <i class="fas fa-history mr-1"></i> Lịch sử nhập kho (phiên này)
           </h6>
-          <div class="table-responsive">
-            <table class="table table-bordered table-hover">
+          <div class="table-responsive rounded-lg overflow-hidden">
+            <table class="premium-table">
               <thead class="thead-light">
                 <tr>
                   <th>#</th>
@@ -361,7 +360,9 @@
       <div class="custom-modal-content" style="width: 850px; max-height: 90vh; display: flex; flex-direction: column;">
         <div class="modal-header bg-dark text-white">
           <h5 class="m-0"><i class="fas fa-file-invoice mr-2"></i>Chi tiết phiếu nhập & Mã vạch</h5>
-          <button class="btn-close-white" @click="hienModalChiTiet = false">&times;</button>
+          <button class="btn-close-white" @click="hienModalChiTiet = false">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
         <div class="modal-body p-0" style="overflow-y: auto;">
           <!-- Thông tin chung -->
@@ -379,8 +380,8 @@
           <!-- Bảng danh sách thuốc -->
           <div class="p-3 border-bottom">
             <h6 class="small font-weight-bold text-muted mb-2 text-uppercase">1. Danh sách mặt hàng</h6>
-            <div class="table-responsive">
-              <table class="table table-sm table-bordered m-0">
+            <div class="table-responsive rounded-lg overflow-hidden">
+              <table class="premium-table shadow-none" style="border: none;">
                 <thead class="bg-light">
                   <tr>
                     <th class="pl-2">Tên thuốc</th>
@@ -436,10 +437,14 @@ const listDangBaoChe = [
 ];
 
 const listQuyCach = [
-  'Hộp 1 vỉ x 10 viên', 'Hộp 2 vỉ x 10 viên', 'Hộp 3 vỉ x 10 viên', 'Hộp 5 vỉ x 10 viên',
-  'Hộp 10 vỉ x 10 viên', 'Hộp 1 lọ 30 viên', 'Hộp 1 lọ 60 viên', 'Hộp 1 lọ 100 viên',
-  'Chai 60ml', 'Chai 100ml', 'Chai 125ml', 'Chai 150ml', 'Chai 200ml', 'Chai 500ml',
-  'Gói 1g', 'Gói 3g', 'Gói 5g', 'Hộp 10 túi x 5g'
+  'Hộp 10 vỉ x 10 viên',
+  'Hộp 10 vỉ x 15 viên',
+  'Hộp 5 vỉ x 10 viên',
+  'Hộp 3 vỉ x 10 viên',
+  'Hộp 1 lọ x 30 viên',
+  'Hộp 1 lọ x 100 viên',
+  'Hộp 1 chai 100ml',
+  'Hộp 1 tuýp 20g'
 ];
 
 // PHIẾU NHẬP (dùng chung)
@@ -576,6 +581,37 @@ const parseQuyCach = (str) => {
   if (units.length > 0) {
     danhSachDonViMoi.value = units;
     thuocMoi.tenDonViNhap = units[0].tenDonVi;
+    goiYGiaBan(); // Tính giá gợi ý ngay khi sinh đơn vị
+  }
+};
+
+const capNhatGiaBanNhanh = (idx) => {
+  const currentUnit = danhSachDonViMoi.value[idx];
+  if (!currentUnit.giaBan || !currentUnit.giaTriQuyDoi) return;
+  
+  // Tính giá của 1 đơn vị cơ bản (hệ số 1)
+  const giaCoBan = currentUnit.giaBan / currentUnit.giaTriQuyDoi;
+  
+  danhSachDonViMoi.value.forEach((u, i) => {
+    if (i !== idx) {
+      u.giaBan = Math.round(giaCoBan * u.giaTriQuyDoi);
+    }
+  });
+};
+
+const goiYGiaBan = () => {
+  if (!thuocMoi.giaNhap || danhSachDonViMoi.value.length === 0) return;
+  
+  // Tính giá bán dựa trên lợi nhuận cố định 10%
+  const giaBanGoiY = Math.round(thuocMoi.giaNhap * 1.1);
+  
+  const importIdx = danhSachDonViMoi.value.findIndex(u => u.tenDonVi === thuocMoi.tenDonViNhap);
+  if (importIdx !== -1) {
+    danhSachDonViMoi.value[importIdx].giaBan = giaBanGoiY;
+    capNhatGiaBanNhanh(importIdx);
+  } else {
+    danhSachDonViMoi.value[0].giaBan = giaBanGoiY;
+    capNhatGiaBanNhanh(0);
   }
 };
 
@@ -757,26 +793,13 @@ const hoanTatThuocMoi = async () => {
     if (serverRes?.status === 'success') {
       const rowData = serverRes.data?.chiTiet ?? serverRes.data?.ChiTiet ?? [];
       
-      // Tìm đơn vị dùng để nhập kho để làm mốc quy đổi
-      const importUnit = rowData.find(x => (x.TenDonVi || x.tenDonVi) === thuocMoi.tenDonViNhap) 
-                         || rowData.find(x => x.LaDonViCoBan || x.laDonViCoBan) 
-                         || rowData[0];
-      const importFactor = importUnit?.GiaTriQuyDoi || importUnit?.giaTriQuyDoi || 1;
-
       const chiTietCamel = rowData.map(x => {
-        const currentFactor = x.GiaTriQuyDoi || x.giaTriQuyDoi || 1;
-        // Tỷ lệ: Nếu nhập 1 Hộp (20 viên) -> sang Viên hệ số là 20/1 = 20. Sang Vỉ (10 viên) hệ số là 10/20 = 0.5? 
-        // ĐÚNG: x_qty = nhap_qty * (nhap_factor / x_factor) -> SAI. 
-        // Hệ số quy đổi thường là: 1 Hộp = 20 (viên), 1 Vỉ = 10 (viên), 1 Viên = 1 (viên).
-        // Vậy: soLuong (Viên) = soLuong (Hộp) * (Hệ số Hộp / Hệ số Viên) = 1 * (20 / 1) = 20.
-        const ratio = importFactor / currentFactor;
-        
         return {
           tenThuoc: thuocMoi.tenThuoc,
           soLo: x.SoLo || x.soLo || thuocMoi.soLo,
           hanSuDung: x.HanSuDung || x.hanSuDung || thuocMoi.hanSuDung,
-          giaNhap: Number(thuocMoi.giaNhap) / ratio,
-          soLuong: Number(thuocMoi.soLuong) * ratio,
+          giaNhap: x.GiaNhap || x.giaNhap || 0,
+          soLuong: x.SoLuong || x.soLuong || 0,
           tenDonVi: x.TenDonVi || x.tenDonVi,
           maVach: x.MaVach || x.maVach,
           hinhAnhMaVach: x.HinhAnhMaVach || x.hinhAnhMaVach
@@ -846,143 +869,227 @@ onMounted(loadDanhMuc);
 </script>
 
 <style scoped>
-/* Modal Overlay */
+/* ══════════════════════════════════════════════
+    PREMIUM UI DESIGN BY ANTIGRAVITY
+   ══════════════════════════════════════════════ */
+
+/* Modal Overlay & Content */
 .custom-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
   z-index: 2000;
+  animation: fadeIn 0.3s ease;
 }
 
 .custom-modal-content {
-  background: white;
-  width: 700px;
-  border-radius: 8px;
+  background: #ffffff;
+  width: 900px;
+  max-width: 95vw;
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: none;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+}
+
+.modal-header h5 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-size: 1.1rem;
 }
 
 .btn-close-white {
   background: none;
   border: none;
-  color: white;
-  font-size: 24px;
-  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 28px;
+  line-height: 1;
+  transition: color 0.2s;
 }
 
-/* Grid Tem */
+.btn-close-white:hover {
+  color: white;
+}
+
+/* Tables */
+.premium-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.premium-table thead th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.premium-table tbody td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.premium-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Barcode Labels (Tem) */
 .barcode-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  padding: 20px;
 }
 
 .barcode-item {
-  border: 1px dashed #ccc;
-  padding: 10px;
-  width: 170px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
   text-align: center;
-  background: #f9f9f9;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: default;
+}
+
+.barcode-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.tem-ten-thuoc {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .tem-image {
   width: 100%;
-  height: auto;
-  margin: 5px 0;
+  height: 45px;
+  object-fit: contain;
+  margin: 4px 0;
 }
 
-.tem-ten-thuoc {
-  font-size: 11px;
-  font-weight: bold;
-  color: #333;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.tem-ma-so {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 4px;
 }
+
+/* Badges */
+.badge {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.badge-info { background: #e0f2fe; color: #0369a1; }
+.badge-success { background: #dcfce7; color: #15803d; }
+.badge-warning { background: #fef3c7; color: #92400e; }
+.badge-secondary { background: #f1f5f9; color: #475569; }
+
+/* Buttons & Custom UI */
+.btn {
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 10px 24px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: none;
+}
+
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+
+.btn-success { background-color: #10b981; border-color: #10b981; }
+.btn-success:hover { background-color: #059669; transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4); }
+
+.btn-warning { background-color: #f59e0b; border-color: #f59e0b; color: white !important; }
+.btn-warning:hover { background-color: #d97706; transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.4); }
 
 /* Autocomplete */
 .pos-autocomplete-list {
   position: absolute;
   z-index: 1000;
   background: white;
-  border: 1px solid #ddd;
+  border-radius: 16px;
   width: 100%;
-  max-height: 200px;
+  max-height: 250px;
   overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  margin-top: 4px;
 }
 
 .pos-autocomplete-item {
-  padding: 8px 12px;
+  padding: 12px 16px;
   cursor: pointer;
-  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+  color: #334155;
+  font-weight: 500;
 }
 
 .pos-autocomplete-item:hover {
-  background: #f1f1f1;
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
-/* Toggle switch */
-.custom-switch-wrap {
-  cursor: pointer;
-}
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
+/* Toggle Switch */
 .custom-switch-track {
-  width: 40px;
-  height: 22px;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 11px;
+  width: 48px; height: 26px;
+  background: #cbd5e1;
+  border-radius: 13px;
   position: relative;
-  transition: background 0.2s;
+  transition: all 0.3s;
 }
 
 .custom-switch-track.active {
-  background: #ffc107;
+  background: #10b981;
 }
 
 .custom-switch-thumb {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
+  top: 3px; left: 3px;
+  width: 20px; height: 20px;
   background: white;
   border-radius: 50%;
-  transition: left 0.2s;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.custom-switch-track.active .custom-switch-thumb {
-  left: 21px;
-}
-
-/* Hiệu ứng nút in */
-.btn-pulse {
-  animation: pulse-yellow 2s infinite;
-  box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
-}
-
-@keyframes pulse-yellow {
-  0% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
-  }
-
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
-  }
-
-  100% {
-    transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
-  }
+.active .custom-switch-thumb {
+  left: 25px;
 }
 </style>

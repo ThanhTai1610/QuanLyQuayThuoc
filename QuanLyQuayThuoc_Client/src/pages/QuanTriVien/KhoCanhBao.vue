@@ -1,138 +1,126 @@
 <template>
   <section>
-    <div class="qlk-filters-card card mb-3">
-      <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">4. Cảnh báo hết hạn</h6>
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-4 mb-3">
-            <label class="small text-muted">Xem theo tháng HSD</label>
-            <input type="month" class="form-control" v-model="locThang" @change="onFilter" />
+    <!-- ═════════════════════════════
+         BỘ LỌC TỐI GIẢN
+         ═════════════════════════════ -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+      <div class="card-body p-3">
+        <div class="row align-items-center">
+          <div class="col-md-3">
+            <h6 class="m-0 font-weight-bold text-dark">
+              <i class="fas fa-exclamation-triangle text-danger mr-2"></i>Cảnh báo hạn dùng
+            </h6>
           </div>
-          <div class="col-md-3 mb-3">
-            <label class="small text-muted">Loại cảnh báo</label>
-            <select class="form-control" v-model="locLoai" @change="onFilter">
-              <option value="all">Cả đã hết + sắp hết</option>
-              <option value="expired">Chỉ đã hết hạn</option>
-              <option value="soon">Chỉ sắp hết hạn (&lt; 6 tháng)</option>
+          <div class="col-md-3 text-right offset-md-6">
+             <button class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-none" @click="hienThongKe = !hienThongKe">
+              <i class="fas" :class="hienThongKe ? 'fa-compress-alt' : 'fa-chart-pie'"></i>
+              {{ hienThongKe ? ' Ẩn số liệu' : ' Xem thống kê' }}
+            </button>
+          </div>
+        </div>
+        <div class="row align-items-center mt-3">
+          <div class="col-md-4">
+            <label class="small text-muted font-weight-bold mb-1">Lọc theo tháng HSD</label>
+            <input type="month" class="form-control form-control-sm rounded-pill px-3" v-model="locThang" @change="onFilter" />
+          </div>
+          <div class="col-md-4">
+            <label class="small text-muted font-weight-bold mb-1">Tình trạng lô hàng</label>
+            <select class="form-control form-control-sm rounded-pill px-3" v-model="locLoai" @change="onFilter">
+              <option value="all">Tất cả tình trạng</option>
+              <option value="expired">Đã hết hạn</option>
+              <option value="soon">Sắp hết hạn</option>
             </select>
           </div>
-          <div class="col-md-2 mb-3">
-            <label class="small text-muted">Số dòng / trang</label>
-            <select class="form-control" v-model="soDongMoiTrang" @change="trangHienTai = 1">
-              <option :value="10">10</option>
-              <option :value="20">20</option>
-              <option :value="50">50</option>
-            </select>
-          </div>
-          <div class="col-md-3 mb-3 d-flex align-items-end">
-            <button type="button" class="btn btn-outline-secondary btn-block" @click="onFilter">
+          <div class="col-md-4 text-right mt-4">
+            <button class="btn btn-primary btn-sm rounded-pill px-4" @click="onFilter">
               <i class="fas fa-sync-alt mr-1"></i> Làm mới
             </button>
           </div>
         </div>
-        <p class="qlk-muted mb-0 small">
-          <i class="fas fa-exclamation-triangle mr-1"></i>
-          Dòng sắp hết được tô màu để đẩy lên đầu danh sách.
-        </p>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-lg-8 mb-3">
-        <div class="card">
-          <div class="card-header py-3 d-flex justify-content-between align-items-center">
-            <div>
-              <div class="font-weight-bold text-primary">Danh sách cảnh báo</div>
-              <div class="small text-muted">Sắp xếp theo Hạn dùng tăng dần</div>
-            </div>
-            <span class="badge badge-light text-gray-600">{{ danhSach.length }} dòng</span>
-          </div>
+      <!-- DANH SÁCH BẢNG -->
+      <div :class="hienThongKe ? 'col-lg-8' : 'col-lg-12'" class="mb-4 transition-layout">
+        <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
           <div class="card-body p-0">
-            <div v-if="dangTai" class="text-center py-4">
-              <div class="spinner-border text-primary" role="status"></div>
+            <div v-if="dangTai" class="text-center py-5">
+              <div class="spinner-grow text-primary" role="status"></div>
             </div>
+            
             <div v-else class="table-responsive">
-              <table class="table table-bordered table-hover mb-0 qlk-table">
-                <thead class="thead-light">
+              <table class="premium-table">
+                <thead>
                   <tr>
-                    <th>Số lô</th>
-                    <th>Hạn sử dụng</th>
-                    <th>Tồn</th>
-                    <th>Thuốc</th>
+                    <th width="120">Số lô</th>
+                    <th>Tên thuốc</th>
+                    <th class="text-center">Hạn dùng</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center">Tồn</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="lo in danhSachHienThi" :key="lo.maLo" :class="rowClass(lo)">
-                    <td>{{ lo.soLo }}</td>
-                    <td>
-                      {{ lo.hanSuDung }}
-                      <span v-if="laHetHan(lo)" class="badge badge-danger ml-1">Hết hạn</span>
-                      <span v-else class="badge badge-warning text-dark ml-1">Sắp hết</span>
+                  <tr v-for="lo in danhSachHienThi" :key="lo.maLo">
+                    <td class="font-weight-bold text-muted">{{ lo.soLo }}</td>
+                    <td class="font-weight-bold text-dark">{{ lo.tenThuoc }}</td>
+                    <td class="text-center text-secondary">{{ lo.hanSuDung }}</td>
+                    <td class="text-center">
+                      <span v-if="laHetHan(lo)" class="badge-custom bg-danger-soft text-danger">Đã hết hạn</span>
+                      <span v-else class="badge-custom bg-warning-soft text-warning">Sắp hết hạn</span>
                     </td>
-                    <td>{{ lo.soLuongTon }}</td>
-                    <td>{{ lo.tenThuoc }}</td>
+                    <td class="text-center">
+                      <span class="bubble-ton">{{ lo.soLuongTon }}</span>
+                    </td>
                   </tr>
                   <tr v-if="danhSachHienThi.length === 0">
-                    <td colspan="4" class="text-center text-muted py-3">Không có cảnh báo.</td>
+                    <td colspan="5" class="text-center text-muted py-5">
+                      Không có cảnh báo nào cần xử lý.
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
             <!-- PHÂN TRANG -->
-            <div v-if="tongSoTrang > 1" class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
-              <div class="small text-muted">
-                Hiển thị {{ batDau + 1 }}–{{ ketThuc }} / {{ danhSach.length }} dòng
+            <div v-if="tongSoTrang > 1" class="d-flex justify-content-between align-items-center px-4 py-3 bg-white border-top">
+              <div class="small text-muted font-italic">
+                Kết quả <strong>{{ batDau + 1 }}–{{ ketThuc }}</strong> trên {{ danhSach.length }}
               </div>
-              <ul class="pagination pagination-sm mb-0">
+              <ul class="pagination pagination-sm mb-0 custom-pagination">
                 <li class="page-item" :class="{ disabled: trangHienTai === 1 }">
-                  <a class="page-link" href="#" @click.prevent="trangHienTai = 1">
-                    <i class="fas fa-angle-double-left"></i>
-                  </a>
+                  <a class="page-link" href="#" @click.prevent="trangHienTai = 1"><i class="fas fa-angle-left"></i></a>
                 </li>
-                <li class="page-item" :class="{ disabled: trangHienTai === 1 }">
-                  <a class="page-link" href="#" @click.prevent="trangHienTai--">
-                    <i class="fas fa-angle-left"></i>
-                  </a>
-                </li>
-                <li v-for="trang in danhSachTrang" :key="trang"
-                  class="page-item" :class="{ active: trang === trangHienTai }">
+                <li class="page-item" v-for="trang in danhSachTrang" :key="trang" :class="{ active: trang === trangHienTai }">
                   <a class="page-link" href="#" @click.prevent="trangHienTai = trang">{{ trang }}</a>
                 </li>
                 <li class="page-item" :class="{ disabled: trangHienTai === tongSoTrang }">
-                  <a class="page-link" href="#" @click.prevent="trangHienTai++">
-                    <i class="fas fa-angle-right"></i>
-                  </a>
-                </li>
-                <li class="page-item" :class="{ disabled: trangHienTai === tongSoTrang }">
-                  <a class="page-link" href="#" @click.prevent="trangHienTai = tongSoTrang">
-                    <i class="fas fa-angle-double-right"></i>
-                  </a>
+                  <a class="page-link" href="#" @click.prevent="trangHienTai = tongSoTrang"><i class="fas fa-angle-right"></i></a>
                 </li>
               </ul>
             </div>
-
           </div>
         </div>
       </div>
 
-      <div class="col-lg-4">
-        <div class="qlk-stat-card">
-          <div class="font-weight-bold text-primary mb-2">Thống kê nhanh</div>
-          <div class="mb-2">
-            <span class="qlk-muted">Tổng giá trị kho</span>
-            <div class="qlk-stat-value">{{ formatGia(thongKe.tongGiaTri) }}</div>
+      <!-- SIDEBAR THỐNG KÊ -->
+      <div v-if="hienThongKe" class="col-lg-4 transition-layout">
+        <div class="stat-card-simple shadow-sm bg-white mb-4">
+          <div class="stat-label text-uppercase small font-weight-bold text-muted mb-2">Giá trị rủi ro</div>
+          <div class="h3 font-weight-bold text-danger mb-0">{{ formatGia(thongKe.tongGiaTri) }}</div>
+          <div class="progress mt-3" style="height: 6px; border-radius: 3px;">
+            <div class="progress-bar bg-danger" style="width: 75%"></div>
           </div>
-          <div class="mb-2">
-            <span class="qlk-muted">Lô đã hết hạn</span>
-            <div class="qlk-stat-value">{{ thongKe.soLoHetHan }}</div>
-          </div>
-          <div class="mb-0">
-            <span class="qlk-muted">Lô sắp hết</span>
-            <div class="qlk-stat-value">{{ thongKe.soLoSapHetHan || 0 }}</div>
-          </div>
+        </div>
+
+        <div class="stat-card-simple shadow-sm bg-white mb-4">
+          <div class="stat-label text-uppercase small font-weight-bold text-muted mb-2">Số lô đã hết hạn</div>
+          <div class="h3 font-weight-bold text-dark mb-0">{{ thongKe.soLoHetHan }} <small class="text-muted">lô</small></div>
+        </div>
+
+        <div class="stat-card-simple shadow-sm bg-white">
+          <div class="stat-label text-uppercase small font-weight-bold text-muted mb-2">Số lô sắp hết hạn</div>
+          <div class="h3 font-weight-bold text-warning mb-0">{{ thongKe.soLoSapHetHan || 0 }} <small class="text-muted">lô</small></div>
         </div>
       </div>
     </div>
@@ -146,66 +134,71 @@ import axiosClient from '../../api/axiosClient';
 const danhSach = ref([]);
 const dangTai  = ref(false);
 const locThang = ref('');
-const locLoai  = ref('soon');
-const thongKe  = ref({ tongGiaTri: 0, soLoHetHan: 0, soLoSapHetHan: 0, soMatHangSapHetTon: 0 });
+const locLoai  = ref('all');
+const hienThongKe = ref(false);
+const thongKe  = ref({ tongGiaTri: 0, soLoHetHan: 0, soLoSapHetHan: 0 });
 
-// ── PHÂN TRANG ──────────────────────────────────
+// Phân trang
 const trangHienTai   = ref(1);
 const soDongMoiTrang = ref(10);
-
-const tongSoTrang = computed(() =>
-  Math.ceil(danhSach.value.length / soDongMoiTrang.value)
-);
+const tongSoTrang = computed(() => Math.ceil(danhSach.value.length / soDongMoiTrang.value));
 const batDau = computed(() => (trangHienTai.value - 1) * soDongMoiTrang.value);
-const ketThuc = computed(() =>
-  Math.min(batDau.value + soDongMoiTrang.value, danhSach.value.length)
-);
-const danhSachHienThi = computed(() =>
-  danhSach.value.slice(batDau.value, ketThuc.value)
-);
+const ketThuc = computed(() => Math.min(batDau.value + soDongMoiTrang.value, danhSach.value.length));
+const danhSachHienThi = computed(() => danhSach.value.slice(batDau.value, ketThuc.value));
 const danhSachTrang = computed(() => {
-  const total   = tongSoTrang.value;
+  const total = tongSoTrang.value;
   const current = trangHienTai.value;
-  const start   = Math.max(1, current - 2);
-  const end     = Math.min(total, current + 2);
-  const range   = [];
-  for (let i = start; i <= end; i++) range.push(i);
+  const range = [];
+  for (let i = Math.max(1, current - 2); i <= Math.min(total, current + 2); i++) range.push(i);
   return range;
 });
-// ────────────────────────────────────────────────
 
 const loadData = async () => {
   dangTai.value = true;
   try {
     const data = await axiosClient.get('/Kho/danh-sach-lo', {
-      params: {
-        thang: locThang.value || undefined,
-        loai:  locLoai.value !== 'all' ? locLoai.value : 'soon',
-      },
+      params: { thang: locThang.value || undefined, loai:  locLoai.value !== 'all' ? locLoai.value : undefined }
     });
     danhSach.value = data?.items ?? [];
     thongKe.value  = data?.thongKe ?? { tongGiaTri: 0, soLoHetHan: 0, soLoSapHetHan: 0 };
   } catch (err) {
     console.error('Lỗi tải cảnh báo:', err);
-    danhSach.value = [];
   } finally {
     dangTai.value = false;
   }
 };
 
-const onFilter = () => {
-  trangHienTai.value = 1;
-  loadData();
-};
-
+const onFilter = () => { trangHienTai.value = 1; loadData(); };
 const laHetHan = (lo) => lo.hanSuDung && new Date(lo.hanSuDung) < new Date();
-const rowClass = (lo) => ({
-  'qlk-row--expired': laHetHan(lo),
-  'qlk-row--warn':    !laHetHan(lo),
-});
-
-const formatGia = (v) =>
-  new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v ?? 0);
+const formatGia = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v ?? 0);
 
 onMounted(loadData);
 </script>
+
+<style scoped>
+.transition-layout { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+.premium-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.premium-table thead th { 
+  background: #f8fafc; padding: 14px 16px; font-size: 0.75rem; 
+  text-transform: uppercase; color: #64748b; letter-spacing: 0.05em;
+  border-bottom: 2px solid #e2e8f0;
+}
+.premium-table tbody td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.premium-table tbody tr:hover { background-color: #f8fafc; }
+
+.badge-custom { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; }
+.bg-danger-soft { background: #fee2e2; color: #b91c1c; }
+.bg-warning-soft { background: #fef3c7; color: #92400e; }
+
+.bubble-ton { 
+  background: #f1f5f9; padding: 4px 12px; border-radius: 20px; 
+  font-weight: 700; color: #334155; font-size: 0.85rem; 
+}
+
+.stat-card-simple { border-radius: 12px; padding: 1.25rem; border: 1px solid #e2e8f0; }
+
+.custom-pagination .page-link { border: none; background: transparent; color: #64748b; font-weight: 600; margin: 0 2px; }
+.custom-pagination .page-item.active .page-link { background: #3b82f6 !important; color: white !important; border-radius: 6px; }
+
+.form-control-sm { height: 32px; font-size: 0.85rem; }
+</style>

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data; // Thay bằng DbContext của bạn
 using QuanLyQuayThuoc.DTOs.SanPham;
@@ -110,8 +110,8 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                         Name = t.TenThuoc,
                         Image = t.HinhAnhChinh,
                         Origin = t.NuocSanXuat,
-                        Price = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0,
-                        Unit = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.TenDonVi).FirstOrDefault() ?? ""
+                        Price = t.DonViTinhs.OrderByDescending(d => d.GiaTriQuyDoi).Select(d => d.GiaBan).FirstOrDefault() ?? 0,
+                        Unit = t.DonViTinhs.OrderByDescending(d => d.GiaTriQuyDoi).Select(d => d.TenDonVi).FirstOrDefault() ?? ""
                     })
                     .ToListAsync();
 
@@ -152,8 +152,8 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                         t.MaThuoc,
                         t.TenThuoc,
                         t.HinhAnhChinh,
-                        // Lấy giá của đơn vị cơ bản (giống logic BestSellers của bạn)
-                        GiaBan = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0
+                        // Lấy giá của đơn vị lớn nhất
+                        GiaBan = t.DonViTinhs.OrderByDescending(d => d.GiaTriQuyDoi).Select(d => d.GiaBan).FirstOrDefault() ?? 0
                     })
                     .ToListAsync();
 
@@ -199,7 +199,7 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                         t.MaThuoc,
                         t.TenThuoc,
                         t.HinhAnhChinh,
-                        GiaBan = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0
+                        GiaBan = t.DonViTinhs.OrderByDescending(d => d.GiaTriQuyDoi).Select(d => d.GiaBan).FirstOrDefault() ?? 0
                     })
                     .ToListAsync();
 
@@ -251,9 +251,9 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                         Id = t.MaThuoc,
                         Name = t.TenThuoc,
                         Image = t.HinhAnhChinh,
-                        Price = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0,
-                        Unit = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.TenDonVi).FirstOrDefault() ?? "Viên",
-                        CategoryName = t.MaDanhMucNavigation.TenDanhMuc // Để hiện tên danh mục gợi ý
+                        Price = t.DonViTinhs.OrderByDescending(d => d.GiaTriQuyDoi).Select(d => d.GiaBan).FirstOrDefault() ?? 0,
+                        Unit = t.DonViTinhs.OrderByDescending(d => d.GiaTriQuyDoi).Select(d => d.TenDonVi).FirstOrDefault() ?? "Viên",
+                        CategoryName = t.MaDanhMucNavigation != null ? t.MaDanhMucNavigation.TenDanhMuc : "Chưa phân loại" // Để hiện tên danh mục gợi ý
                     })
                     .ToListAsync();
 

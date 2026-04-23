@@ -187,13 +187,20 @@ namespace QuanLyQuayThuoc.Repositories
                         _context.DonViTinhs.Update(donViTinh);
                     }
 
+                    // 1. Phân tích hệ số quy đổi của đơn vị nhập
+                    int heSoQuyDoi = donViTinh.GiaTriQuyDoi ?? 1;
+
+                    // 2. Chuẩn hóa về đơn vị cơ bản (hệ số 1)
+                    int tongSoLuongLe = item.SoLuong * heSoQuyDoi;
+                    decimal giaNhapLe = heSoQuyDoi > 0 ? (item.GiaNhap / (decimal)heSoQuyDoi) : item.GiaNhap;
+
                     var loHangMoi = new LoHang
                     {
                         MaThuoc = item.MaThuoc,
                         SoLo = item.SoLo,
                         HanSuDung = DateOnly.FromDateTime(item.HanSuDung),
-                        GiaNhap = item.GiaNhap,
-                        SoLuongTon = item.SoLuong,
+                        GiaNhap = giaNhapLe,
+                        SoLuongTon = tongSoLuongLe,
                         NgaySanXuat = today
                     };
 
@@ -345,9 +352,14 @@ namespace QuanLyQuayThuoc.Repositories
                     };
                     _context.DonViTinhs.Add(donViTinh);
 
-                    // Trả về thông tin barcode để UI hiển thị/in
+                    // Trả về thông tin barcode & tính toán quy đổi để UI hiển thị
                     item.MaVach = maVach;
                     item.HinhAnhMaVach = TaoHinhAnhMaVachBase64(maVach);
+
+                    // Tính toán hiển thị (Logic backend)
+                    double ratio = (double)heSoQuyDoi / (item.GiaTriQuyDoi > 0 ? item.GiaTriQuyDoi : 1);
+                    item.GiaNhap = (decimal)((double)dto.GiaNhap / ratio);
+                    item.SoLuong = (int)((double)dto.SoLuong * ratio);
                 }
 
                 // 5. Lưu DUY NHẤT 1 lô hàng (Đã được quy đổi về đơn vị gốc)
