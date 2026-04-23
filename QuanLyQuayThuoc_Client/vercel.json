@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/api/(.*)",
+      "destination": "http://thanhtai121-001-site1.ntempurl.com/api/$1"
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": "http://thanhtai121-001-site1.ntempurl.com/uploads/$1"
     }
   ]
 }

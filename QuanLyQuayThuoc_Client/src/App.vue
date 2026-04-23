@@ -1,7 +1,8 @@
 <template>
-  <router-view></router-view>
-
-  <ChatbotTuVan />
+  <div class="notranslate" translate="no">
+    <router-view></router-view>
+    <ChatbotTuVan />
+  </div>
 </template>
 
 <script setup>
