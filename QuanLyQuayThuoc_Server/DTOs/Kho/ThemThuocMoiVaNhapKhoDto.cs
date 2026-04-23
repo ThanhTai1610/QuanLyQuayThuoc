@@ -41,5 +41,9 @@ namespace QuanLyQuayThuoc.DTOs.Kho
         // Các trường barcode/ảnh được server sinh ra dựa trên đơn vị tính này
         public string? MaVach { get; set; }
         public string? HinhAnhMaVach { get; set; }
+
+        // Các trường tính toán được trả về sau khi nhập kho
+        public decimal? GiaNhap { get; set; }
+        public int? SoLuong { get; set; }
     }
 }

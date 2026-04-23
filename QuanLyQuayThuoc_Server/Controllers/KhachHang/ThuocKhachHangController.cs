@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using QuanLyQuayThuoc.Data; // Thay bằng DbContext của bạn
+using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.DTOs.SanPham;
 
 namespace QuanLyQuayThuoc.Controllers.KhachHang
@@ -46,7 +46,6 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                 HanSuDungThang = thuoc.HanSuDungThang,
                 LaThuocKeDon = thuoc.LaThuocKeDon ?? false,
                 HinhAnhChinh = thuoc.HinhAnhChinh,
-
                 MoTaNgan = thuoc.MoTaNgan,
                 ThanhPhan = thuoc.ThanhPhan,
                 CongDung = thuoc.CongDung,
@@ -77,22 +76,20 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                 }).ToList()
             };
 
-
-
             return Ok(dto);
         }
+
         [HttpGet("BestSellers")]
         public async Task<IActionResult> GetBestSellers()
         {
             try
             {
-                // Bước 1: Tính toán ID và Số lượng bán ra (Tải về bộ nhớ bằng ToList)
                 var topSellingData = await _context.ChiTietDonHangs
                     .Join(_context.LoHangs, ct => ct.MaLo, l => l.MaLo, (ct, l) => new { l.MaThuoc, ct.SoLuong })
                     .GroupBy(x => x.MaThuoc)
                     .Select(g => new {
                         MaThuoc = g.Key,
-                        TongDaBan = g.Sum(x => (int?)x.SoLuong) ?? 0 // Dùng int? để tránh lỗi null
+                        TongDaBan = g.Sum(x => (int?)x.SoLuong) ?? 0
                     })
                     .OrderByDescending(x => x.TongDaBan)
                     .Take(6)
@@ -102,7 +99,6 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
 
                 var ids = topSellingData.Select(x => x.MaThuoc).ToList();
 
-                // Bước 2: Lấy thông tin chi tiết các thuốc này từ DB
                 var productDetails = await _context.Thuocs
                     .Where(t => ids.Contains(t.MaThuoc))
                     .Select(t => new {
@@ -115,7 +111,6 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                     })
                     .ToListAsync();
 
-                // Bước 3: Kết hợp dữ liệu (Thực hiện hoàn toàn trên RAM)
                 var result = productDetails.Select(p => new {
                     p.Id,
                     p.Name,
@@ -123,7 +118,6 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                     p.Origin,
                     p.Price,
                     p.Unit,
-                    // Lấy số lượng bán từ danh sách topSellingData đã tải ở Bước 1
                     TotalSold = topSellingData.FirstOrDefault(x => x.MaThuoc == p.Id)?.TongDaBan ?? 0
                 })
                 .OrderByDescending(p => p.TotalSold)
@@ -133,12 +127,10 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
             }
             catch (Exception ex)
             {
-                // Log lỗi ra console để Tài dễ debug
-                Console.WriteLine("Lỗi BestSellers: " + ex.Message);
                 return StatusCode(500, "Lỗi server: " + ex.Message);
             }
         }
-        // 1. API: Lấy sản phẩm tương tự (Cùng danh mục, loại trừ sản phẩm hiện tại)
+
         [HttpGet("Related")]
         public async Task<IActionResult> GetRelatedProducts(int maDanhMuc, int currentProductId)
         {
@@ -146,15 +138,14 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
             {
                 var relatedProducts = await _context.Thuocs
                     .Where(t => t.MaDanhMuc == maDanhMuc && t.MaThuoc != currentProductId)
-                    .Take(10) // Lấy tối đa 10 sản phẩm
+                    .Take(10)
                     .Select(t => new
                     {
                         t.MaThuoc,
                         t.TenThuoc,
                         t.HinhAnhChinh,
-                        // Lấy giá của đơn vị cơ bản (giống logic BestSellers của bạn)
                         GiaBan = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0,
-                        MaDvt = t.DonViTinhs.OrderByDescending(d => d.LaDonViCoBan).Select(d => d.MaDvt).FirstOrDefault()
+                        MaDvt = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.MaDvt).FirstOrDefault()
                     })
                     .ToListAsync();
 
@@ -166,96 +157,35 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
             }
         }
 
-        // 2. API: Lấy sản phẩm thường mua cùng (Sản phẩm xuất hiện cùng trong các đơn hàng khác)
-        [HttpGet("FrequentlyBoughtWith")]
-        public async Task<IActionResult> GetFrequentlyBoughtWith(int currentProductId)
-        {
-            try
-            {
-                // Bước 1: Tìm danh sách các MaDonHang có chứa sản phẩm này
-                var orderIds = await _context.ChiTietDonHangs
-                    .Join(_context.LoHangs, ct => ct.MaLo, l => l.MaLo, (ct, l) => new { ct.MaDonHang, l.MaThuoc })
-                    .Where(x => x.MaThuoc == currentProductId)
-                    .Select(x => x.MaDonHang)
-                    .Distinct()
-                    .ToListAsync();
-
-                if (!orderIds.Any()) return Ok(new List<object>());
-
-                // Bước 2: Tìm các sản phẩm khác (MaThuoc) nằm trong các đơn hàng đó
-                var suggestedProductIds = await _context.ChiTietDonHangs
-                    .Join(_context.LoHangs, ct => ct.MaLo, l => l.MaLo, (ct, l) => new { ct.MaDonHang, l.MaThuoc })
-                    .Where(x => orderIds.Contains(x.MaDonHang) && x.MaThuoc != currentProductId)
-                    .GroupBy(x => x.MaThuoc)
-                    .OrderByDescending(g => g.Count()) // Ưu tiên sản phẩm xuất hiện nhiều nhất
-                    .Select(g => g.Key)
-                    .Take(10)
-                    .ToListAsync();
-
-                // Bước 3: Lấy thông tin chi tiết các sản phẩm gợi ý
-                var results = await _context.Thuocs
-                    .Where(t => suggestedProductIds.Contains(t.MaThuoc))
-                    .Select(t => new
-                    {
-                        t.MaThuoc,
-                        t.TenThuoc,
-                        t.HinhAnhChinh,
-                        GiaBan = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0
-                    })
-                    .ToListAsync();
-
-                return Ok(results);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Lỗi lấy sản phẩm mua cùng: " + ex.Message);
-            }
-        }
-
         [HttpGet("FrequentlyBoughtWith/{maDanhMuc}/{currentProductId}")]
         public async Task<IActionResult> GetFrequentlyBoughtWith(int maDanhMuc, int currentProductId)
         {
             try
             {
-                // Bước 1: Định nghĩa các cặp danh mục đi kèm (Hard-code logic)
-                // Key: Mã danh mục đang xem | Value: Danh sách các mã danh mục gợi ý mua cùng
                 var mapping = new Dictionary<int, List<int>>
-        {
-            { 1, new List<int> { 5, 8 } }, // Ví dụ: Kháng sinh (1) -> Gợi ý Men tiêu hóa (5), Vitamin (8)
-            { 2, new List<int> { 8, 10 } }, // Ví dụ: Thuốc ho (2) -> Gợi ý Vitamin C (8), Khẩu trang (10)
-            { 7, new List<int> { 6 } },     // Ví dụ: Giải pháp làn da (7) -> Gợi ý Chăm sóc da mặt (6)
-            { 6, new List<int> { 7 } }      // Ngược lại
-        };
-
-                List<int> targetCategoryIds = new List<int>();
-
-                // Kiểm tra xem danh mục hiện tại có nằm trong sơ đồ gợi ý không
-                if (mapping.ContainsKey(maDanhMuc))
                 {
-                    targetCategoryIds = mapping[maDanhMuc];
-                }
-                else
-                {
-                    // Nếu không có trong mapping, lấy đại 1 danh mục bất kỳ khác để không bị trống UI
-                    targetCategoryIds = _context.DanhMucs
-                        .Where(d => d.MaDanhMuc != maDanhMuc)
-                        .Select(d => d.MaDanhMuc)
-                        .Take(1).ToList();
-                }
+                    { 1, new List<int> { 5, 8 } },
+                    { 2, new List<int> { 8, 10 } },
+                    { 7, new List<int> { 6 } },
+                    { 6, new List<int> { 7 } }
+                };
 
-                // Bước 2: Lấy sản phẩm từ các danh mục mục tiêu
+                List<int> targetCategoryIds = mapping.ContainsKey(maDanhMuc) 
+                    ? mapping[maDanhMuc] 
+                    : await _context.DanhMucs.Where(d => d.MaDanhMuc != maDanhMuc).Select(d => d.MaDanhMuc).Take(1).ToListAsync();
+
                 var suggestedProducts = await _context.Thuocs
                     .Where(t => targetCategoryIds.Contains(t.MaDanhMuc ?? 0) && t.MaThuoc != currentProductId)
-                    .OrderBy(t => Guid.NewGuid()) // Lấy ngẫu nhiên để mỗi lần load lại ra cái mới
-                    .Take(6) // Hiển thị 4 cái cho đẹp layout của bạn
+                    .OrderBy(t => Guid.NewGuid())
+                    .Take(6)
                     .Select(t => new {
                         Id = t.MaThuoc,
                         Name = t.TenThuoc,
                         Image = t.HinhAnhChinh,
                         Price = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.GiaBan).FirstOrDefault() ?? 0,
                         Unit = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.TenDonVi).FirstOrDefault() ?? "Viên",
-                        MaDvt = t.DonViTinhs.OrderByDescending(d => d.LaDonViCoBan).Select(d => d.MaDvt).FirstOrDefault(),
-                        CategoryName = t.MaDanhMucNavigation.TenDanhMuc // Để hiện tên danh mục gợi ý
+                        MaDvt = t.DonViTinhs.Where(d => d.LaDonViCoBan == true).Select(d => d.MaDvt).FirstOrDefault(),
+                        CategoryName = t.MaDanhMucNavigation != null ? t.MaDanhMucNavigation.TenDanhMuc : "Chưa phân loại"
                     })
                     .ToListAsync();
 
