@@ -146,7 +146,7 @@ namespace QuanLyQuayThuoc.Repositories
                 SoLuongTon = l.SoLuongTon,
                 GiaNhap = l.GiaNhap ?? 0,
                 TenThuoc = l.MaThuocNavigation?.TenThuoc,
-                MucDoCanhBao = l.HanSuDung < today ? 2 : (l.HanSuDung <= sixMonthsLater ? 1 : 0)
+                MucDoCanhBao = l.HanSuDung < today ? 2 : (l.HanSuDung < sixMonthsLater ? 1 : 0)
             }).ToList();
 
             if (loai == "expired") items = items.Where(i => i.MucDoCanhBao == 2).ToList();
@@ -266,7 +266,7 @@ namespace QuanLyQuayThuoc.Repositories
                     .CountAsync(l => l.HanSuDung < today),
 
                 SoLoSapHetHan = await _context.LoHangs
-                    .CountAsync(l => l.HanSuDung >= today && l.HanSuDung <= soon),
+                    .CountAsync(l => l.HanSuDung >= today && l.HanSuDung < soon),
 
                 SoMatHangSapHetTon = (await _context.Thuocs.ToListAsync())
                     .Count(t => _context.LoHangs.Where(l => l.MaThuoc == t.MaThuoc).Sum(l => l.SoLuongTon) < 50)

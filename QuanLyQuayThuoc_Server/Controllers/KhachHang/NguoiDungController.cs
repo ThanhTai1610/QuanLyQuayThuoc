@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authorization; 
-using System.Security.Claims; 
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Data;
 using QuanLyQuayThuoc.DTOs.NguoiDung;
 using QuanLyQuayThuoc.Helpers;
-using QuanLyQuayThuoc.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using QuanLyQuayThuoc.Models;
+using QuanLyQuayThuoc.Services.Interfaces;
+using System.Security.Claims;
 
 namespace QuanLyQuayThuoc.Controllers.KhachHang
 {
@@ -17,13 +17,13 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
     {
         private readonly INguoiDungService _nguoiDungService;
         private readonly JwtHelper _jwtHelper;
-        private readonly ApplicationDbContext _context; // Thêm context vào đây
+        private readonly ApplicationDbContext _context;
 
         public NguoiDungController(INguoiDungService nguoiDungService, JwtHelper jwtHelper, ApplicationDbContext context)
         {
             _nguoiDungService = nguoiDungService;
             _jwtHelper = jwtHelper;
-            _context = context; // Gán giá trị cho context
+            _context = context;
         }
 
         [HttpPost("dang-nhap")]
@@ -34,24 +34,25 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
             if (userAuth == null)
                 return Unauthorized(new { message = "Email hoặc mật khẩu không chính xác" });
 
-            var token = _jwtHelper.GenerateToken(userAuth);
+            return Ok(TaoPhanHoiDangNhap(userAuth));
+        }
 
-            var cookieOptions = new CookieOptions
+        [HttpPost("dang-nhap-google")]
+        public async Task<IActionResult> LoginGoogle([FromBody] DangNhapGoogleDto duLieu)
+        {
+            try
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.Now.AddDays(1)
-            };
+                var userAuth = await _nguoiDungService.DangNhapBangGoogle(duLieu);
 
-            Response.Cookies.Append("AuthToken", token, cookieOptions);
+                if (userAuth == null)
+                    return Unauthorized(new { message = "Xác thực Google không hợp lệ." });
 
-            return Ok(new
+                return Ok(TaoPhanHoiDangNhap(userAuth));
+            }
+            catch (InvalidOperationException ex)
             {
-                user = userAuth,
-                token = token,
-                message = "Đăng nhập thành công"
-            });
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
         [Authorize]
@@ -60,21 +61,20 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
         {
             try
             {
-                // 1. Lấy ID người dùng từ Claim trong Token
                 var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized("Không tìm thấy thông tin người dùng.");
+                if (string.IsNullOrEmpty(userIdClaim))
+                    return Unauthorized("Không tìm thấy thông tin người dùng.");
 
                 var userId = int.Parse(userIdClaim);
                 var user = await _context.NguoiDungs.FindAsync(userId);
 
-                if (user == null) return NotFound("Người dùng không tồn tại.");
+                if (user == null)
+                    return NotFound("Người dùng không tồn tại.");
 
-                // 2. Kiểm tra mật khẩu cũ
-                // Tài đảm bảo đã cài thư viện BCrypt.Net-Next nhé
-                bool isCorrect = BCrypt.Net.BCrypt.Verify(model.MatKhauCu, user.MatKhau);
-                if (!isCorrect) return BadRequest("Mật khẩu cũ không chính xác.");
+                var isCorrect = BCrypt.Net.BCrypt.Verify(model.MatKhauCu, user.MatKhau);
+                if (!isCorrect)
+                    return BadRequest("Mật khẩu cũ không chính xác.");
 
-                // 3. Hash mật khẩu mới và lưu
                 user.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhauMoi);
                 await _context.SaveChangesAsync();
 
@@ -85,44 +85,37 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                 return StatusCode(500, "Lỗi hệ thống: " + ex.Message);
             }
         }
+
         [AllowAnonymous]
         [HttpPost("quen-mat-khau")]
         public async Task<IActionResult> QuenMatKhau([FromBody] QuenMatKhauDto model)
         {
             try
             {
-                // 1. Kiểm tra Email
                 var user = await _context.NguoiDungs.FirstOrDefaultAsync(u => u.Email == model.Email);
-                if (user == null) return NotFound(new { message = "Email không tồn tại trong hệ thống." });
+                if (user == null)
+                    return NotFound(new { message = "Email không tồn tại trong hệ thống." });
 
-                // 2. Tạo OTP và lưu vào DB
-                string otp = new Random().Next(100000, 999999).ToString();
+                var otp = new Random().Next(100000, 999999).ToString();
                 user.MaOtp = otp;
                 user.HanOtp = DateTime.Now.AddMinutes(5);
                 await _context.SaveChangesAsync();
 
-                // 3. Gửi Mail và đợi kết quả (Bỏ Task.Run)
-                string subject = "Mã xác nhận quên mật khẩu - Pharmative";
-                string body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực 5 phút.";
-
-                // Đợi gửi xong mới trả về kết quả cho Frontend
-                bool isSent = await EmailHelper.SendEmailAsync(model.Email, subject, body);
+                var subject = "Mã xác nhận quên mật khẩu - Pharmative";
+                var body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực 5 phút.";
+                var isSent = await EmailHelper.SendEmailAsync(model.Email, subject, body);
 
                 if (isSent)
-                {
                     return Ok(new { success = true, message = "Mã OTP đã được gửi về Email." });
-                }
-                else
-                {
-                    return StatusCode(500, new { message = "Gửi mail thất bại. Tài kiểm tra lại App Password Gmail nhé!" });
-                }
+
+                return StatusCode(500, new { message = "Gửi mail thất bại. Tài kiểm tra lại App Password Gmail nhé!" });
             }
             catch (Exception ex)
             {
-                // Trả về lỗi chi tiết để Tài dễ debug
                 return StatusCode(500, new { message = "Lỗi hệ thống: " + ex.Message });
             }
         }
+
         [AllowAnonymous]
         [HttpPost("dat-lai-mat-khau")]
         public async Task<IActionResult> DatLaiMatKhau([FromBody] DatLaiMatKhauDto model)
@@ -132,22 +125,13 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
             if (user == null)
                 return NotFound(new { message = "Email không tồn tại." });
 
-            // Kiểm tra mã OTP
             if (string.IsNullOrEmpty(user.MaOtp) || user.MaOtp != model.MaOtp)
-            {
                 return BadRequest(new { message = "Mã OTP không chính xác." });
-            }
 
-            // Kiểm tra thời gian hết hạn
             if (user.HanOtp < DateTime.Now)
-            {
                 return BadRequest(new { message = "Mã OTP đã hết hạn (quá 5 phút)." });
-            }
 
-            // Hash mật khẩu mới
             user.MatKhau = BCrypt.Net.BCrypt.HashPassword(model.MatKhauMoi);
-
-            // Xóa dấu vết OTP sau khi dùng xong để bảo mật
             user.MaOtp = null;
             user.HanOtp = null;
 
@@ -155,51 +139,44 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
 
             return Ok(new { message = "Đặt lại mật khẩu thành công!" });
         }
+
         [AllowAnonymous]
         [HttpPost("xac-nhan-otp")]
         public async Task<IActionResult> XacNhanOtp([FromBody] XacThucOtpDto model)
         {
-            // Trong NguoiDungController.cs, hàm XacNhanOtp
             var user = await _context.NguoiDungs.FirstOrDefaultAsync(u => u.Email == model.Email.Trim());
 
             if (user == null || user.MaOtp?.Trim() != model.Otp.Trim())
-            {
                 return BadRequest(new { message = "Mã OTP không chính xác." });
-            }
+
             return Ok(new { message = "Mã OTP hợp lệ." });
         }
+
         [AllowAnonymous]
         [HttpPost("gui-otp-dang-ky")]
         public async Task<IActionResult> GuiOtpDangKy([FromBody] DangKyDto model)
         {
-            // 1. Kiểm tra email đã tồn tại chưa
             if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
                 return Conflict(new { message = "Email này đã được đăng ký." });
 
-            // 2. Tạo OTP
-            string otp = new Random().Next(100000, 999999).ToString();
+            var otp = new Random().Next(100000, 999999).ToString();
+            var subject = "Mã xác thực đăng ký tài khoản - Pharmative";
+            var body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực trong 5 phút.";
 
-            // 3. Gửi Email (Dùng EmailHelper Tài đã có)
-            string subject = "Mã xác thực đăng ký tài khoản - Pharmative";
-            string body = $"Mã OTP của bạn là: <b>{otp}</b>. Hiệu lực trong 5 phút.";
+            var isSent = await EmailHelper.SendEmailAsync(model.Email, subject, body);
 
-            bool isSent = await EmailHelper.SendEmailAsync(model.Email, subject, body);
-
-            if (!isSent) return StatusCode(500, "Không thể gửi email.");
+            if (!isSent)
+                return StatusCode(500, "Không thể gửi email.");
 
             return Ok(new { otpXacThuc = otp, message = "Mã OTP đã gửi về Email." });
         }
+
         [AllowAnonymous]
         [HttpPost("dang-ky-otp")]
         public async Task<IActionResult> DangKyChinhThuc([FromBody] DangKyDto model)
         {
-            // 1. Kiểm tra lại email một lần nữa cho chắc
             if (await _context.NguoiDungs.AnyAsync(u => u.Email == model.Email))
                 return Conflict(new { message = "Email này đã được đăng ký." });
-
-            // 2. Logic kiểm tra OTP (Nếu Tài dùng cách gửi OTP về Client ở bước GuiOtp)
-            // model.MaOtp này phải khớp với mã đã gửi qua Email
-            // Lưu ý: Tài cần thêm trường 'MaOtp' vào trong DangKyDto nhé
 
             var user = new NguoiDung
             {
@@ -216,6 +193,28 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Đăng ký thành công!" });
+        }
+
+        private object TaoPhanHoiDangNhap(PhanQuyenDto userAuth)
+        {
+            var token = _jwtHelper.GenerateToken(userAuth);
+
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddDays(1)
+            };
+
+            Response.Cookies.Append("AuthToken", token, cookieOptions);
+
+            return new
+            {
+                user = userAuth,
+                token,
+                message = "Đăng nhập thành công"
+            };
         }
     }
 }

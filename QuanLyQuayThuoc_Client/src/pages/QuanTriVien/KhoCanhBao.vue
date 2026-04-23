@@ -67,7 +67,8 @@
                     <td class="text-center text-secondary">{{ lo.hanSuDung }}</td>
                     <td class="text-center">
                       <span v-if="laHetHan(lo)" class="badge-custom bg-danger-soft text-danger">Đã hết hạn</span>
-                      <span v-else class="badge-custom bg-warning-soft text-warning">Sắp hết hạn</span>
+                      <span v-else-if="laSapHetHan(lo)" class="badge-custom bg-warning-soft text-warning">Sắp hết hạn</span>
+                      <span v-else class="badge-custom bg-success-soft text-success">Bình thường</span>
                     </td>
                     <td class="text-center">
                       <span class="bubble-ton">{{ lo.soLuongTon }}</span>
@@ -169,7 +170,34 @@ const loadData = async () => {
 };
 
 const onFilter = () => { trangHienTai.value = 1; loadData(); };
-const laHetHan = (lo) => lo.hanSuDung && new Date(lo.hanSuDung) < new Date();
+const parseNgay = (value) => {
+  if (!value) return null;
+  const raw = String(value).trim();
+  const parsed = new Date(raw.includes('T') ? raw : `${raw}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+};
+
+const laHetHan = (lo) => {
+  const hsd = parseNgay(lo?.hanSuDung);
+  if (!hsd) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return hsd < today;
+};
+
+const laSapHetHan = (lo) => {
+  const hsd = parseNgay(lo?.hanSuDung);
+  if (!hsd) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (hsd < today) return false;
+
+  const sixMonthsLater = new Date(today);
+  sixMonthsLater.setMonth(sixMonthsLater.getMonth() + 6);
+  return hsd < sixMonthsLater;
+};
 const formatGia = (v) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v ?? 0);
 
 onMounted(loadData);
@@ -189,6 +217,7 @@ onMounted(loadData);
 .badge-custom { padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; }
 .bg-danger-soft { background: #fee2e2; color: #b91c1c; }
 .bg-warning-soft { background: #fef3c7; color: #92400e; }
+.bg-success-soft { background: #dcfce7; color: #166534; }
 
 .bubble-ton { 
   background: #f1f5f9; padding: 4px 12px; border-radius: 20px; 

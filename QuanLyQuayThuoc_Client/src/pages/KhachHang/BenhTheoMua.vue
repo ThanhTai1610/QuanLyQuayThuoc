@@ -1,12 +1,12 @@
-<template>
+﻿<template>
   <section class="home-section home-season-disease">
     <div class="container">
       <div class="season-disease-title">
         <span class="icon-heartbeat"></span>
-        <h2>Bệnh theo mùa</h2>
+        <h2>Bá»‡nh theo mÃ¹a</h2>
       </div>
       <p class="season-disease-sub">
-        Gợi ý giải pháp chăm sóc sức khỏe theo từng nhóm bệnh thường gặp khi giao mùa.
+        Gá»£i Ã½ giáº£i phÃ¡p chÄƒm sÃ³c sá»©c khá»e theo tá»«ng nhÃ³m bá»‡nh thÆ°á»ng gáº·p khi giao mÃ¹a.
       </p>
 
       <div class="season-tabs">
@@ -24,7 +24,7 @@
 
       <div v-if="dangTai" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Đang tải...</span>
+          <span class="visually-hidden">Äang táº£i...</span>
         </div>
       </div>
 
@@ -44,7 +44,7 @@
               :to="{ path: '/san-pham', query: { chuDe: thongTinChuDe.maChuDe } }"
               class="btn season-intro-btn"
             >
-              Khám phá ngay giải pháp
+              KhÃ¡m phÃ¡ ngay giáº£i phÃ¡p
             </router-link>
           </div>
         </div>
@@ -57,7 +57,7 @@
           >
             <div class="product-origin-badge">
               <img :src="getFlagUrl(sp.nuocSanXuat)" class="flag-icon" alt="flag" />
-              <span class="origin-text">{{ sp.nuocSanXuat || 'Việt Nam' }}</span>
+              <span class="origin-text">{{ sp.nuocSanXuat || 'Viá»‡t Nam' }}</span>
             </div>
             
             <img
@@ -78,7 +78,7 @@
               :to="{ name: 'ChiTietSanPham', params: { id: sp.maThuoc } }"
               class="btn season-buy-btn"
             >
-              Chọn mua
+              Chá»n mua
             </router-link>
           </article>
         </div>
@@ -98,17 +98,27 @@ const sanPhamChuDe   = ref([]);
 const tabHienTai     = ref(null);
 const dangTai        = ref(false);
 
-// Hàm lấy link cờ đồng bộ với trang bán chạy
+// HÃ m láº¥y link cá» Ä‘á»“ng bá»™ vá»›i trang bÃ¡n cháº¡y
 const getFlagUrl = (countryName) => {
   if (!countryName) return 'https://flagcdn.com/w40/vn.png';
-  const name = countryName.toLowerCase();
-  if (name.includes('việt nam')) return 'https://flagcdn.com/w40/vn.png';
-  if (name.includes('hoa kỳ') || name.includes('mỹ') || name.includes('usa')) return 'https://flagcdn.com/w40/us.png';
-  if (name.includes('pháp')) return 'https://flagcdn.com/w40/fr.png';
-  if (name.includes('đức')) return 'https://flagcdn.com/w40/de.png';
-  if (name.includes('nhật')) return 'https://flagcdn.com/w40/jp.png';
-  if (name.includes('anh')) return 'https://flagcdn.com/w40/gb.png';
-  if (name.includes('hàn quốc')) return 'https://flagcdn.com/w40/kr.png';
+
+  const name = countryName
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  if (name.includes('viet nam') || name === 'vn') return 'https://flagcdn.com/w40/vn.png';
+  if (name.includes('hoa ky') || name.includes('my') || name.includes('usa') || name === 'us') return 'https://flagcdn.com/w40/us.png';
+  if (name.includes('phap') || name === 'fr') return 'https://flagcdn.com/w40/fr.png';
+  if (name.includes('duc') || name === 'de') return 'https://flagcdn.com/w40/de.png';
+  if (name.includes('nhat') || name === 'jp') return 'https://flagcdn.com/w40/jp.png';
+  if (name.includes('anh') || name === 'uk' || name === 'gb') return 'https://flagcdn.com/w40/gb.png';
+  if (name.includes('han quoc') || name === 'kr') return 'https://flagcdn.com/w40/kr.png';
+  if (name.includes('canada') || name === 'ca') return 'https://flagcdn.com/w40/ca.png';
+  if (name.includes('italy') || name.includes('italia') || name === 'it' || name === 'y') return 'https://flagcdn.com/w40/it.png';
+  if (name.includes('nga') || name.includes('russia') || name === 'ru') return 'https://flagcdn.com/w40/ru.png';
+  if (name.includes('philippines') || name.includes('philippin') || name.includes('phi lip pin') || name === 'ph') return 'https://flagcdn.com/w40/ph.png';
+
   return 'https://flagcdn.com/w40/un.png';
 };
 
@@ -121,7 +131,7 @@ const loadTabs = async () => {
       await loadNoiDungChuDe(res[0].maChuDe);
     }
   } catch (err) {
-    console.error('Lỗi tải danh sách tab:', err);
+    console.error('Lá»—i táº£i danh sÃ¡ch tab:', err);
   }
 };
 
@@ -132,7 +142,7 @@ const loadNoiDungChuDe = async (id) => {
     thongTinChuDe.value = res.info; 
     sanPhamChuDe.value = res.products;
   } catch (err) {
-    console.error('Lỗi tải dữ liệu chủ đề:', err);
+    console.error('Lá»—i táº£i dá»¯ liá»‡u chá»§ Ä‘á»:', err);
   } finally {
     dangTai.value = false;
   }
@@ -157,9 +167,9 @@ onMounted(loadTabs);
 </script>
 
 <style scoped>
-/* CSS bổ sung để Badge hiển thị đẹp trong card Bệnh theo mùa */
+/* CSS bá»• sung Ä‘á»ƒ Badge hiá»ƒn thá»‹ Ä‘áº¹p trong card Bá»‡nh theo mÃ¹a */
 .season-product-card {
-  position: relative; /* Quan trọng để badge đè lên */
+  position: relative; /* Quan trá»ng Ä‘á»ƒ badge Ä‘Ã¨ lÃªn */
 }
 
 .product-origin-badge {

@@ -125,7 +125,6 @@
                       </template>
                       <template v-else-if="item.chenhLech < 0">
                         <option value="Hỏng / Vỡ">Hỏng / Vỡ</option>
-                        <option value="Hết hạn">Hết hạn</option>
                         <option value="Nhập sai">Nhập sai</option>
                         <option value="Thất thoát">Thất thoát</option>
                         <option value="Khác">Khác</option>
