@@ -251,7 +251,6 @@ import '../../assets/css/product-detail-page.css';
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axiosClient from '../../api/axiosClient'; 
-import { authState } from '../../api/auth'; 
 import Swal from 'sweetalert2';
 import bus from '../../api/bus';
 import GuiDonThuocModal from './GuiDonThuocModal.vue';
@@ -380,17 +379,18 @@ const loadFrequentlyBoughtProducts = async (maDanhMuc, currentProductId) => {
 };
 
 const themGioHang = async () => {
-  if (!authState.user) {
+  if (!localStorage.getItem('token')) {
     Swal.fire({ title: 'Thông báo', text: 'Vui lòng đăng nhập!', icon: 'warning', confirmButtonText: 'Đăng nhập' })
-      .then((r) => { if (r.isConfirmed) router.push('/dang-nhap'); });
+      .then((r) => { if (r.isConfirmed) router.push('/auth/dang-nhap'); });
     return;
   }
 
   const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
+  if (!activeUnit) return;
   const payload = { MaThuoc: thuoc.value.maThuoc, MaDvt: activeUnit.maDvt, SoLuong: soLuong.value };
 
   try {
-    await axiosClient.post('GioHang/them', payload);
+    await axiosClient.post('/GioHang/them', payload);
     Swal.fire({
       icon: 'success',
       title: 'Đã thêm!',
@@ -406,10 +406,30 @@ const themGioHang = async () => {
   }
 };
 
+const muaNgay = async () => {
+  if (!localStorage.getItem('token')) {
+    Swal.fire({ title: 'Thông báo', text: 'Vui lòng đăng nhập!', icon: 'warning', confirmButtonText: 'Đăng nhập' })
+      .then((r) => { if (r.isConfirmed) router.push('/auth/dang-nhap'); });
+    return;
+  }
+
+  const activeUnit = thuoc.value.donViTinhs[selectedUnitIndex.value];
+  if (!activeUnit) return;
+
+  const payload = { MaThuoc: thuoc.value.maThuoc, MaDvt: activeUnit.maDvt, SoLuong: soLuong.value };
+
+  try {
+    await axiosClient.post('/GioHang/them', payload);
+    router.push('/gio-hang');
+  } catch (e) {
+    Swal.fire('Thất bại', 'Không thể mua ngay lúc này.', 'error');
+  }
+};
+
 const themNhanhVaoGio = async (item) => {
-    if (!authState.user) {
+    if (!localStorage.getItem('token')) {
         Swal.fire({ title: 'Thông báo', text: 'Vui lòng đăng nhập!', icon: 'warning', confirmButtonText: 'Đăng nhập' })
-            .then((r) => { if (r.isConfirmed) router.push('/dang-nhap'); });
+            .then((r) => { if (r.isConfirmed) router.push('/auth/dang-nhap'); });
         return;
     }
     try {
@@ -419,7 +439,7 @@ const themNhanhVaoGio = async (item) => {
             SoLuong: 1 
         };
         console.log("Payload thêm nhanh:", payload);
-        await axiosClient.post('GioHang/them', payload);
+        await axiosClient.post('/GioHang/them', payload);
         
         Swal.fire({
             icon: 'success',

@@ -308,7 +308,7 @@ const themVaoGio = async (sp) => {
       if (result.isConfirmed) router.push('/gio-hang');
     });
   } catch (err) {
-    if (err.response?.status === 401) router.push('/dang-nhap'); 
+    if (err.response?.status === 401) router.push('/auth/dang-nhap'); 
     else Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể thêm vào giỏ.' });
   }
 };

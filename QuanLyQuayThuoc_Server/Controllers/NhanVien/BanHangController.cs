@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using QuanLyQuayThuoc.DTOs.DonHang;
 using QuanLyQuayThuoc.Services.Interfaces;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace QuanLyQuayThuoc.Controllers
 {
@@ -20,11 +21,18 @@ namespace QuanLyQuayThuoc.Controllers
 
         private int GetMaNhanVienFromToken()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null)
-                throw new UnauthorizedAccessException("Không tìm thấy thông tin nhân viên trong Token. Vui lòng đăng nhập lại.");
+            var userIdRaw =
+                User.FindFirst("UserId")?.Value
+                ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? User.FindFirst(JwtRegisteredClaimNames.NameId)?.Value
+                ?? User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
 
-            return int.Parse(userIdClaim.Value);
+            if (string.IsNullOrWhiteSpace(userIdRaw) || !int.TryParse(userIdRaw, out var maNhanVien))
+            {
+                throw new UnauthorizedAccessException("Không đọc được thông tin nhân viên từ token. Vui lòng đăng nhập lại.");
+            }
+
+            return maNhanVien;
         }
 
         [HttpGet("tim-kiem")]

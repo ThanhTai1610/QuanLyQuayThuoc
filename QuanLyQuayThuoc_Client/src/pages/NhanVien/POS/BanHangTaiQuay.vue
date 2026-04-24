@@ -21,7 +21,7 @@
 <script setup>
 import { ref, computed, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
+import axiosClient from '../../../api/axiosClient';
 import TimKiem from '../../NhanVien/POS/TimKiem.vue';
 import GioHang from '../../NhanVien/POS/GioHang.vue';
 import ThanhToan from '../../NhanVien/POS/ThanhToan.vue';
@@ -165,8 +165,6 @@ const xuLyMoMo = async (chiTietThanhToan) => {
   const tongTienSnapshot = tongTienHang.value;
 
   try {
-    const token = localStorage.getItem('token');
-
     // Bước 1: Tạo đơn hàng trên backend
     const dto = {
       phuongThucThanhToan: 'Momo',
@@ -179,18 +177,14 @@ const xuLyMoMo = async (chiTietThanhToan) => {
       }))
     };
 
-    const ketQua = await axios.post(
-      `${import.meta.env.VITE_API_URL}/BanHang/thanh-toan`,
-      dto,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const ketQua = await axiosClient.post('/BanHang/thanh-toan', dto);
 
     // ✅ Hỗ trợ cả chữ hoa (C#) lẫn chữ thường
-    const isSuccess = ketQua.data?.Success === true || ketQua.data?.success === true;
-    const maDonHangMoi = ketQua.data?.MaDonHang ?? ketQua.data?.maDonHang;
+    const isSuccess = ketQua?.Success === true || ketQua?.success === true;
+    const maDonHangMoi = ketQua?.MaDonHang ?? ketQua?.maDonHang;
 
     if (!isSuccess || maDonHangMoi == null) {
-      throw new Error(ketQua.data?.Message || ketQua.data?.message || 'Tạo đơn hàng thất bại');
+      throw new Error(ketQua?.Message || ketQua?.message || 'Tạo đơn hàng thất bại');
     }
 
     // Chuẩn bị dữ liệu hóa đơn để hiện sau khi MoMo redirect về
@@ -228,7 +222,6 @@ const xuLyMoMo = async (chiTietThanhToan) => {
 const goiApiThanhToan = async (chiTietThanhToan) => {
   if (!cacSanPhamTrongGio.value.length) return;
   try {
-    const token = localStorage.getItem('token');
     const dto = {
       phuongThucThanhToan: 'TienMat',
       giamGia: chiTietThanhToan?.giamGia || 0,
@@ -240,14 +233,10 @@ const goiApiThanhToan = async (chiTietThanhToan) => {
       }))
     };
 
-    const ketQua = await axios.post(
-      `${import.meta.env.VITE_API_URL}/BanHang/thanh-toan`,
-      dto,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const ketQua = await axiosClient.post('/BanHang/thanh-toan', dto);
 
-    const isSuccess = ketQua.data?.Success === true || ketQua.data?.success === true;
-    const maDonHangMoi = ketQua.data?.MaDonHang ?? ketQua.data?.maDonHang;
+    const isSuccess = ketQua?.Success === true || ketQua?.success === true;
+    const maDonHangMoi = ketQua?.MaDonHang ?? ketQua?.maDonHang;
 
     if (isSuccess && maDonHangMoi != null) {
       Swal.fire({
@@ -257,7 +246,7 @@ const goiApiThanhToan = async (chiTietThanhToan) => {
       });
       datLaiTrang();
     } else {
-      Swal.fire({ title: 'Lỗi', text: ketQua.data?.Message || 'Thanh toán thất bại.', icon: 'error' });
+      Swal.fire({ title: 'Lỗi', text: ketQua?.Message || ketQua?.message || 'Thanh toán thất bại.', icon: 'error' });
     }
   } catch (loi) {
     Swal.fire({ title: 'Lỗi', text: loi.response?.data?.Message || loi.message || 'Không thể kết nối Server', icon: 'error' });

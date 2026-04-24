@@ -209,7 +209,7 @@ const loadData = async () => {
     nguoiDung.value      = resUser;
     danhSachDiaChi.value = resDC;
   } catch (err) {
-    if (err.response?.status === 401) router.push('/dang-nhap');
+    if (err.response?.status === 401) router.push('/auth/dang-nhap');
   } finally {
     dangTai.value = false;
   }
@@ -351,7 +351,7 @@ const diaChiDayDu = (dc) =>
 
 const dangXuat = () => {
   localStorage.clear();
-  router.push('/dang-nhap');
+  router.push('/auth/dang-nhap');
 };
 
 onMounted(loadData);

@@ -104,6 +104,57 @@ builder.Services.AddAuthentication(options => {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (!string.IsNullOrWhiteSpace(context.Token))
+            {
+                return Task.CompletedTask;
+            }
+
+            var tokenFromHeader = context.Request.Headers["X-Access-Token"].ToString();
+            if (!string.IsNullOrWhiteSpace(tokenFromHeader))
+            {
+                context.Token = tokenFromHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+                    ? tokenFromHeader.Substring("Bearer ".Length).Trim()
+                    : tokenFromHeader.Trim();
+
+                return Task.CompletedTask;
+            }
+
+            var tokenFromCookie = context.Request.Cookies["AuthToken"];
+            if (!string.IsNullOrWhiteSpace(tokenFromCookie))
+            {
+                context.Token = tokenFromCookie;
+            }
+
+            return Task.CompletedTask;
+        },
+        OnChallenge = async context =>
+        {
+            if (context.Response.HasStarted)
+            {
+                return;
+            }
+
+            context.HandleResponse();
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json; charset=utf-8";
+
+            var detail = string.IsNullOrWhiteSpace(context.ErrorDescription)
+                ? "Thiếu token hoặc token không hợp lệ/hết hạn. Vui lòng đăng nhập lại."
+                : context.ErrorDescription;
+
+            await context.Response.WriteAsJsonAsync(new
+            {
+                Success = false,
+                Message = "Unauthorized",
+                Detail = detail
+            });
+        }
+    };
 });
 
 var app = builder.Build();

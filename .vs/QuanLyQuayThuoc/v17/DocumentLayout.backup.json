@@ -226,7 +226,7 @@
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\appsettings.json",
               "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\appsettings.json",
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAqwBoAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-04-13T04:57:06.609Z",
               "EditorCaption": ""
@@ -253,7 +253,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\BaoCaoController.cs",
               "ViewState": "AgIAAMsAAAAAAAAAAAAvwOoAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T17:32:44.415Z"
+              "WhenOpened": "2026-04-15T17:32:44.415Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -349,7 +350,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\DonHangKhachController.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAYwDQAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T17:45:35.069Z"
+              "WhenOpened": "2026-04-15T17:45:35.069Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -453,7 +455,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
               "ViewState": "AgIAAHEAAAAAAAAAAAAAwK4AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:30:50.406Z"
+              "WhenOpened": "2026-04-04T20:30:50.406Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -525,7 +528,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAwwC0AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T17:01:01.308Z"
+              "WhenOpened": "2026-04-03T17:01:01.308Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -561,7 +565,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
               "ViewState": "AgIAACAAAAAAAAAAAIAwwC8AAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:43:41.341Z"
+              "WhenOpened": "2026-04-03T16:43:41.341Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -585,7 +590,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\PhieuNhapKhoDto.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAA8wBEAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:35:00.635Z"
+              "WhenOpened": "2026-04-03T16:35:00.635Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -597,7 +603,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoLoHangDto.cs",
               "ViewState": "AgIAABIAAAAAAAAAAAAywB8AAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:34:35.747Z"
+              "WhenOpened": "2026-04-03T16:34:35.747Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -609,7 +616,8 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoTongQuanDto.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAA8wBUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:33:50.539Z"
+              "WhenOpened": "2026-04-03T16:33:50.539Z",
+              "EditorCaption": ""
             }
           ]
         }
