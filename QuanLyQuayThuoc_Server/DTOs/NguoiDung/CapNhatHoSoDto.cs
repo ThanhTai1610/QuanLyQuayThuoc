@@ -11,7 +11,7 @@ namespace QuanLyQuayThuoc.DTOs.NguoiDung
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Họ tên từ 2 đến 100 ký tự")]
         public string HoTen { get; set; }
 
-        public string SoDienThoai { get; set; }
+        public string? SoDienThoai { get; set; }
 
         [Required(ErrorMessage = "Email không được để trống")]
         // EmailAddress chỉ kiểm tra cơ bản, RegularExpression này sẽ kiểm tra chặt chẽ hơn

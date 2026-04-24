@@ -38,7 +38,10 @@ namespace QuanLyQuayThuoc.Repositories
 
             user.HoTen = duLieu.HoTen;
             user.Email = duLieu.Email;
-            user.SoDienThoai = duLieu.SoDienThoai;
+            if (!string.IsNullOrWhiteSpace(duLieu.SoDienThoai))
+            {
+                user.SoDienThoai = duLieu.SoDienThoai;
+            }
             user.GioiTinh = duLieu.GioiTinh;
             user.NgaySinh = duLieu.NgaySinh;
             return await _db.SaveChangesAsync() > 0;

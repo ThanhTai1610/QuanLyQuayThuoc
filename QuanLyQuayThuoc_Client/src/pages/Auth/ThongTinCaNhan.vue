@@ -335,6 +335,7 @@ const xuLyCapNhat = async () => {
     loading.value = true;
     await axiosClient.put('/HoSo/cap-nhat', { 
       ...formCapNhat.value, 
+      soDienThoai: nguoiDung.value.soDienThoai,
       maNguoiDung: nguoiDung.value.maNguoiDung 
     });
     
