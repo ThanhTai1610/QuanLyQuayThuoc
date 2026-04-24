@@ -68,7 +68,8 @@ namespace QuanLyQuayThuoc.Controllers
                     var donHang = await _context.DonHangs.FindAsync(maDonHang);
                     if (donHang != null)
                     {
-                        donHang.TrangThai = "Đã thanh toán";
+                        // Sau khi thanh toán thành công, đơn vẫn cần nhân viên xác nhận xử lý.
+                        donHang.TrangThai = "Chờ xử lý";
                         donHang.PhuongThucThanhToan = "Momo";
                         await _context.SaveChangesAsync();
                     }

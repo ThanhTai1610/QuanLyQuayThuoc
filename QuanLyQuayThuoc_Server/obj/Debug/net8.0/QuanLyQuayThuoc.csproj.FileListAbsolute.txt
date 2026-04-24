@@ -667,7 +667,6 @@ F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\staticwebassets\msbui
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.QuanLyQuayThuoc.props
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.QuanLyQuayThuoc.props
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\staticwebassets.pack.json
-F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQu.BA465F03.Up2Date
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\QuanLyQuayThuoc.dll
 F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\refint\QuanLyQuayThuoc.dll

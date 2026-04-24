@@ -10,10 +10,28 @@ namespace QuanLyQuayThuoc.Controllers.NhanVien
     public class XuLyDonHangController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private const string TrangThaiChoXuLy = "Chờ xử lý";
 
         public XuLyDonHangController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        private static string ChuanHoaTrangThaiDonHang(string? trangThai)
+        {
+            if (string.IsNullOrWhiteSpace(trangThai))
+            {
+                return TrangThaiChoXuLy;
+            }
+
+            var value = trangThai.Trim();
+            return value switch
+            {
+                "Chờ xác nhận" => TrangThaiChoXuLy,
+                "Chờ thanh toán" => TrangThaiChoXuLy,
+                "Đã thanh toán" => TrangThaiChoXuLy,
+                _ => value
+            };
         }
 
         // 1. Lấy danh sách đơn hàng xử lý
@@ -32,7 +50,9 @@ namespace QuanLyQuayThuoc.Controllers.NhanVien
                     TenKhachHang = d.MaKhachHangNavigation != null ? d.MaKhachHangNavigation.HoTen : "Khách vãng lai",
                     SoDienThoaiNhan = d.SoDienThoaiNhan, // Đúng tên trong Model
                     TongTien = d.TongTien ?? 0,
-                    TrangThai = d.TrangThai,
+                    TrangThai = d.TrangThai == "Chờ xác nhận" || d.TrangThai == "Chờ thanh toán" || d.TrangThai == "Đã thanh toán"
+                        ? TrangThaiChoXuLy
+                        : d.TrangThai,
                     LaThuocKeDon = d.ChiTietDonHangs.Any(ct =>
                         ct.MaLoNavigation != null &&
                         ct.MaLoNavigation.MaThuocNavigation != null &&
@@ -63,7 +83,9 @@ namespace QuanLyQuayThuoc.Controllers.NhanVien
                     GhiChu = "Phương thức: " + d.PhuongThucThanhToan,
 
                     TongTien = d.TongTien ?? 0,
-                    TrangThai = d.TrangThai,
+                    TrangThai = d.TrangThai == "Chờ xác nhận" || d.TrangThai == "Chờ thanh toán" || d.TrangThai == "Đã thanh toán"
+                        ? TrangThaiChoXuLy
+                        : d.TrangThai,
                     AnhDonThuoc = d.AnhDonThuoc,
                     ChiTietSanPham = d.ChiTietDonHangs.Select(ct => new
                     {
@@ -89,7 +111,7 @@ namespace QuanLyQuayThuoc.Controllers.NhanVien
             var donHang = await _context.DonHangs.FindAsync(id);
             if (donHang == null) return NotFound("Đơn hàng không tồn tại");
 
-            donHang.TrangThai = yeuCau.TrangThaiMoi;
+            donHang.TrangThai = ChuanHoaTrangThaiDonHang(yeuCau.TrangThaiMoi);
 
             // VÌ KHÔNG CÓ CỘT GhiChu TRONG DB, NÊN TẠM THỜI BỎ QUA VIỆC LƯU LÝ DO HỦY
             // HOẶC BẠN PHẢI THÊM CỘT GhiChu VÀO SQL SERVER RỒI SCAFFOLD LẠI

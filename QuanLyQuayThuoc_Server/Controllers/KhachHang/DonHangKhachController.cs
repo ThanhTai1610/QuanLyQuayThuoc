@@ -14,10 +14,28 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
     public class DonHangKhachController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private const string TrangThaiChoXuLy = "Chờ xử lý";
 
         public DonHangKhachController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        private static string ChuanHoaTrangThaiDonHang(string? trangThai)
+        {
+            if (string.IsNullOrWhiteSpace(trangThai))
+            {
+                return TrangThaiChoXuLy;
+            }
+
+            var value = trangThai.Trim();
+            return value switch
+            {
+                "Chờ xác nhận" => TrangThaiChoXuLy,
+                "Chờ thanh toán" => TrangThaiChoXuLy,
+                "Đã thanh toán" => TrangThaiChoXuLy,
+                _ => value
+            };
         }
 
         [HttpGet("cua-toi")]
@@ -90,6 +108,11 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                     })
                     .ToListAsync();
 
+                foreach (var order in orders)
+                {
+                    order.TrangThai = ChuanHoaTrangThaiDonHang(order.TrangThai);
+                }
+
                 return Ok(orders);
             }
             catch (Exception ex)
@@ -126,6 +149,8 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
                 .FirstOrDefaultAsync();
 
             if (order == null) return NotFound(new { message = "Không tìm thấy đơn hàng" });
+
+            order.TrangThai = ChuanHoaTrangThaiDonHang(order.TrangThai);
             return Ok(order);
         }
 
@@ -136,8 +161,10 @@ namespace QuanLyQuayThuoc.Controllers.KhachHang
 
             if (donHang == null) return NotFound(new { message = "Không tìm thấy đơn hàng" });
 
+            var trangThaiHienTai = ChuanHoaTrangThaiDonHang(donHang.TrangThai);
+
             // Chỉ cho phép hủy khi đơn hàng đang ở trạng thái 'Chờ xử lý'
-            if (donHang.TrangThai != "Chờ xử lý")
+            if (trangThaiHienTai != TrangThaiChoXuLy)
             {
                 return BadRequest(new { message = "Không thể hủy đơn hàng ở trạng thái này." });
             }
