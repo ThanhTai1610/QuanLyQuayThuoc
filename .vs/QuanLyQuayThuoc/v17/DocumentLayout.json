@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "F:\\QuanLyQuayThuoc\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|solutionrelative:quanlyquaythuoc_server\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4D7EA190-CBDA-4EEB-A815-F64686897EBA}|QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.csproj|f:\\quanlyquaythuoc\\quanlyquaythuoc_server\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
@@ -152,7 +152,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 9,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Bookmark",
@@ -192,8 +192,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\QuanLyQuayThuoc.http",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
-              "WhenOpened": "2026-04-23T17:26:46.058Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-23T17:26:46.058Z"
             },
             {
               "$type": "Document",
@@ -205,12 +204,11 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\ChatbotService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-16T03:31:09.631Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-16T03:31:09.631Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Program.cs",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\Program.cs",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\Program.cs",
@@ -218,18 +216,17 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Program.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAswHgAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:34:36.586Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-04T20:34:36.586Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "appsettings.json",
               "DocumentMoniker": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\appsettings.json",
               "RelativeDocumentMoniker": "QuanLyQuayThuoc_Server\\appsettings.json",
               "ToolTip": "F:\\QuanLyQuayThuoc\\QuanLyQuayThuoc_Server\\appsettings.json",
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\appsettings.json",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAqwA0AAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-04-13T04:57:06.609Z",
               "EditorCaption": ""
@@ -244,8 +241,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\appsettings.Development.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-04-13T04:57:10.291Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-13T04:57:10.291Z"
             },
             {
               "$type": "Document",
@@ -257,8 +253,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\BaoCaoController.cs",
               "ViewState": "AgIAAMsAAAAAAAAAAAAvwOoAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T17:32:44.415Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-15T17:32:44.415Z"
             },
             {
               "$type": "Document",
@@ -282,8 +277,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Helpers\\EmailHelper.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAE4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T16:57:33.998Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-15T16:57:33.998Z"
             },
             {
               "$type": "Document",
@@ -355,8 +349,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\KhachHang\\DonHangKhachController.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAYwDQAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-15T17:45:35.069Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-15T17:45:35.069Z"
             },
             {
               "$type": "Document",
@@ -460,8 +453,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Services\\Implementation\\GioHangService.cs",
               "ViewState": "AgIAAHEAAAAAAAAAAAAAwK4AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-04T20:30:50.406Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-04T20:30:50.406Z"
             },
             {
               "$type": "Document",
@@ -533,8 +525,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Controllers\\QuanTriVien\\KhoController.cs",
               "ViewState": "AgIAAB4AAAAAAAAAAAAwwC0AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T17:01:01.308Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-03T17:01:01.308Z"
             },
             {
               "$type": "Document",
@@ -570,8 +561,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\Repository\\Implementation\\KhoRepository.cs",
               "ViewState": "AgIAACAAAAAAAAAAAIAwwC8AAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:43:41.341Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-03T16:43:41.341Z"
             },
             {
               "$type": "Document",
@@ -595,8 +585,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\PhieuNhapKhoDto.cs",
               "ViewState": "AgIAAAgAAAAAAAAAAAA8wBEAAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:35:00.635Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-03T16:35:00.635Z"
             },
             {
               "$type": "Document",
@@ -608,8 +597,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoLoHangDto.cs",
               "ViewState": "AgIAABIAAAAAAAAAAAAywB8AAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:34:35.747Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-03T16:34:35.747Z"
             },
             {
               "$type": "Document",
@@ -621,8 +609,7 @@
               "RelativeToolTip": "QuanLyQuayThuoc_Server\\DTOs\\Kho\\KhoTongQuanDto.cs",
               "ViewState": "AgIAAAIAAAAAAAAAAAA8wBUAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-03T16:33:50.539Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-03T16:33:50.539Z"
             }
           ]
         }

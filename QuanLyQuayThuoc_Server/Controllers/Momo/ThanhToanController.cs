@@ -82,10 +82,10 @@ namespace QuanLyQuayThuoc.Controllers
             // Ở đây mình trả về momoOrderId để khớp với code Frontend mình đã hướng dẫn bạn split.
             if (userType == "NhanVien")
             {
-                return Redirect($"http://localhost:5173/nhan-vien/ban-hang?orderId={momoOrderId}&status={status}");
+                return Redirect($"https://quan-ly-quay-thuoc-client.vercel.app/nhan-vien/ban-hang?orderId={momoOrderId}&status={status}");
             }
 
-            return Redirect($"http://localhost:5173/dat-hang?orderId={momoOrderId}&status={status}");
+            return Redirect($"https://quan-ly-quay-thuoc-client.vercel.app/dat-hang?orderId={momoOrderId}&status={status}");
         }
     }
 }

@@ -673,4 +673,3 @@ F:\QuanLyQuayThuoc\_build_check\server-check-email-queue\QuanLyQuayThuoc.deps.js
 F:\QuanLyQuayThuoc\_build_check\server-check-email-queue\QuanLyQuayThuoc.runtimeconfig.json
 F:\QuanLyQuayThuoc\_build_check\server-check-email-queue\QuanLyQuayThuoc.dll
 F:\QuanLyQuayThuoc\_build_check\server-check-email-queue\QuanLyQuayThuoc.pdb
-F:\QuanLyQuayThuoc\QuanLyQuayThuoc_Server\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
